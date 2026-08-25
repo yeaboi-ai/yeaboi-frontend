@@ -12,6 +12,7 @@
     "dev": "vite",
     "gen-enums": "node scripts/gen-enums.mjs",
     "gen-enums:check": "node scripts/gen-enums.mjs --check",
+    "pack-design": "node scripts/pack-design.mjs",
     "typecheck": "npm run gen-enums:check && tsc --noEmit",
     "lint": "npm run typecheck",
     "format": "prettier --write .",

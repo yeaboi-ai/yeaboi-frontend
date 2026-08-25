@@ -29,3 +29,6 @@ build/
 
 # macOS
 .DS_Store
+
+# Assembled by scripts/pack-design.mjs for the npm publish; never committed.
+dist-design/

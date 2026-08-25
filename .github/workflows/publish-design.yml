@@ -1,0 +1,96 @@
+# Publish @yeaboi-ai/design to npm.
+#
+# THE WORKFLOW FILENAME MUST STAY "publish-design.yml". It is part of npm's
+# trusted-publisher record for this package (owner, repo, workflow filename,
+# environment `npm`); renaming the file revokes publish rights, and the failure
+# reads as an authentication error rather than a rename.
+#
+# No token and no secret: `id-token: write` mints a short-lived OIDC credential
+# that npm exchanges for publish rights, scoped to this workflow in this repo.
+#
+# ONE VERSION FOR THE WHOLE REPO. The number comes from pyproject.toml, the same
+# one the wheel uses — both artifacts are built from this tree and released
+# together, and a second independent version line would be a thing to keep in
+# step for no benefit. A bump that changes only the wheel republishes an
+# identical design package; that costs nothing and keeps "the front end at
+# version X" meaning one thing.
+
+name: Publish @yeaboi-ai/design
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-design-${{ github.event_name == 'push' && github.sha || 'dispatch' }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Is there a release to make
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      go: ${{ steps.v.outputs.go }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: v
+        run: |
+          set -euo pipefail
+          version="$(grep -m1 '^version = ' pyproject.toml | cut -d'"' -f2)"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          # Ask the registry rather than tracking state here: it is the only
+          # authority on what has been published, and it stays right across
+          # force-pushes, reverts and re-runs.
+          code="$(curl -sS -o /dev/null -w '%{http_code}' \
+            "https://registry.npmjs.org/@yeaboi-ai/design/$version")"
+          if [ "$code" = "404" ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+            echo "→ @yeaboi-ai/design@$version is not published; publishing"
+          else
+            echo "go=false" >> "$GITHUB_OUTPUT"
+            echo "→ @yeaboi-ai/design@$version already published (HTTP $code); nothing to do"
+          fi
+
+  publish:
+    name: Build & publish
+    needs: check
+    if: needs.check.outputs.go == 'true'
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      id-token: write # npm trusted publishing (OIDC)
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          registry-url: https://registry.npmjs.org
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      # Trusted publishing needs npm >= 11.5.1, which is newer than the npm
+      # bundled with most Node releases. Upgrading in place is the documented
+      # way and is what makes the OIDC path available at all.
+      - run: npm install -g npm@latest
+      - run: make install
+
+      # The package is source, so the gate that matters is that the source
+      # compiles and its tests pass — there is no separate build to verify.
+      - run: make lint
+      - run: make test-fast
+
+      - name: Assemble the package
+        run: node scripts/pack-design.mjs --version "${{ needs.check.outputs.version }}"
+
+      # --provenance explicitly. npm's docs say OIDC attaches it automatically;
+      # in practice it does not always, and provenance is what ties the
+      # published tarball to this workflow run.
+      - name: Publish to npm
+        working-directory: dist-design
+        run: npm publish --access public --provenance

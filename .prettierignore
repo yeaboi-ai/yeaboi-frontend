@@ -21,3 +21,4 @@ package-lock.json
 # `data-state` rule is found by regex. Reformatting them broke 210 tests for no
 # benefit; they are hand-authored and machine-read, so prettier stays out.
 *.css
+dist-design/

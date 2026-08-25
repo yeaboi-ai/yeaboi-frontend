@@ -41,7 +41,7 @@ CONTRACTS_REPO  := https://github.com/yeaboi-ai/yeaboi.ai.git
 CONTRACTS_DIR   := .
 CONTRACTS_PATHS := contracts/web
 
-.PHONY: help gen-enums dev clean dist-check wheel-check
+.PHONY: help gen-enums pack-design dev clean dist-check wheel-check
 
 help: ## Show this help
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2}'
@@ -59,21 +59,24 @@ help: ## Show this help
 gen-enums: ## Render src/types/enums.ts from the vendored enums contract
 	$(NPM) run gen-enums
 
+pack-design: ## Assemble the @yeaboi/design npm package into dist-design/
+	$(NPM) run pack-design
+
 # `make test` runs `typecheck` first, and `npm run typecheck` starts with
 # `gen-enums --check` — so a stale enums.ts fails before anything reads it.
 
+# To have the PYTHON side serve this tree's build instead of a published wheel,
+# point a sibling yeaboi checkout at it — assets.py checks this before anything
+# else:  YEABOI_WEB_STATIC=../yeaboi-frontend/yeaboi_web_assets/static
 dev: ## Vite dev server on :5399 with HMR, proxying /api to a yeaboi dev board
 	@echo "  dev/{retro,poker,deck,gate,export}.html on http://localhost:5399/"
 	@echo "  boards need ?token=<token> from the yeaboi checkout's 'make dev-board';"
 	@echo "  for poker, set YEABOI_DEV_API=http://127.0.0.1:5273 so /api proxies there."
 	$(NPM) run dev
 
-# The wheel's payload. Serving it from a sibling yeaboi checkout without
-# publishing is what YEABOI_WEB_STATIC is for:
-#   YEABOI_WEB_STATIC=../yeaboi-frontend/yeaboi_web_assets/static
-# Both read build output, so both depend on `build` rather than relying on
-# where they land in a prerequisite list — that ordering holds only while make
-# runs serially, and is exactly the kind of thing that breaks under `-j`.
+# Both read build output, so both depend on `build` rather than relying on where
+# they land in a prerequisite list — that ordering holds only while make runs
+# serially, and is exactly the kind of thing that breaks under `-j`.
 dist-check: build ## Assert the built bundles are self-contained and shippable
 	node scripts/check-dist.mjs
 
@@ -81,7 +84,7 @@ wheel-check: build ## Build the wheel, install it, and assert it carries the bun
 	uv run --no-project python scripts/check_wheel.py
 
 clean: ## Remove build output
-	rm -rf yeaboi_web_assets/static dist
+	rm -rf yeaboi_web_assets/static dist dist-design
 
 # node.mk already makes this `lint format-check test build`. Adding prerequisites
 # WITHOUT a recipe extends that list rather than replacing it — an override of a
