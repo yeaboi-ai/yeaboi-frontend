@@ -43,10 +43,19 @@ configure({
 // namespace and is inert under vitest 4.
 expect.extend(matchers);
 
+// Whether this file is running under jsdom at all.
+//
+// The suites under src/__guards__ read files off disk and declare
+// `@vitest-environment node`, where there is no window, no document and no
+// HTMLMediaElement — and setupFiles still runs for them. Everything DOM-shaped
+// below is therefore conditional; everything else (matchers, localStorage) is
+// useful in both.
+const HAS_DOM = typeof window !== 'undefined';
+
 // Unmount between tests. Preact renders into a container testing-library
 // creates; without this, a previous test's tree is still in the document and
 // `getByRole` finds two of everything.
-afterEach(() => cleanup());
+if (HAS_DOM) afterEach(() => cleanup());
 
 /**
  * localStorage.
@@ -78,7 +87,7 @@ if (typeof (globalThis.localStorage as Partial<Storage> | undefined)?.getItem !=
 // matchMedia: used by the theme fallback, the confetti/alarm reduced-motion
 // guards, and the visualiser. Defaults to "no preference / dark", matching the
 // product default (midnight). Tests that care override it per-case.
-if (!window.matchMedia) {
+if (HAS_DOM && !window.matchMedia) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
     matches: false,
     media: query,
@@ -98,13 +107,18 @@ if (!window.matchMedia) {
 // rejection, so a method returning undefined would break the case rather than
 // quieten it. Overridden unconditionally: the methods exist, they just do
 // nothing useful here.
-HTMLMediaElement.prototype.play = () => Promise.resolve();
-HTMLMediaElement.prototype.pause = () => {};
-HTMLMediaElement.prototype.load = () => {};
+if (HAS_DOM) {
+  HTMLMediaElement.prototype.play = () => Promise.resolve();
+  HTMLMediaElement.prototype.pause = () => {};
+  HTMLMediaElement.prototype.load = () => {};
+}
 
 // jsdom defines getContext but throws a "not implemented" notice for every
 // call, which floods the output whenever a canvas renders. Both canvas users
 // here (confetti, the visualiser) already handle a null context by drawing
 // nothing, so returning null is both quiet and the behaviour under test.
 // Overridden unconditionally: the method exists, it just does not work.
-HTMLCanvasElement.prototype.getContext = (() => null) as unknown as HTMLCanvasElement['getContext'];
+if (HAS_DOM) {
+  HTMLCanvasElement.prototype.getContext = (() =>
+    null) as unknown as HTMLCanvasElement['getContext'];
+}
