@@ -67,7 +67,7 @@ export function useHeartbeat({
           avatar: latest.current.avatar,
           typing_grid: latest.current.typingGrid,
         },
-        { signal: controller.signal }
+        { signal: controller.signal },
       );
       // Failures are deliberately ignored: a missed beat costs at most a brief
       // absence from the presence row, and the next one repairs it. Surfacing

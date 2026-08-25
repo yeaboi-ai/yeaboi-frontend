@@ -32,9 +32,10 @@ describe('Profile', () => {
   });
 
   it('leads with coverage, before the numbers', () => {
-    const { container } = draw([{ kind: 'kv', rows: [['Team velocity', '28 pts/sprint']] }], [
-      'Documentation — Failed',
-    ]);
+    const { container } = draw(
+      [{ kind: 'kv', rows: [['Team velocity', '28 pts/sprint']] }],
+      ['Documentation — Failed'],
+    );
     const text = container.textContent ?? '';
     expect(text.indexOf('Documentation — Failed')).toBeLessThan(text.indexOf('28 pts/sprint'));
   });
@@ -112,7 +113,14 @@ describe('Profile', () => {
           kind: 'table',
           headers: ['Practice', 'Example'],
           rows: [
-            ['Testing', { t: 'ACME-5', href: 'https://jira.example.com/browse/ACME-5', note: 'Session expiry' }],
+            [
+              'Testing',
+              {
+                t: 'ACME-5',
+                href: 'https://jira.example.com/browse/ACME-5',
+                note: 'Session expiry',
+              },
+            ],
             ['Deploy', { t: 'ACME-6', href: 'javascript:alert(1)' }],
           ],
         },
@@ -164,7 +172,9 @@ describe('Profile', () => {
       const { container } = draw([
         { kind: 'callout', tone: 'chartreuse', title: 'x' } as unknown as Block,
       ]);
-      expect((container.querySelector('div[style]') as HTMLElement).style.borderLeftColor).toBe('var(--warn)');
+      expect((container.querySelector('div[style]') as HTMLElement).style.borderLeftColor).toBe(
+        'var(--warn)',
+      );
     });
 
     it('draws nothing for a bar with no positive counts', () => {

@@ -110,7 +110,12 @@ export function TimerControls({
         <span className={styles['fieldLabel']}>Length</span>
         <div className={styles['presetRow']} role="group" aria-label="Preset lengths">
           {presets.map((seconds) => (
-            <button key={seconds} type="button" className={styles['preset']} onClick={() => onStart(seconds)}>
+            <button
+              key={seconds}
+              type="button"
+              className={styles['preset']}
+              onClick={() => onStart(seconds)}
+            >
               {seconds % 60 === 0 ? `${seconds / 60}m` : `${seconds}s`}
             </button>
           ))}
@@ -147,12 +152,15 @@ export function TimerControls({
           )}
         </div>
       </div>
-
     </div>
   );
 }
 
 /** Full-viewport canvas for the finish celebration. Attach the useConfetti ref. */
-export function ConfettiCanvas({ canvasRef }: { canvasRef: (el: HTMLCanvasElement | null) => void }): ReactNode {
+export function ConfettiCanvas({
+  canvasRef,
+}: {
+  canvasRef: (el: HTMLCanvasElement | null) => void;
+}): ReactNode {
   return <canvas ref={canvasRef} className={styles['confetti']} aria-hidden="true" />;
 }

@@ -99,7 +99,9 @@ export function Results({
 
         {onFloor ? null : onAi ? (
           ai.confidence ? (
-            <span className={cx(styles['conf'], styles[`conf-${ai.confidence}`])}>{ai.confidence} confidence</span>
+            <span className={cx(styles['conf'], styles[`conf-${ai.confidence}`])}>
+              {ai.confidence} confidence
+            </span>
           ) : null
         ) : revealed && median !== null ? (
           <span className={styles['resultsSum']}>
@@ -124,7 +126,10 @@ export function Results({
                   <span className={styles['dtrack']}>
                     {/* Share of the table, not of the tallest bar: normalising to
                         the max draws every tie as a full bar. */}
-                    <span className={styles['dbar']} style={{ width: `${(count / total) * 100}%` }} />
+                    <span
+                      className={styles['dbar']}
+                      style={{ width: `${(count / total) * 100}%` }}
+                    />
                   </span>
                   <span className={styles['dcount']}>{count}</span>
                   {/* Pluralised on the total, not the count: "1 of 3 vote" is what

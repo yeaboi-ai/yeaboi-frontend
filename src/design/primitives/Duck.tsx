@@ -183,7 +183,7 @@ export function useDuckIdle(enabled: boolean): DuckIdle | null {
             schedule();
           }, IDLE_MS[kind]);
         },
-        IDLE_MIN_MS + Math.random() * (IDLE_MAX_MS - IDLE_MIN_MS)
+        IDLE_MIN_MS + Math.random() * (IDLE_MAX_MS - IDLE_MIN_MS),
       );
     };
 
@@ -224,7 +224,7 @@ export function useDuckPulse(resting: DuckRest = 'idle'): [DuckState, (pulse: Du
     () => () => {
       if (timer.current !== null) clearTimeout(timer.current);
     },
-    []
+    [],
   );
 
   // A resting state that means something — the board is locked, or we have

@@ -61,7 +61,14 @@ const WAITING: Record<'pending' | 'failed' | 'off', string> = {
   off: 'Sharing is off for this board, so there is no link to send.',
 };
 
-export function InviteQR({ qrSrc, joinCode, inviteUrl, shareUrl, shareState, className }: InviteQRProps) {
+export function InviteQR({
+  qrSrc,
+  joinCode,
+  inviteUrl,
+  shareUrl,
+  shareState,
+  className,
+}: InviteQRProps) {
   const src = safeImageSrc(qrSrc);
   // The endpoint answers 503 until the tunnel is up, and a broken image with
   // its alt text showing is the worst of the three things it could do.

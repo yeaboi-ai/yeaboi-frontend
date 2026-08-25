@@ -60,7 +60,11 @@ describe('readMarkdown', () => {
 
   it('groups a run of bullets into one list', () => {
     const [list] = readMarkdown('- a\n- b\n- c');
-    expect(list).toEqual({ t: 'list', ordered: false, items: [[{ s: 'a' }], [{ s: 'b' }], [{ s: 'c' }]] });
+    expect(list).toEqual({
+      t: 'list',
+      ordered: false,
+      items: [[{ s: 'a' }], [{ s: 'b' }], [{ s: 'c' }]],
+    });
   });
 
   it('starts a second list when the marker kind changes', () => {
@@ -95,7 +99,9 @@ describe('readMarkdown', () => {
   it('does not turn a sentence containing a pipe into a table', () => {
     // The divider lookahead is the whole guard. Without it "a | b" alone reads
     // as a one-row table and the prose disappears into a grid.
-    expect(readMarkdown('run a | b to compare')).toEqual([{ t: 'p', runs: [{ s: 'run a | b to compare' }] }]);
+    expect(readMarkdown('run a | b to compare')).toEqual([
+      { t: 'p', runs: [{ s: 'run a | b to compare' }] },
+    ]);
   });
 
   it('reads rules, quotes and paragraphs', () => {

@@ -144,7 +144,7 @@ export async function postJSON<T>(
   session: Session,
   path: string,
   body: Record<string, unknown> = {},
-  init: RequestInit = {}
+  init: RequestInit = {},
 ): Promise<ApiResult<T>> {
   let response: Response;
   try {
@@ -197,7 +197,7 @@ export async function pollState<T>(
     waitSeconds = 0,
     signal,
     path = '/api/state',
-  }: { etag?: string; waitSeconds?: number; signal?: AbortSignal; path?: string } = {}
+  }: { etag?: string; waitSeconds?: number; signal?: AbortSignal; path?: string } = {},
 ): Promise<PollResult<T>> {
   const extra: Record<string, string> = { pid: session.pid };
   if (waitSeconds > 0) extra['wait'] = String(waitSeconds);

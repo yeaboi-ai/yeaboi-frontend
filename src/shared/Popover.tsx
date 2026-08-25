@@ -57,12 +57,21 @@ const CLOSE_MS = 220;
  * that opening a tool grows the dock itself, which is something no absolutely
  * positioned panel can do — an out-of-flow box cannot size its container.
  */
-export function PopoverGroup({ children, panelHost = null }: { children: ReactNode; panelHost?: HTMLElement | null }) {
+export function PopoverGroup({
+  children,
+  panelHost = null,
+}: {
+  children: ReactNode;
+  panelHost?: HTMLElement | null;
+}) {
   const [openId, setOpenId] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   const close = useCallback(() => setOpenId(null), []);
-  const toggle = useCallback((id: string) => setOpenId((current) => (current === id ? null : id)), []);
+  const toggle = useCallback(
+    (id: string) => setOpenId((current) => (current === id ? null : id)),
+    [],
+  );
 
   useEffect(() => {
     if (openId === null) return;
@@ -96,7 +105,10 @@ export function PopoverGroup({ children, panelHost = null }: { children: ReactNo
     if (panelHost) panelHost.dataset['open'] = openId ? 'true' : 'false';
   }, [panelHost, openId]);
 
-  const value = useMemo(() => ({ openId, toggle, close, panelHost }), [openId, toggle, close, panelHost]);
+  const value = useMemo(
+    () => ({ openId, toggle, close, panelHost }),
+    [openId, toggle, close, panelHost],
+  );
 
   return (
     <PopoverGroupContext.Provider value={value}>
@@ -176,7 +188,9 @@ export function Popover({
     const { width, height } = panel.getBoundingClientRect();
     const room = { above: anchor.top, below: window.innerHeight - anchor.bottom };
     const wantAbove = placement === 'above';
-    const above = wantAbove ? room.above >= height || room.above >= room.below : room.below < height && room.above > room.below;
+    const above = wantAbove
+      ? room.above >= height || room.above >= room.below
+      : room.below < height && room.above > room.below;
     const wantLeft = align === 'left';
     const left = wantLeft
       ? anchor.left + width <= window.innerWidth || anchor.right - width < 0

@@ -28,7 +28,7 @@ export function useEdgeFade<T extends HTMLElement>(deps: unknown): [(el: T | nul
       ref.current = el;
       measure();
     },
-    [measure]
+    [measure],
   );
 
   useEffect(() => {

@@ -37,7 +37,9 @@ describe('CoverageDots', () => {
   });
 
   it('spells an underscored state as words', () => {
-    const { container } = render(<CoverageDots items={[{ label: 'poker', status: 'not_configured' }]} />);
+    const { container } = render(
+      <CoverageDots items={[{ label: 'poker', status: 'not_configured' }]} />,
+    );
     expect(container.textContent).toContain('not configured');
   });
 
@@ -47,7 +49,11 @@ describe('CoverageDots', () => {
   });
 
   it('carries the honest sentence as the dot title when there is one', () => {
-    render(<CoverageDots items={[{ label: 'standup', status: 'partial', detail: '3 runs, none named them.' }]} />);
+    render(
+      <CoverageDots
+        items={[{ label: 'standup', status: 'partial', detail: '3 runs, none named them.' }]}
+      />,
+    );
     expect(screen.getByTitle('3 runs, none named them.')).toBeTruthy();
   });
 

@@ -46,7 +46,7 @@ export interface HostBroadcastHandlers {
 
 export function useHostBroadcast(
   broadcast: BroadcastState | null | undefined,
-  { onTheme, onMusic, onAutoplayBlocked }: HostBroadcastHandlers
+  { onTheme, onMusic, onAutoplayBlocked }: HostBroadcastHandlers,
 ): void {
   // High-water marks. Refs, not state: crossing an edge must not itself cause a
   // render, and these must survive re-renders without resetting.

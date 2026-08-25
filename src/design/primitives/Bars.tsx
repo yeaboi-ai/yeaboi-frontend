@@ -25,13 +25,11 @@ export interface StatBarProps {
 export function StatBar({ pct, tone = 'accent', label, className }: StatBarProps) {
   const width = Math.max(0, Math.min(100, pct));
   return (
-    <div
-      className={cx(styles['bar'], className)}
-      role="img"
-      aria-label={label}
-      title={label}
-    >
-      <div className={styles['barFill']} style={{ width: `${width}%`, background: toneVar(tone) }} />
+    <div className={cx(styles['bar'], className)} role="img" aria-label={label} title={label}>
+      <div
+        className={styles['barFill']}
+        style={{ width: `${width}%`, background: toneVar(tone) }}
+      />
     </div>
   );
 }
@@ -76,7 +74,10 @@ export function SegmentBar({ segments, label, widthPct = 100, className }: Segme
           // of their own, the list is rebuilt wholesale from a fresh count, and
           // reordering carries no state to lose.
           key={`${segment.tone}-${index}`}
-          style={{ flex: `0 0 ${((segment.value / total) * 100).toFixed(1)}%`, background: toneVar(segment.tone) }}
+          style={{
+            flex: `0 0 ${((segment.value / total) * 100).toFixed(1)}%`,
+            background: toneVar(segment.tone),
+          }}
         />
       ))}
     </div>

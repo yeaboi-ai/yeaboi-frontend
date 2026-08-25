@@ -13,12 +13,13 @@ import { describe, expect, it } from 'vitest';
 import { safeImageSrc, safeUrl } from './url';
 
 describe('safeUrl', () => {
-  it.each(['https://jira.example/browse/AB-1', 'http://localhost:8080/x', 'mailto:someone@example.com'])(
-    'allows %s',
-    (url) => {
-      expect(safeUrl(url)).toBe(url);
-    }
-  );
+  it.each([
+    'https://jira.example/browse/AB-1',
+    'http://localhost:8080/x',
+    'mailto:someone@example.com',
+  ])('allows %s', (url) => {
+    expect(safeUrl(url)).toBe(url);
+  });
 
   it.each([
     'javascript:alert(1)',

@@ -27,7 +27,7 @@ function renderBar(over: Partial<Parameters<typeof EditBar>[0]> = {}) {
       onIdentity={onIdentity}
       inputRef={createRef<HTMLInputElement>()}
       {...over}
-    />
+    />,
   );
   return { onIdentity };
 }

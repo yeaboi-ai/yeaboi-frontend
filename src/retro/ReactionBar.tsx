@@ -78,7 +78,7 @@ export function ReactionChips({ reactions, mine, onReact, disabled }: ReactionCh
         setTimeout(() => {
           timers.current.delete(emoji);
           setLeaving((current) => current.filter((held) => held !== emoji));
-        }, CHIP_OUT_MS)
+        }, CHIP_OUT_MS),
       );
     }
     // `key`, not `counted`: a new array every render would re-run this forever.
@@ -94,7 +94,9 @@ export function ReactionChips({ reactions, mine, onReact, disabled }: ReactionCh
   }, []);
 
   const first = previous.current === null;
-  const shown = REACTION_EMOJIS.filter((emoji) => counted.includes(emoji) || leaving.includes(emoji));
+  const shown = REACTION_EMOJIS.filter(
+    (emoji) => counted.includes(emoji) || leaving.includes(emoji),
+  );
 
   // The whole row, not just its contents. An empty flex row still occupies its
   // gap and padding, which is what left a strip of dead space under every card.
@@ -112,7 +114,7 @@ export function ReactionChips({ reactions, mine, onReact, disabled }: ReactionCh
             className={cx(
               styles['rxChip'],
               isMine && styles['rxChipMine'],
-              going ? styles['rxChipOut'] : !first && styles['rxChipIn']
+              going ? styles['rxChipOut'] : !first && styles['rxChipIn'],
             )}
             disabled={disabled || going}
             {...(going ? { 'aria-hidden': true, tabIndex: -1 } : {})}
@@ -144,7 +146,13 @@ export interface ReactionTriggerProps {
   disabled?: boolean;
 }
 
-export function ReactionTrigger({ open, onToggle, trayId, buttonRef, disabled }: ReactionTriggerProps) {
+export function ReactionTrigger({
+  open,
+  onToggle,
+  trayId,
+  buttonRef,
+  disabled,
+}: ReactionTriggerProps) {
   return (
     <Button
       shape="bare"
@@ -228,7 +236,9 @@ export function ReactionTray({ open, id, mine, onPick, anchorRef, trayRef }: Rea
       className={cx(styles['rxTray'], !open && styles['rxTrayOut'])}
       role="menu"
       aria-label="Reactions"
-      style={at ? { top: `${at.top}px`, left: `${at.left}px`, width: `${TRAY_W}px` } : { opacity: 0 }}
+      style={
+        at ? { top: `${at.top}px`, left: `${at.left}px`, width: `${TRAY_W}px` } : { opacity: 0 }
+      }
       {...(open ? {} : { 'aria-hidden': true, inert: true })}
     >
       {REACTION_EMOJIS.map((emoji) => (
@@ -244,6 +254,6 @@ export function ReactionTray({ open, id, mine, onPick, anchorRef, trayRef }: Rea
         </button>
       ))}
     </div>,
-    document.body
+    document.body,
   );
 }

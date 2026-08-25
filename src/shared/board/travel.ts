@@ -64,7 +64,11 @@ export function lastSeen(place: string, name: string): FaceBox | undefined {
 }
 
 /** Animate `el` as though it had come from `from`. Silent if it cannot. */
-export function travelFrom(el: HTMLElement, from: FaceBox | undefined, opts: { fade?: boolean } = {}): void {
+export function travelFrom(
+  el: HTMLElement,
+  from: FaceBox | undefined,
+  opts: { fade?: boolean } = {},
+): void {
   if (!from || typeof el.animate !== 'function') return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const here = el.getBoundingClientRect();
@@ -75,10 +79,13 @@ export function travelFrom(el: HTMLElement, from: FaceBox | undefined, opts: { f
   const scale = Math.min(3, Math.max(0.2, from.width / here.width));
   el.animate(
     [
-      { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, ...(opts.fade ? { opacity: 0 } : {}) },
+      {
+        transform: `translate(${dx}px, ${dy}px) scale(${scale})`,
+        ...(opts.fade ? { opacity: 0 } : {}),
+      },
       { transform: 'none', ...(opts.fade ? { opacity: 1 } : {}) },
     ],
-    { duration: TRAVEL_MS, easing: TRAVEL_EASE }
+    { duration: TRAVEL_MS, easing: TRAVEL_EASE },
   );
 }
 
@@ -91,7 +98,7 @@ export function travelFrom(el: HTMLElement, from: FaceBox | undefined, opts: { f
  */
 export function useArrival(
   el: { current: HTMLElement | null },
-  opts: { place: string; from: string; name: string; alsoFade?: { current: HTMLElement | null } }
+  opts: { place: string; from: string; name: string; alsoFade?: { current: HTMLElement | null } },
 ): void {
   const flown = useRef('');
   const { place, from, name, alsoFade } = opts;
@@ -125,7 +132,7 @@ export function useArrival(
  */
 export function useRowChoreography(
   row: { current: HTMLElement | null },
-  opts: { place: string; from: string; members: string }
+  opts: { place: string; from: string; members: string },
 ): void {
   const was = useRef(new Map<string, FaceBox>());
   const { place, from, members } = opts;

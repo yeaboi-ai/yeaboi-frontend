@@ -76,9 +76,10 @@ function Story({ story }: { story: PlanStory }) {
 
       {story.rationale ? (
         <p className={styles['why']}>
-          <Chip {...(story.confidence && CONFIDENCE_TONE[story.confidence.toLowerCase()]
-            ? { tone: CONFIDENCE_TONE[story.confidence.toLowerCase()] as Tone }
-            : {})}
+          <Chip
+            {...(story.confidence && CONFIDENCE_TONE[story.confidence.toLowerCase()]
+              ? { tone: CONFIDENCE_TONE[story.confidence.toLowerCase()] as Tone }
+              : {})}
           >
             {story.confidence ? `${story.confidence} confidence` : 'Points rationale'}
           </Chip>
@@ -138,9 +139,15 @@ function Sprint({ sprint, velocity }: { sprint: PlanSprint; velocity: number }) 
       }
     >
       <p className={styles['sprintGoal']}>{sprint.goal}</p>
-      <StatBar pct={fill} tone={tone} label={`${sprint.used} of ${sprint.capacity} points planned`} />
+      <StatBar
+        pct={fill}
+        tone={tone}
+        label={`${sprint.used} of ${sprint.capacity} points planned`}
+      />
       {reduced ? (
-        <p className={styles['reducedNote']}>Reduced from {velocity} pts (bank holidays / deductions)</p>
+        <p className={styles['reducedNote']}>
+          Reduced from {velocity} pts (bank holidays / deductions)
+        </p>
       ) : null}
       <div className={styles['chipRow']}>
         {sprint.storyIds.map((id) => (
@@ -255,7 +262,12 @@ export function Plan({
             rows={questionnaire}
             rowKey={([label]) => label}
             columns={[
-              { key: 'Q', header: '', width: '3rem', cell: ([label]) => <span className={styles['cardId']}>{label}</span> },
+              {
+                key: 'Q',
+                header: '',
+                width: '3rem',
+                cell: ([label]) => <span className={styles['cardId']}>{label}</span>,
+              },
               { key: 'Question', cell: ([, question]) => question },
               { key: 'Answer', cell: ([, , answer]) => answer },
             ]}
@@ -314,7 +326,9 @@ export function Plan({
                   hint={`~${capacity.sprintWeeks * capacity.targetSprints} weeks`}
                 />
               </StatGrid>
-              {capacity.velocity > 0 && capacity.netVelocity > 0 && capacity.netVelocity <= capacity.velocity ? (
+              {capacity.velocity > 0 &&
+              capacity.netVelocity > 0 &&
+              capacity.netVelocity <= capacity.velocity ? (
                 <div className={styles['split']}>
                   <SegmentBar
                     segments={[
@@ -326,7 +340,11 @@ export function Plan({
                   <Legend
                     items={[
                       { label: 'Net', count: capacity.netVelocity, tone: 'ok' },
-                      { label: 'Deducted', count: capacity.velocity - capacity.netVelocity, tone: 'muted' },
+                      {
+                        label: 'Deducted',
+                        count: capacity.velocity - capacity.netVelocity,
+                        tone: 'muted',
+                      },
                     ]}
                   />
                 </div>
@@ -352,7 +370,15 @@ export function Plan({
                   {feature.title}
                 </>
               }
-              actions={<Chip {...(priorityTone(feature.priority) ? { tone: priorityTone(feature.priority) as Tone } : {})}>{feature.priority}</Chip>}
+              actions={
+                <Chip
+                  {...(priorityTone(feature.priority)
+                    ? { tone: priorityTone(feature.priority) as Tone }
+                    : {})}
+                >
+                  {feature.priority}
+                </Chip>
+              }
             >
               <Prose text={feature.description} />
             </Card>
@@ -397,7 +423,10 @@ export function Plan({
                 rows={group.tasks}
                 rowKey={(task) => task.id}
                 columns={[
-                  { key: 'ID', cell: (task) => <span className={styles['cardId']}>{task.id}</span> },
+                  {
+                    key: 'ID',
+                    cell: (task) => <span className={styles['cardId']}>{task.id}</span>,
+                  },
                   { key: 'Label', cell: (task) => <Chip>{task.label}</Chip> },
                   { key: 'Title', cell: (task) => task.title },
                   {
@@ -429,8 +458,8 @@ export function Plan({
         <section id="sprints">
           <h2 className={styles['h2']}>Sprint Plan</h2>
           <p className={styles['footnote']}>
-            {sprints.length} sprint{sprints.length === 1 ? '' : 's'} · {totalPoints} total story points ·{' '}
-            {velocity} pts/sprint velocity
+            {sprints.length} sprint{sprints.length === 1 ? '' : 's'} · {totalPoints} total story
+            points · {velocity} pts/sprint velocity
           </p>
           {sprints.map((sprint) => (
             <Sprint key={sprint.name} sprint={sprint} velocity={velocity} />
@@ -442,7 +471,12 @@ export function Plan({
         <section id="attachments">
           <h2 className={styles['h2']}>Attachments</h2>
           {images.map((src, index) => (
-            <img key={index} className={styles['screenshot']} src={src} alt={`Screenshot ${index + 1}`} />
+            <img
+              key={index}
+              className={styles['screenshot']}
+              src={src}
+              alt={`Screenshot ${index + 1}`}
+            />
           ))}
         </section>
       ) : null}

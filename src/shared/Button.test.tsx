@@ -79,7 +79,7 @@ describe('Button', () => {
     render(
       <Button onClick={onClick} disabled aria-label="Next ticket" title="Next">
         ›
-      </Button>
+      </Button>,
     );
     const button = screen.getByRole('button', { name: 'Next ticket' }) as HTMLButtonElement;
     expect(button.disabled).toBe(true);

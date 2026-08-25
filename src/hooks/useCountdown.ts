@@ -36,7 +36,10 @@ export interface Countdown {
   finished: boolean;
 }
 
-export function useCountdown(timer: TimerState | null | undefined, onFinish?: () => void): Countdown {
+export function useCountdown(
+  timer: TimerState | null | undefined,
+  onFinish?: () => void,
+): Countdown {
   const offset = useRef(0);
   const syncedTo = useRef<number | null>(null);
   const firedFor = useRef<number | null>(null);

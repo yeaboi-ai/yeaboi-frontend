@@ -38,7 +38,8 @@ export function useDockLift(node: () => HTMLElement | null, dragging: boolean): 
   }, []);
 
   useEffect(() => {
-    if (!dragging || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    if (!dragging || window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+      return undefined;
 
     const onMove = (event: PointerEvent): void => {
       if (frame.current) return;

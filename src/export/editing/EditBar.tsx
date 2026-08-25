@@ -31,7 +31,8 @@ import { AVATARS } from '../../types/enums';
 import styles from './editbar.module.css';
 
 /** Repeated verbatim in the history panel — both surfaces render a name. */
-export const SELF_DECLARED = 'Names are self-declared: anyone with this link can edit, and can claim any name.';
+export const SELF_DECLARED =
+  'Names are self-declared: anyone with this link can edit, and can claim any name.';
 
 export interface EditBarProps {
   /** False once the host has closed editing. */
@@ -70,7 +71,8 @@ export function EditBar({ editable, name, avatar, count, onIdentity, inputRef }:
             Editing as {name}
           </span>
           <span className={styles['hint']}>
-            Use the <b>✎</b> beside anything underlined to correct it, or <b>＋ Add</b> to append something new.
+            Use the <b>✎</b> beside anything underlined to correct it, or <b>＋ Add</b> to append
+            something new.
           </span>
         </p>
         <span className={styles['controls']}>
@@ -106,7 +108,8 @@ export function EditBar({ editable, name, avatar, count, onIdentity, inputRef }:
       <p className={styles['text']}>
         <span className={styles['title']}>Something wrong? You can fix it.</span>
         <span className={styles['hint']}>
-          This document can be corrected in place. Every change is kept, shown against your name, and can be undone.
+          This document can be corrected in place. Every change is kept, shown against your name,
+          and can be undone.
         </span>
       </p>
 

@@ -5,7 +5,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { fetchBody, fetchInit, fetchUrl } from '../test/calls';
-import { apiUrl, loadSession, pollState, postJSON, stripCredentialsFromUrl, type Session } from './api';
+import {
+  apiUrl,
+  loadSession,
+  pollState,
+  postJSON,
+  stripCredentialsFromUrl,
+  type Session,
+} from './api';
 
 const SESSION: Session = { token: 'tok', admin: '', pid: 'pid-1' };
 
@@ -32,7 +39,9 @@ describe('apiUrl', () => {
   });
 
   it('merges extra parameters', () => {
-    expect(apiUrl(SESSION, '/api/state', { pid: 'p', wait: '25' })).toBe('/api/state?token=tok&pid=p&wait=25');
+    expect(apiUrl(SESSION, '/api/state', { pid: 'p', wait: '25' })).toBe(
+      '/api/state?token=tok&pid=p&wait=25',
+    );
   });
 
   it('omits the token when there is none', () => {
@@ -175,11 +184,19 @@ describe('pollState', () => {
 
   it('flags an error without losing the cursor', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('offline')));
-    expect(await pollState(SESSION, { etag: 'W/"a"' })).toEqual({ changed: false, etag: 'W/"a"', error: true });
+    expect(await pollState(SESSION, { etag: 'W/"a"' })).toEqual({
+      changed: false,
+      etag: 'W/"a"',
+      error: true,
+    });
   });
 
   it('treats a 5xx as an error, not as "no change"', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('', { status: 503 })));
-    expect(await pollState(SESSION, { etag: 'W/"a"' })).toEqual({ changed: false, etag: 'W/"a"', error: true });
+    expect(await pollState(SESSION, { etag: 'W/"a"' })).toEqual({
+      changed: false,
+      etag: 'W/"a"',
+      error: true,
+    });
   });
 });

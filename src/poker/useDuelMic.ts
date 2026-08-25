@@ -127,7 +127,11 @@ function announce(session: Session, on: boolean): void {
   void postJSON(session, micPath(session), { on });
 }
 
-export function useDuelMic(session: Session, duel: DuelSlice | null, boardSaysRecording = false): DuelMic {
+export function useDuelMic(
+  session: Session,
+  duel: DuelSlice | null,
+  boardSaysRecording = false,
+): DuelMic {
   const [armed, setArmed] = useState(false);
   const [interrupted, setInterrupted] = useState(false);
   const [error, setError] = useState('');
@@ -265,7 +269,10 @@ export function useDuelMic(session: Session, duel: DuelSlice | null, boardSaysRe
     if (!armed) return undefined;
     const clear = (): void => {
       const body = JSON.stringify({ pid: session.pid, admin: session.admin, on: false });
-      navigator.sendBeacon?.(apiUrl(session, micPath(session)), new Blob([body], { type: 'application/json' }));
+      navigator.sendBeacon?.(
+        apiUrl(session, micPath(session)),
+        new Blob([body], { type: 'application/json' }),
+      );
     };
     window.addEventListener('pagehide', clear);
     return () => window.removeEventListener('pagehide', clear);
@@ -298,5 +305,13 @@ export function useDuelMic(session: Session, duel: DuelSlice | null, boardSaysRe
   releaseRef.current = release;
   useEffect(() => () => releaseRef.current(), []);
 
-  return { capable, armed, error, enable, disable: release, interrupted, dismiss: () => setInterrupted(false) };
+  return {
+    capable,
+    armed,
+    error,
+    enable,
+    disable: release,
+    interrupted,
+    dismiss: () => setInterrupted(false),
+  };
 }

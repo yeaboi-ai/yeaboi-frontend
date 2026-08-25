@@ -64,7 +64,10 @@ export interface RetroActions {
  * `fetch` and no renderer at all.
  */
 export function createRetroActions(session: Session, store: BoardStore<RetroState>): RetroActions {
-  async function mutate(path: string, body: Record<string, unknown>): Promise<ApiResult<StateEnvelope>> {
+  async function mutate(
+    path: string,
+    body: Record<string, unknown>,
+  ): Promise<ApiResult<StateEnvelope>> {
     const result = await postJSON<StateEnvelope>(session, path, body);
     if (result.ok && result.data.state) store.apply(result.data.state);
     return result;
@@ -96,7 +99,10 @@ export function createRetroActions(session: Session, store: BoardStore<RetroStat
     },
 
     async react(cardId, emoji) {
-      const result = await postJSON<ReactEnvelope>(session, '/api/react', { card_id: cardId, emoji });
+      const result = await postJSON<ReactEnvelope>(session, '/api/react', {
+        card_id: cardId,
+        emoji,
+      });
       if (!result.ok) return false;
       if (result.data.state) store.apply(result.data.state);
       return Boolean(result.data.reacted);
@@ -127,7 +133,11 @@ export function createRetroActions(session: Session, store: BoardStore<RetroStat
     },
 
     async suggestActions() {
-      const result = await postJSON<StateEnvelope & { message?: string }>(session, '/api/admin/suggest', {});
+      const result = await postJSON<StateEnvelope & { message?: string }>(
+        session,
+        '/api/admin/suggest',
+        {},
+      );
       if (result.ok && result.data.state) store.apply(result.data.state);
       if (!result.ok) return 'Could not reach the board — nothing was added.';
       return result.data.message ?? '';

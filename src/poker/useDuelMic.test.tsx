@@ -114,8 +114,12 @@ beforeEach(() => {
       if (String(url).includes('/api/duel/audio')) {
         uploads.push({ turn: new URL(String(url), 'http://x').searchParams.get('turn') });
       }
-      return Promise.resolve({ ok: true, status: 200, text: () => Promise.resolve('{}') } as Response);
-    })
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        text: () => Promise.resolve('{}'),
+      } as Response);
+    }),
   );
 });
 

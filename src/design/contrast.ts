@@ -36,11 +36,9 @@ export function parseHex(hex: string): [number, number, number] {
 
 /** WCAG relative luminance. */
 export function luminance(hex: string): number {
-  const linear = parseHex(hex).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)) as [
-    number,
-    number,
-    number,
-  ];
+  const linear = parseHex(hex).map((c) =>
+    c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4,
+  ) as [number, number, number];
   return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
 }
 
@@ -121,7 +119,8 @@ export interface ModeAccents {
 export function parseModeAccents(css: string): ModeAccents {
   const base: Record<string, string> = {};
   const light: Record<string, string> = {};
-  const re = /(\[data-theme="(\w+)"\])?\[data-mode="(\w+)"\][^{]*\{[^}]*?--accent\s*:\s*(#[0-9a-fA-F]{3,8})/g;
+  const re =
+    /(\[data-theme="(\w+)"\])?\[data-mode="(\w+)"\][^{]*\{[^}]*?--accent\s*:\s*(#[0-9a-fA-F]{3,8})/g;
   for (let m = re.exec(css); m !== null; m = re.exec(css)) {
     const theme = m[2];
     const mode = m[3] as string;

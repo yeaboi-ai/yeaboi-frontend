@@ -35,10 +35,22 @@ export interface DropdownProps {
   className?: string | undefined;
 }
 
-export function Dropdown({ label, value, options, onChange, placeholder = '—', className }: DropdownProps) {
+export function Dropdown({
+  label,
+  value,
+  options,
+  onChange,
+  placeholder = '—',
+  className,
+}: DropdownProps) {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
-  const [rect, setRect] = useState<{ left: number; width: number; top?: number; bottom?: number } | null>(null);
+  const [rect, setRect] = useState<{
+    left: number;
+    width: number;
+    top?: number;
+    bottom?: number;
+  } | null>(null);
   const root = useRef<HTMLDivElement | null>(null);
   const trigger = useRef<HTMLButtonElement | null>(null);
   const menu = useRef<HTMLUListElement | null>(null);
@@ -89,7 +101,10 @@ export function Dropdown({ label, value, options, onChange, placeholder = '—',
     if (!open || !rect || !menu.current) return;
     const box = menu.current.getBoundingClientRect();
     const spill = box.right - (window.innerWidth - 8);
-    if (spill > 0) setRect((current) => (current ? { ...current, left: Math.max(8, current.left - spill) } : current));
+    if (spill > 0)
+      setRect((current) =>
+        current ? { ...current, left: Math.max(8, current.left - spill) } : current,
+      );
   }, [open, rect]);
 
   const choose = (next: string): void => {
@@ -137,51 +152,55 @@ export function Dropdown({ label, value, options, onChange, placeholder = '—',
         onClick={() => setOpen(!open)}
         onKeyDown={onKeyDown}
       >
-        <span className={cx(styles['ddValue'], !value && styles['ddEmpty'])}>{value || placeholder}</span>
+        <span className={cx(styles['ddValue'], !value && styles['ddEmpty'])}>
+          {value || placeholder}
+        </span>
         <Icon name="chevron-down" size={12} className={styles['ddCaret']} />
       </button>
 
       {open && rect
         ? createPortal(
-        <ul
-          ref={menu}
-          // The group that owns the surrounding popover closes on any
-          // pointerdown outside itself, and this menu is outside everything.
-          data-dropdown-menu=""
-          className={styles['ddMenu']}
-          role="listbox"
-          aria-label={label}
-          style={{
-            left: `${rect.left}px`,
-            minWidth: `${rect.width}px`,
-            ...(rect.top === undefined ? { bottom: `${rect.bottom}px` } : { top: `${rect.top}px` }),
-          }}
-        >
-          {items.length === 0 ? (
-            <li className={styles['ddNone']}>Nothing to pick from.</li>
-          ) : (
-            items.map((option, index) => (
-              <li
-                key={option}
-                role="option"
-                aria-selected={option === value}
-                className={cx(styles['ddOpt'], index === active && styles['ddOptActive'])}
-                onMouseEnter={() => setActive(index)}
-                // Down rather than click: a click fires after the blur that
-                // would already have closed the menu under the pointer.
-                onMouseDown={(event) => {
-                  event.preventDefault();
-                  choose(option);
-                }}
-              >
-                <span>{option}</span>
-                {option === value ? <Icon name="check" size={12} /> : null}
-              </li>
-            ))
-          )}
-        </ul>,
-        document.body,
-      )
+            <ul
+              ref={menu}
+              // The group that owns the surrounding popover closes on any
+              // pointerdown outside itself, and this menu is outside everything.
+              data-dropdown-menu=""
+              className={styles['ddMenu']}
+              role="listbox"
+              aria-label={label}
+              style={{
+                left: `${rect.left}px`,
+                minWidth: `${rect.width}px`,
+                ...(rect.top === undefined
+                  ? { bottom: `${rect.bottom}px` }
+                  : { top: `${rect.top}px` }),
+              }}
+            >
+              {items.length === 0 ? (
+                <li className={styles['ddNone']}>Nothing to pick from.</li>
+              ) : (
+                items.map((option, index) => (
+                  <li
+                    key={option}
+                    role="option"
+                    aria-selected={option === value}
+                    className={cx(styles['ddOpt'], index === active && styles['ddOptActive'])}
+                    onMouseEnter={() => setActive(index)}
+                    // Down rather than click: a click fires after the blur that
+                    // would already have closed the menu under the pointer.
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                      choose(option);
+                    }}
+                  >
+                    <span>{option}</span>
+                    {option === value ? <Icon name="check" size={12} /> : null}
+                  </li>
+                ))
+              )}
+            </ul>,
+            document.body,
+          )
         : null}
     </div>
   );

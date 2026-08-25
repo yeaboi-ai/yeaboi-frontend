@@ -40,7 +40,12 @@ export function PresenceRow({ people, max = 5, className }: PresenceRowProps) {
     <div className={cx(styles['presence'], className)}>
       <span className={styles['avatarStack']} aria-hidden="true">
         {shown.map((person) => (
-          <Avatar key={person.name} name={person.name} emoji={person.avatar} className={styles['stacked']} />
+          <Avatar
+            key={person.name}
+            name={person.name}
+            emoji={person.avatar}
+            className={styles['stacked']}
+          />
         ))}
         {overflow > 0 ? <span className={styles['presenceMore']}>+{overflow}</span> : null}
       </span>

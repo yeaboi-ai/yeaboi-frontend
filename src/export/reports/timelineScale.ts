@@ -214,7 +214,13 @@ export function buildScale(times: number[], bounds?: { start: string; end: strin
       raw.push({ from, to: (first as Run).from, quiet: true });
     }
     runs.forEach((run, index) => {
-      raw.push({ from: run.from, to: run.to, quiet: false, firstAt: run.firstAt, lastAt: run.lastAt });
+      raw.push({
+        from: run.from,
+        to: run.to,
+        quiet: false,
+        firstAt: run.firstAt,
+        lastAt: run.lastAt,
+      });
       const next = runs[index + 1];
       if (next) raw.push({ from: run.to, to: next.from, quiet: true });
     });
@@ -305,7 +311,17 @@ export function buildScale(times: number[], bounds?: { start: string; end: strin
     }
   }
 
-  return { segments, gaps, ticks, pct, segmentIndex, compressed: quietCount > 0, multiDay, from, to };
+  return {
+    segments,
+    gaps,
+    ticks,
+    pct,
+    segmentIndex,
+    compressed: quietCount > 0,
+    multiDay,
+    from,
+    to,
+  };
 }
 
 /* ---- who touched the same thing ---------------------------------------- */

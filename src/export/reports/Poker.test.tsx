@@ -28,22 +28,38 @@ describe('Poker', () => {
   it('renders a ticket row with its points and votes', () => {
     const { container } = render(
       <Poker
-        tickets={[ticket({ before: 3, votes: [{ voter: 'Alex', value: '5' }, { voter: 'Sam', value: '8' }] })]}
+        tickets={[
+          ticket({
+            before: 3,
+            votes: [
+              { voter: 'Alex', value: '5' },
+              { voter: 'Sam', value: '8' },
+            ],
+          }),
+        ]}
         participants={[]}
         trend={null}
-      />
+      />,
     );
-    const cells = [...(container.querySelector('tbody tr')?.querySelectorAll('td') ?? [])].map((c) => c.textContent);
+    const cells = [...(container.querySelector('tbody tr')?.querySelectorAll('td') ?? [])].map(
+      (c) => c.textContent,
+    );
     // Initials in the votes cell — the names ride in the accessible label.
     expect(cells).toEqual(['PROJ-1', 'Add login', '3', '5', 'A5S8']);
-    expect([...container.querySelectorAll('[aria-label$="voted 5"], [aria-label$="voted 8"]')].map((v) =>
-      v.getAttribute('aria-label')
-    )).toEqual(['Alex voted 5', 'Sam voted 8']);
+    expect(
+      [...container.querySelectorAll('[aria-label$="voted 5"], [aria-label$="voted 8"]')].map((v) =>
+        v.getAttribute('aria-label'),
+      ),
+    ).toEqual(['Alex voted 5', 'Sam voted 8']);
   });
 
   it('says "skipped" instead of showing a number the room never agreed', () => {
     const { container } = render(
-      <Poker tickets={[ticket({ estimated: false, final: null })]} participants={[]} trend={null} />
+      <Poker
+        tickets={[ticket({ estimated: false, final: null })]}
+        participants={[]}
+        trend={null}
+      />,
     );
     expect(container.querySelector('tbody tr td:nth-child(4)')?.textContent).toBe('skipped');
   });
@@ -60,10 +76,10 @@ describe('Poker', () => {
         tickets={[ticket({ url: 'https://x.atlassian.net/browse/PROJ-1' })]}
         participants={[]}
         trend={null}
-      />
+      />,
     );
     expect(screen.getByRole('link', { name: 'PROJ-1' }).getAttribute('href')).toBe(
-      'https://x.atlassian.net/browse/PROJ-1'
+      'https://x.atlassian.net/browse/PROJ-1',
     );
   });
 
@@ -71,7 +87,7 @@ describe('Poker', () => {
     // The Python side allowlists it too; this is the second gate, and the one
     // that survives someone hand-editing the island.
     const { container } = render(
-      <Poker tickets={[ticket({ url: 'javascript:alert(1)' })]} participants={[]} trend={null} />
+      <Poker tickets={[ticket({ url: 'javascript:alert(1)' })]} participants={[]} trend={null} />,
     );
     expect(container.querySelector('a')).toBeNull();
     expect(container.querySelector('.chip')?.textContent).toBe('PROJ-1');
@@ -83,7 +99,7 @@ describe('Poker', () => {
         tickets={[ticket({ aiNote: 'Estimate looks high. Risk is contained; scope is clear.' })]}
         participants={[]}
         trend={null}
-      />
+      />,
     );
     expect([...container.querySelectorAll('#ai li')].map((li) => li.textContent)).toEqual([
       'Estimate looks high.',
@@ -105,7 +121,7 @@ describe('Poker', () => {
         tickets={[ticket({ duel: { low: 'Alex (5)', high: 'Sam (8)', transcript } })]}
         participants={[]}
         trend={null}
-      />
+      />,
     );
     expect(container.querySelector('#duels')?.textContent).toContain(transcript);
     expect(screen.getByText('Alex (5)').className).toContain('chip');
@@ -117,7 +133,7 @@ describe('Poker', () => {
         tickets={[ticket(), ticket({ key: 'PROJ-2', estimated: false, final: null })]}
         participants={[]}
         trend={null}
-      />
+      />,
     );
     expect(container.querySelector('[aria-label="1 of 2 tickets estimated"]')).not.toBeNull();
     expect(container.querySelector('.legend')?.textContent).toBe('Estimated 1Skipped 1');
@@ -125,7 +141,11 @@ describe('Poker', () => {
 
   it('draws a trend once there are two runs to compare', () => {
     const { rerender, container } = render(
-      <Poker tickets={[ticket()]} participants={[]} trend={{ title: 'Estimation trend', label: 'x', points: [] }} />
+      <Poker
+        tickets={[ticket()]}
+        participants={[]}
+        trend={{ title: 'Estimation trend', label: 'x', points: [] }}
+      />,
     );
     expect(container.querySelector('svg')).toBeNull();
 
@@ -141,9 +161,11 @@ describe('Poker', () => {
             ['2026-07-25', 5],
           ],
         }}
-      />
+      />,
     );
-    expect(screen.getByRole('img', { name: 'Tickets estimated — last 2 runs' }).tagName).toBe('svg');
+    expect(screen.getByRole('img', { name: 'Tickets estimated — last 2 runs' }).tagName).toBe(
+      'svg',
+    );
     expect(screen.getByText('2026-06-27').tagName).toBe('SPAN');
   });
 

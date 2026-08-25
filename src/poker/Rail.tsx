@@ -32,7 +32,16 @@ export interface RailProps {
   onClose(): void;
 }
 
-export function Rail({ tickets, current, peeking, estimated, scope, open, onPick, onClose }: RailProps) {
+export function Rail({
+  tickets,
+  current,
+  peeking,
+  estimated,
+  scope,
+  open,
+  onPick,
+  onClose,
+}: RailProps) {
   return (
     <aside
       className={cx(kit['rail'], open && kit['railOpen'])}
@@ -54,7 +63,7 @@ export function Rail({ tickets, current, peeking, estimated, scope, open, onPick
                 kit['railItem'],
                 index === current && kit['railCurrent'],
                 index === peeking && kit['railPeeking'],
-                ticket.estimated && kit['railDone']
+                ticket.estimated && kit['railDone'],
               )}
               aria-current={index === current ? 'true' : undefined}
               title={ticket.summary}
@@ -68,9 +77,15 @@ export function Rail({ tickets, current, peeking, estimated, scope, open, onPick
                 {ticket.key ? <span className={kit['railKey']}>{ticket.key}</span> : null}
                 {ticket.summary}
               </span>
-              {ticket.estimated ? <span className={kit['railPts']}>{fmtPoints(ticket.final_points)}</span> : null}
+              {ticket.estimated ? (
+                <span className={kit['railPts']}>{fmtPoints(ticket.final_points)}</span>
+              ) : null}
               <span className={kit['srOnly']}>
-                {index === current ? ' — being voted on now' : ticket.estimated ? ' — estimated' : ''}
+                {index === current
+                  ? ' — being voted on now'
+                  : ticket.estimated
+                    ? ' — estimated'
+                    : ''}
               </span>
             </button>
           </li>

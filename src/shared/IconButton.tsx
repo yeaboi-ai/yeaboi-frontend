@@ -50,8 +50,19 @@ export interface IconButtonProps
 
 /** Forwards its ref for the same reason `Button` does — see the note there. */
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
-  { icon, label, children, active, emphasis, compact, tone = 'default', className, type = 'button', ...rest },
-  ref
+  {
+    icon,
+    label,
+    children,
+    active,
+    emphasis,
+    compact,
+    tone = 'default',
+    className,
+    type = 'button',
+    ...rest
+  },
+  ref,
 ) {
   return (
     <button

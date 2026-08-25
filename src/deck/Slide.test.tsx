@@ -40,7 +40,9 @@ describe('Slide', () => {
   it('still renders a whole-paragraph summary from an older export', () => {
     // Decks are files on disks that get re-opened, not a server response that
     // is always current.
-    render(<Slide slide={{ type: 'summary', title: 'Executive summary', body: 'One long blob.' }} />);
+    render(
+      <Slide slide={{ type: 'summary', title: 'Executive summary', body: 'One long blob.' }} />,
+    );
     expect(screen.getByText('One long blob.')).toBeTruthy();
   });
 
@@ -55,7 +57,10 @@ describe('Slide', () => {
     const security = DECK_WIRE.slides.find((s) => s.title === 'Security');
     render(<Slide slide={security!} />);
     expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Security');
-    expect([...screen.getAllByRole('listitem')].map((li) => li.textContent)).toEqual(['SSO', 'MFA']);
+    expect([...screen.getAllByRole('listitem')].map((li) => li.textContent)).toEqual([
+      'SSO',
+      'MFA',
+    ]);
   });
 
   it('renders outcome cards with their own bullets', () => {
@@ -71,7 +76,10 @@ describe('Slide', () => {
     };
     render(<Slide slide={slide} />);
     const security = screen.getByRole('heading', { level: 3, name: 'Security' }).parentElement!;
-    expect([...within(security).getAllByRole('listitem')].map((li) => li.textContent)).toEqual(['SSO', 'MFA']);
+    expect([...within(security).getAllByRole('listitem')].map((li) => li.textContent)).toEqual([
+      'SSO',
+      'MFA',
+    ]);
   });
 
   describe('the eyebrow', () => {
@@ -81,7 +89,11 @@ describe('Slide', () => {
     });
 
     it('carries the page position when a run was split', () => {
-      render(<Slide slide={{ type: 'list', section: 'Delivery', title: 'Big', page: [2, 3], items: ['a'] }} />);
+      render(
+        <Slide
+          slide={{ type: 'list', section: 'Delivery', title: 'Big', page: [2, 3], items: ['a'] }}
+        />,
+      );
       expect(screen.getByText('2/3')).toBeTruthy();
       // …and the heading stays the theme's own name. Suffixing it "(2/3)" put
       // a piece of bookkeeping in the largest type on a projected slide.
@@ -90,7 +102,9 @@ describe('Slide', () => {
 
     it('says nothing about a run of one', () => {
       const { container } = render(
-        <Slide slide={{ type: 'list', section: 'Delivery', title: 'Big', page: [1, 1], items: ['a'] }} />
+        <Slide
+          slide={{ type: 'list', section: 'Delivery', title: 'Big', page: [1, 1], items: ['a'] }}
+        />,
       );
       expect(container.textContent).not.toContain('1/1');
     });
@@ -109,7 +123,9 @@ describe('Slide', () => {
       // Three cells per character and two rows that cannot line-break, so a
       // long string would run off a projected slide rather than wrap.
       render(<Slide slide={{ type: 'thanks', title: 'Thank you very much indeed' }} />);
-      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Thank you very much indeed');
+      expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(
+        'Thank you very much indeed',
+      );
       expect(screen.queryByRole('img')).toBeNull();
     });
 
@@ -126,7 +142,9 @@ describe('Slide', () => {
   it('renders tracker text as text, never as markup', () => {
     const hostile = '<img src=x onerror=alert(1)>';
     const { container } = render(
-      <Slide slide={{ type: 'list', section: 'Delivery', title: 'T', page: [1, 1], items: [hostile] }} />
+      <Slide
+        slide={{ type: 'list', section: 'Delivery', title: 'T', page: [1, 1], items: [hostile] }}
+      />,
     );
     expect(container.querySelector('img')).toBeNull();
     expect(screen.getByText(hostile)).toBeTruthy();

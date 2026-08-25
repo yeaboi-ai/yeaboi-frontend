@@ -361,7 +361,6 @@ export interface PokerState {
   notice: string;
 }
 
-
 // ── Ship board ─────────────────────────────────────────────────────────────
 // A read-only projection of one supervised story → PR run (`ship/board.py`).
 // Guests watch: the phase checklist, the agent's live activity, the scrubbed

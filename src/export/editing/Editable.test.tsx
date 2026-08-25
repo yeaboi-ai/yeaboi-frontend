@@ -61,7 +61,7 @@ describe('with no editing context — a file on disk', () => {
     const { container } = render(
       <Editable path="team_summary" label="team summary" value="raw">
         <p>drawn</p>
-      </Editable>
+      </Editable>,
     );
     expect(container.innerHTML).toBe('<p>drawn</p>');
   });
@@ -72,7 +72,7 @@ describe('with no editing context — a file on disk', () => {
         <ul>
           <li>one</li>
         </ul>
-      </EditableList>
+      </EditableList>,
     );
     expect(container.innerHTML).toBe('<ul><li>one</li></ul>');
   });
@@ -90,7 +90,7 @@ describe('with a session', () => {
         <Editable path="member_updates[name=Ada].blockers" label="Ada's blocker" value="staging db">
           <p>staging db</p>
         </Editable>
-      </EditProvider>
+      </EditProvider>,
     );
     // Composed at the call site so a screen reader hears the member's name
     // rather than "Edit".
@@ -106,7 +106,7 @@ describe('with a session', () => {
         <Editable path="team_summary" label="team summary" value="The team shipped PSOT-12.">
           <p>The team shipped (a link).</p>
         </Editable>
-      </EditProvider>
+      </EditProvider>,
     );
     fireEvent.click(screen.getByLabelText('Edit team summary'));
     const field = await screen.findByLabelText<HTMLTextAreaElement>('team summary');
@@ -120,7 +120,7 @@ describe('with a session', () => {
         <Editable path="team_summary" label="team summary" value="corrected">
           <p>corrected</p>
         </Editable>
-      </EditProvider>
+      </EditProvider>,
     );
     expect(screen.getByLabelText('team summary was edited — show history')).toBeTruthy();
   });
@@ -131,7 +131,7 @@ describe('with a session', () => {
         <Editable path="team_summary" label="team summary" value="x">
           <p>x</p>
         </Editable>
-      </EditProvider>
+      </EditProvider>,
     );
     expect(screen.queryByLabelText('Edit team summary')).toBeNull();
   });
@@ -143,7 +143,7 @@ describe('with a session', () => {
         <EditableList path="highlights" label="highlight">
           <ul />
         </EditableList>
-      </EditProvider>
+      </EditProvider>,
     );
     const input = screen.getByLabelText<HTMLInputElement>('Add a highlight');
     fireEvent.input(input, { target: { value: 'shipped auth' } });

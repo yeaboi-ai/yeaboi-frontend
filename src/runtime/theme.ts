@@ -69,7 +69,8 @@ export function isTheme(value: unknown): value is Theme {
 
 function preferred(): Theme {
   const light =
-    typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: light)').matches;
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-color-scheme: light)').matches;
   return light ? 'light' : 'midnight';
 }
 

@@ -80,7 +80,11 @@ export function History({
         </span>
       ) : null}
 
-      <Button onClick={() => setOpen((was) => !was)} size="s" aria-expanded={open || Boolean(filter)}>
+      <Button
+        onClick={() => setOpen((was) => !was)}
+        size="s"
+        aria-expanded={open || Boolean(filter)}
+      >
         ✎ Edits ({rows.length})
       </Button>
 
@@ -102,7 +106,11 @@ export function History({
           ) : (
             <ul className={styles['list']}>
               {ordered.map((row) => (
-                <li key={row.id} className={styles['row']} data-unapplied={row.applied ? undefined : '1'}>
+                <li
+                  key={row.id}
+                  className={styles['row']}
+                  data-unapplied={row.applied ? undefined : '1'}
+                >
                   <p className={styles['what']}>
                     {/* Space inside the expression — JSX strips it before a
                         newline, which runs the emoji into the name. */}
@@ -131,7 +139,11 @@ export function History({
                   <p className={styles['meta']}>
                     <span>{row.at.slice(0, 10)}</span>
                     {editable && row.applied && row.op !== 'revert' ? (
-                      <button type="button" className={styles['revert']} onClick={() => onRevert(row.id)}>
+                      <button
+                        type="button"
+                        className={styles['revert']}
+                        onClick={() => onRevert(row.id)}
+                      >
                         Revert
                       </button>
                     ) : null}

@@ -30,7 +30,10 @@ export interface CardProps {
 
 export function Card({ children, title, actions, interactive, style, className }: CardProps) {
   return (
-    <div className={cx(styles['card'], interactive && styles['cardHover'], className)} style={style}>
+    <div
+      className={cx(styles['card'], interactive && styles['cardHover'], className)}
+      style={style}
+    >
       {title || actions ? (
         <div className={styles['cardHeader']}>
           <div className={styles['cardTitle']}>{title}</div>

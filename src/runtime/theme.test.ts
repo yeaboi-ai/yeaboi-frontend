@@ -76,13 +76,15 @@ describe('WCAG contrast', () => {
   // One case per (theme, foreground, surface) so a failure names the exact
   // pair rather than "the contrast test failed".
   const cases = THEMES.flatMap((theme) =>
-    FOREGROUNDS.flatMap((fg) => SURFACES.map((bg) => [theme, fg, bg] as const))
+    FOREGROUNDS.flatMap((fg) => SURFACES.map((bg) => [theme, fg, bg] as const)),
   );
 
   it.each(cases)('%s: --%s on --%s clears AA', (theme, fg, bg) => {
     const tokens = PALETTES[theme] as Record<string, string>;
     const ratio = contrast(tokens[fg] as string, tokens[bg] as string);
-    expect(ratio, `${theme}: --${fg} on --${bg} is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(AA_TEXT);
+    expect(ratio, `${theme}: --${fg} on --${bg} is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(
+      AA_TEXT,
+    );
   });
 
   it.each(THEMES)('%s: --dim clears the non-text floor but is never body text', (theme) => {
@@ -94,10 +96,13 @@ describe('WCAG contrast', () => {
     // for a sentence.
     const tokens = PALETTES[theme] as Record<string, string>;
     const ratio = contrast(tokens['dim'] as string, tokens['bg'] as string);
-    expect(ratio, `${theme}: --dim on --bg is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(AA_NON_TEXT);
-    expect(ratio, `${theme}: --dim on --bg is ${ratio.toFixed(2)}:1 — that is body text, not dim`).toBeLessThan(
-      AA_TEXT
+    expect(ratio, `${theme}: --dim on --bg is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(
+      AA_NON_TEXT,
     );
+    expect(
+      ratio,
+      `${theme}: --dim on --bg is ${ratio.toFixed(2)}:1 — that is body text, not dim`,
+    ).toBeLessThan(AA_TEXT);
   });
 
   it.each(THEMES)('%s: --ink is readable on a filled accent button', (theme) => {
@@ -105,7 +110,9 @@ describe('WCAG contrast', () => {
     // Nothing else in the palette pairs those two, so it needs its own case.
     const tokens = PALETTES[theme] as Record<string, string>;
     const ratio = contrast(tokens['ink'] as string, tokens['accent'] as string);
-    expect(ratio, `${theme}: --ink on --accent is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(AA_TEXT);
+    expect(ratio, `${theme}: --ink on --accent is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(
+      AA_TEXT,
+    );
   });
 });
 
@@ -121,7 +128,17 @@ describe('mode accents', () => {
     // accent here silently inherits the theme's, which is how poker ended up
     // green while its TUI theme was gold.
     expect(modes.slice().sort()).toEqual(
-      ['analysis', 'performance', 'planning', 'poker', 'reporting', 'retro', 'ship', 'standup', 'usage'].sort()
+      [
+        'analysis',
+        'performance',
+        'planning',
+        'poker',
+        'reporting',
+        'retro',
+        'ship',
+        'standup',
+        'usage',
+      ].sort(),
     );
   });
 
@@ -132,14 +149,18 @@ describe('mode accents', () => {
   });
 
   const cases = modes.flatMap((mode) =>
-    THEMES.flatMap((theme) => (['bg', 'panel', 'card'] as const).map((bg) => [mode, theme, bg] as const))
+    THEMES.flatMap((theme) =>
+      (['bg', 'panel', 'card'] as const).map((bg) => [mode, theme, bg] as const),
+    ),
   );
 
   it.each(cases)('%s accent on %s --%s clears AA', (mode, theme, bg) => {
     const tokens = PALETTES[theme] as Record<string, string>;
     const accent = effectiveAccent(MODE_ACCENTS, mode, theme);
     const ratio = contrast(accent, tokens[bg] as string);
-    expect(ratio, `${mode} on ${theme} --${bg} is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(AA_TEXT);
+    expect(ratio, `${mode} on ${theme} --${bg} is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(
+      AA_TEXT,
+    );
   });
 
   it.each(modes.flatMap((mode) => THEMES.map((theme) => [mode, theme] as const)))(
@@ -151,10 +172,11 @@ describe('mode accents', () => {
       const tokens = PALETTES[theme] as Record<string, string>;
       const accent = effectiveAccent(MODE_ACCENTS, mode, theme);
       const ratio = contrast(tokens['ink'] as string, accent);
-      expect(ratio, `${mode}/${theme}: --ink on the accent is ${ratio.toFixed(2)}:1`).toBeGreaterThanOrEqual(
-        AA_TEXT
-      );
-    }
+      expect(
+        ratio,
+        `${mode}/${theme}: --ink on the accent is ${ratio.toFixed(2)}:1`,
+      ).toBeGreaterThanOrEqual(AA_TEXT);
+    },
   );
 });
 
@@ -165,7 +187,9 @@ describe('THEME_PREVIEW', () => {
   it.each(THEMES)('%s matches palette.css', (theme) => {
     const tokens = PALETTES[theme] as Record<string, string>;
     expect(THEME_PREVIEW[theme].bg.toLowerCase()).toBe((tokens['bg'] as string).toLowerCase());
-    expect(THEME_PREVIEW[theme].accent.toLowerCase()).toBe((tokens['accent'] as string).toLowerCase());
+    expect(THEME_PREVIEW[theme].accent.toLowerCase()).toBe(
+      (tokens['accent'] as string).toLowerCase(),
+    );
   });
 });
 

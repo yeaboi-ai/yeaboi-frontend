@@ -43,7 +43,7 @@ export function useBoardSnapshot<S extends Revisioned>(store: BoardStore<S>): S 
 export function useBoardSelector<S extends Revisioned, T>(
   store: BoardStore<S>,
   selector: (snapshot: S | null) => T,
-  isEqual: (a: T, b: T) => boolean = Object.is
+  isEqual: (a: T, b: T) => boolean = Object.is,
 ): T {
   // Refs rather than state: updating these must not itself schedule a render.
   const cache = useRef<{ has: boolean; value: T }>({ has: false, value: undefined as T });

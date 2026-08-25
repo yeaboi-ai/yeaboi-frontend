@@ -53,7 +53,13 @@ import { EditableSlot } from '../editing/Editable';
 import { Field } from '../editing/Field';
 import { votePractice, type Verdict } from '../vote';
 import { CoverageDots } from './Coverage';
-import { EvidenceList, EvidenceRow, statusCategory, VISIBLE_ROWS, type EvidenceVariant } from './Evidence';
+import {
+  EvidenceList,
+  EvidenceRow,
+  statusCategory,
+  VISIBLE_ROWS,
+  type EvidenceVariant,
+} from './Evidence';
 import styles from './reports.module.css';
 import { memberSlug, Timeline } from './Timeline';
 import { TrendCard } from './Trend';
@@ -120,14 +126,26 @@ function Links({ links }: { links: EvidenceLink[] }) {
  * single column of headed sections, so every fact lands under a heading a
  * tracker user already knows how to scan for.
  */
-function CardSection({ label, tone: sectionTone, children }: { label: string; tone?: Tone; children: ReactNode }) {
+function CardSection({
+  label,
+  tone: sectionTone,
+  children,
+}: {
+  label: string;
+  tone?: Tone;
+  children: ReactNode;
+}) {
   return (
     <section className={styles['issueSection']}>
       <span className={styles['categoryHead']}>
         {/* The tone anchors the section to its count chip and activity-bar
             segment; the Eyebrow word rides beside the colour, per the house rule. */}
         {sectionTone ? (
-          <i className={styles['dot']} style={{ background: toneVar(sectionTone) }} aria-hidden="true" />
+          <i
+            className={styles['dot']}
+            style={{ background: toneVar(sectionTone) }}
+            aria-hidden="true"
+          />
         ) : null}
         <Eyebrow>{label}</Eyebrow>
       </span>
@@ -136,7 +154,13 @@ function CardSection({ label, tone: sectionTone, children }: { label: string; to
   );
 }
 
-function Category({ category, slug, label, variant, evidence: evidenceOverride }: {
+function Category({
+  category,
+  slug,
+  label,
+  variant,
+  evidence: evidenceOverride,
+}: {
   category: StandupCategory;
   slug: string;
   /** Overrides the payload label — "Ticketing" renders as "Ticket status changes". */
@@ -149,7 +173,8 @@ function Category({ category, slug, label, variant, evidence: evidenceOverride }
   const evidence = evidenceOverride ?? category.evidence ?? [];
   // A member whose stories claimed every code row (and whose LLM prose came
   // back empty) has nothing left to say here — a bare heading is not a section.
-  if (!category.items.length && !evidence.length && (evidenceOverride || !category.links.length)) return null;
+  if (!category.items.length && !evidence.length && (evidenceOverride || !category.links.length))
+    return null;
   return (
     <CardSection label={label ?? category.label} tone={categoryTone}>
       {category.items.length ? (
@@ -311,7 +336,8 @@ export function groupStories(
  * without it the flat ticket feed is the honest (and legacy-identical) view. */
 function hasHierarchy(grouped: ReturnType<typeof groupStories>): boolean {
   return grouped.groups.some(
-    (group) => group.orphan || group.subtasks.length > 0 || group.code.length > 0 || group.docs.length > 0,
+    (group) =>
+      group.orphan || group.subtasks.length > 0 || group.code.length > 0 || group.docs.length > 0,
   );
 }
 
@@ -366,7 +392,12 @@ function StoryGroups({ groups, slug }: { groups: StoryGroup[]; slug: string }) {
     <div>
       <ul className={styles['storyList']}>
         {head.map((group, index) => (
-          <StorySection key={`${group.story.key}-${index}`} group={group} slug={slug} index={index} />
+          <StorySection
+            key={`${group.story.key}-${index}`}
+            group={group}
+            slug={slug}
+            index={index}
+          />
         ))}
       </ul>
       {rest.length ? (
@@ -504,7 +535,10 @@ function Practice({
       {correctable && state !== 'done' ? (
         state === 'asking' ? (
           <div className={styles['practiceAsk']}>
-            <label className={styles['practiceAskLabel']} htmlFor={`why-${member}-${practice.rule}`}>
+            <label
+              className={styles['practiceAskLabel']}
+              htmlFor={`why-${member}-${practice.rule}`}
+            >
               What did we get wrong? (optional)
             </label>
             <input
@@ -516,10 +550,18 @@ function Practice({
               onInput={(event) => setNote((event.target as HTMLInputElement).value)}
             />
             <div className={styles['practiceAskRow']}>
-              <button type="button" className={styles['practiceSend']} onClick={() => void send('down', note)}>
+              <button
+                type="button"
+                className={styles['practiceSend']}
+                onClick={() => void send('down', note)}
+              >
                 Send
               </button>
-              <button type="button" className={styles['practiceVote']} onClick={() => setState('idle')}>
+              <button
+                type="button"
+                className={styles['practiceVote']}
+                onClick={() => setState('idle')}
+              >
                 Cancel
               </button>
             </div>
@@ -645,8 +687,14 @@ function Member({ member, correctable }: { member: StandupMember; correctable: b
   const code = byLabel.get('Code');
   const docs = byLabel.get('Documentation');
   const ticketing = byLabel.get('Ticketing');
-  const other = member.categories.filter((c) => !['Code', 'Documentation', 'Ticketing'].includes(c.label));
-  const grouped = groupStories(ticketing?.evidence ?? [], code?.evidence ?? [], docs?.evidence ?? []);
+  const other = member.categories.filter(
+    (c) => !['Code', 'Documentation', 'Ticketing'].includes(c.label),
+  );
+  const grouped = groupStories(
+    ticketing?.evidence ?? [],
+    code?.evidence ?? [],
+    docs?.evidence ?? [],
+  );
   // Without hierarchy facts (legacy payloads, keyless boards) the flat ticket
   // feed is the honest view — and pixel-identical to what it always rendered.
   const storied = hasHierarchy(grouped);
@@ -758,7 +806,12 @@ function Member({ member, correctable }: { member: StandupMember; correctable: b
           {/* The Ticketing category, in Jira's clothes: the prose says what moved,
               the feed rows put a status lozenge on every ticket. */}
           {ticketing ? (
-            <Category category={ticketing} slug={slug} label="Ticket status changes" variant="feed" />
+            <Category
+              category={ticketing}
+              slug={slug}
+              label="Ticket status changes"
+              variant="feed"
+            />
           ) : null}
         </>
       )}
@@ -778,12 +831,19 @@ function Member({ member, correctable }: { member: StandupMember; correctable: b
         <CardSection label="Untracked work">
           <ul className={styles['practiceList']}>
             {untracked.map((practice) => (
-              <Practice key={practice.rule} member={member.name} practice={practice} correctable={correctable} />
+              <Practice
+                key={practice.rule}
+                member={member.name}
+                practice={practice}
+                correctable={correctable}
+              />
             ))}
           </ul>
         </CardSection>
       ) : null}
-      {coached.length ? <Practices member={member.name} practices={coached} correctable={correctable} /> : null}
+      {coached.length ? (
+        <Practices member={member.name} practices={coached} correctable={correctable} />
+      ) : null}
 
       {member.outlook ? (
         <CardSection label="What's next">
@@ -869,7 +929,14 @@ export function Standup({
   correctable = false,
 }: {
   sprint: { name: string; day: number; total: number };
-  confidence: { label: string; pct: number; text: string; trend: string; trendText: string; rationale: string };
+  confidence: {
+    label: string;
+    pct: number;
+    text: string;
+    trend: string;
+    trendText: string;
+    rationale: string;
+  };
   /** Report-level editable fields. Undefined on a file export. */
   edit?: EditMap;
   summary: Run[][];
@@ -909,7 +976,11 @@ export function Standup({
         <Timeline members={members} window={activityBounds} />
         <StatGrid>
           {sprint.total ? (
-            <StatTile value={`${sprint.day} / ${sprint.total}`} label="Sprint day" hint={sprint.name}>
+            <StatTile
+              value={`${sprint.day} / ${sprint.total}`}
+              label="Sprint day"
+              hint={sprint.name}
+            >
               <StatBar
                 pct={(sprint.day / sprint.total) * 100}
                 label={`Sprint day ${sprint.day} of ${sprint.total}`}
@@ -920,13 +991,19 @@ export function Standup({
           )}
           {/* No Members or Activity-items tiles: a head-count and a raw API
               item count are numbers nobody at a standup acts on. */}
-          <StatTile value={known ? `${confidence.pct}%` : '—'} label="Confidence" tone={confidenceTone} />
+          <StatTile
+            value={known ? `${confidence.pct}%` : '—'}
+            label="Confidence"
+            tone={confidenceTone}
+          />
         </StatGrid>
 
         <p className={styles['confidence']}>
           <Chip tone={confidenceTone}>{confidence.text}</Chip>
           {confidence.trendText ? (
-            <Chip tone={confidence.trend === 'improving' ? 'ok' : 'danger'}>{confidence.trendText}</Chip>
+            <Chip tone={confidence.trend === 'improving' ? 'ok' : 'danger'}>
+              {confidence.trendText}
+            </Chip>
           ) : null}
           {confidence.rationale ? (
             <Field edit={edit} field="confidence_rationale" label="the confidence rationale" inline>
@@ -1013,7 +1090,8 @@ export function Standup({
           <ul className={styles['details']}>
             {activityCounts.length ? (
               <li>
-                Activity examined — {activityCounts.map(([src, n]) => `${sourceLabel(src)}: ${n}`).join(', ')}
+                Activity examined —{' '}
+                {activityCounts.map(([src, n]) => `${sourceLabel(src)}: ${n}`).join(', ')}
                 {activityWindow ? ` (${activityWindow})` : ''}
               </li>
             ) : null}

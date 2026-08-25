@@ -50,7 +50,8 @@ export function EditTicketModal({ open, ticket, onSave, onClose }: EditTicketMod
     if (trimmed && trimmed !== ticket.summary) edit.summary = trimmed;
     if (description !== ticket.description_text) edit.description = description;
     const parsed = Number.parseFloat(points);
-    if (points.trim() !== '' && !Number.isNaN(parsed) && parsed !== ticket.story_points) edit.points = parsed;
+    if (points.trim() !== '' && !Number.isNaN(parsed) && parsed !== ticket.story_points)
+      edit.points = parsed;
     onClose();
     // Nothing changed is not an error; it is a cancel that went through the
     // Save button, and pushing an empty edit to a tracker would still bump the
@@ -96,8 +97,8 @@ export function EditTicketModal({ open, ticket, onSave, onClose }: EditTicketMod
 
       {ticket.source === 'azdevops' ? (
         <p className={styles['editWarn']} role="alert">
-          <Icon name="triangle-alert" /> Saving replaces this ticket&rsquo;s rich formatting on the board with plain
-          text.
+          <Icon name="triangle-alert" /> Saving replaces this ticket&rsquo;s rich formatting on the
+          board with plain text.
         </p>
       ) : null}
       <p className={styles['editNote']}>Saving updates the ticket on the real board immediately.</p>

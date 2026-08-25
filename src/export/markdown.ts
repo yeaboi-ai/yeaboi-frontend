@@ -131,7 +131,11 @@ export function readMarkdown(md: string): MdBlock[] {
 
     const heading = HEADING_RE.exec(line);
     if (heading) {
-      out.push({ t: 'h', level: (heading[1] ?? '#').length, runs: inlineRuns((heading[2] ?? '').trim()) });
+      out.push({
+        t: 'h',
+        level: (heading[1] ?? '#').length,
+        runs: inlineRuns((heading[2] ?? '').trim()),
+      });
       i += 1;
       continue;
     }
@@ -139,7 +143,12 @@ export function readMarkdown(md: string): MdBlock[] {
     // A pipe table is a header row *followed by* a divider — the lookahead is
     // what stops a prose line containing a pipe from becoming a one-cell table.
     const next = lines[i + 1];
-    if (line.includes('|') && next !== undefined && DIVIDER_RE.test(next.trim()) && next.includes('-')) {
+    if (
+      line.includes('|') &&
+      next !== undefined &&
+      DIVIDER_RE.test(next.trim()) &&
+      next.includes('-')
+    ) {
       const head = cells(line);
       i += 2;
       const rows: Run[][][] = [];

@@ -21,7 +21,8 @@ interface Recorded {
 /** The arguments of the nth recorded call (0-based). Throws if it never happened. */
 export function callArgs(mock: Recorded, index = 0): unknown[] {
   const call = mock.mock.calls[index];
-  if (!call) throw new Error(`expected at least ${index + 1} call(s), got ${mock.mock.calls.length}`);
+  if (!call)
+    throw new Error(`expected at least ${index + 1} call(s), got ${mock.mock.calls.length}`);
   return call;
 }
 

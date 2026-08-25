@@ -78,7 +78,9 @@ export function Console({
   const revealed = phase === 'revealed';
   const dueling = phase === 'duel';
   const transcribing = duel?.status === 'transcribing';
-  const recording = Boolean(duel && (duel.recording.host || duel.recording.low || duel.recording.high));
+  const recording = Boolean(
+    duel && (duel.recording.host || duel.recording.low || duel.recording.high),
+  );
   const hasTicket = Boolean(ticket);
 
   const [open, setOpen] = useState(false);
@@ -135,7 +137,10 @@ export function Console({
   };
 
   return (
-    <aside className={cx(kit['aside'], open && kit['asideOpen'])} data-phase={dueling ? 'duel' : phase}>
+    <aside
+      className={cx(kit['aside'], open && kit['asideOpen'])}
+      data-phase={dueling ? 'duel' : phase}
+    >
       {/* The collapsed bar is the whole console on a phone: where we are, and
           the single next action. Tapping the chevron opens the rest. */}
       <div className={kit['asideBar']}>
@@ -209,7 +214,9 @@ export function Console({
           {mic.capable ? (
             <Button
               active={mic.armed}
-              title={mic.armed ? 'Stop recording the session' : 'Record the session from this device'}
+              title={
+                mic.armed ? 'Stop recording the session' : 'Record the session from this device'
+              }
               onClick={() => (mic.armed ? mic.disable() : void mic.enable())}
             >
               {mic.armed ? (
@@ -252,18 +259,22 @@ export function Console({
                 <span className={styles['clabel']}>Turn length</span>
                 <div className={styles['seg']}>
                   {DUEL_PRESETS.map((seconds) => (
-                    <button key={seconds} type="button" className={styles['preset']} onClick={() => onOpenDuel(seconds)}>
+                    <button
+                      key={seconds}
+                      type="button"
+                      className={styles['preset']}
+                      onClick={() => onOpenDuel(seconds)}
+                    >
                       {seconds < 120 ? `${seconds}s` : `${seconds / 60}m`}
                     </button>
                   ))}
                 </div>
                 <p className={styles['chint']}>
-                  Lowest voter argues first, then the highest. The debate is recorded &amp; transcribed for the
-                  AI&rsquo;s verdict.
+                  Lowest voter argues first, then the highest. The debate is recorded &amp;
+                  transcribed for the AI&rsquo;s verdict.
                 </p>
               </div>
             ) : null}
-
           </div>
         </div>
 

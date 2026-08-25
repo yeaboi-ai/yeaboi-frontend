@@ -114,7 +114,7 @@ export function useMusic(channels: readonly Channel[]): MusicApi {
       if (audio && url) audio.src = url;
       return wrapped;
     },
-    [channels]
+    [channels],
   );
 
   /** Wire the analyser in once audio is running. Never at the cost of sound. */
@@ -123,7 +123,9 @@ export function useMusic(channels: readonly Channel[]): MusicApi {
       void ctxRef.current?.resume();
       return;
     }
-    const Ctor = window.AudioContext ?? (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    const Ctor =
+      window.AudioContext ??
+      (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
     if (!Ctor) return;
     let ctx: AudioContext | null = null;
     try {
@@ -212,7 +214,7 @@ export function useMusic(channels: readonly Channel[]): MusicApi {
         await audioRef.current?.play();
       },
     }),
-    [playing, connecting, channel, volume, analyser, play, stop, load]
+    [playing, connecting, channel, volume, analyser, play, stop, load],
   );
 
   return api;

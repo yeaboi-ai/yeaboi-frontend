@@ -131,7 +131,9 @@ type Widened<T> = T extends string
  * first means each fixture is checked against the interface it is actually for,
  * and the error names that interface instead of listing all of them.
  */
-type BootOf<K extends ExportReport['kind']> = ExportBoot & { report: Extract<ExportReport, { kind: K }> };
+type BootOf<K extends ExportReport['kind']> = ExportBoot & {
+  report: Extract<ExportReport, { kind: K }>;
+};
 
 // The assertions themselves — the lines that fail when the wire moves.
 void (retroJson satisfies Widened<RetroState>);

@@ -62,23 +62,27 @@ describe('Plan', () => {
 
   it('colours a story by its priority, and leaves an unknown one neutral', () => {
     const { container, rerender } = render(<Plan {...withStories([story()])} />);
-    expect((container.querySelector('.story') as HTMLElement).style.getPropertyValue('--story-tone')).toBe(
-      'var(--critical)'
-    );
+    expect(
+      (container.querySelector('.story') as HTMLElement).style.getPropertyValue('--story-tone'),
+    ).toBe('var(--critical)');
 
     rerender(<Plan {...withStories([story({ priority: 'whenever' })])} />);
-    expect((container.querySelector('.story') as HTMLElement).style.getPropertyValue('--story-tone')).toBe('');
+    expect(
+      (container.querySelector('.story') as HTMLElement).style.getPropertyValue('--story-tone'),
+    ).toBe('');
   });
 
   it('labels the points rationale with its confidence', () => {
     const { container } = render(
-      <Plan {...withStories([story({ rationale: 'Unfamiliar provider.', confidence: 'low' })])} />
+      <Plan {...withStories([story({ rationale: 'Unfamiliar provider.', confidence: 'low' })])} />,
     );
     expect(container.querySelector('.why .chip')?.textContent).toBe('low confidence');
   });
 
   it('falls back to a neutral label when the rationale has no confidence', () => {
-    const { container } = render(<Plan {...withStories([story({ rationale: 'Straightforward.' })])} />);
+    const { container } = render(
+      <Plan {...withStories([story({ rationale: 'Straightforward.' })])} />,
+    );
     expect(container.querySelector('.why .chip')?.textContent).toBe('Points rationale');
   });
 
@@ -93,19 +97,28 @@ describe('Plan', () => {
             ],
           }),
         ])}
-      />
+      />,
     );
     const items = [...container.querySelectorAll('.criteria li')];
     expect(items).toHaveLength(2);
     expect(items[0]?.textContent).toBe(
-      'AC 1Given a configured tenant When they log in Then they reach Okta'
+      'AC 1Given a configured tenant When they log in Then they reach Okta',
     );
   });
 
   it('strikes through a DoD item the story is exempt from rather than dropping it', () => {
     // Which items a story is exempt from is a decision worth showing.
     const { container } = render(
-      <Plan {...withStories([story({ dod: [['Documentation', true], ['Released via SDLC', false]] })])} />
+      <Plan
+        {...withStories([
+          story({
+            dod: [
+              ['Documentation', true],
+              ['Released via SDLC', false],
+            ],
+          }),
+        ])}
+      />,
     );
     const items = [...container.querySelectorAll('.dod li')];
     expect(items.map((li) => li.textContent)).toEqual(['✓ Documentation', '✗ Released via SDLC']);
@@ -119,15 +132,19 @@ describe('Plan', () => {
   });
 
   it('marks a sprint that lost capacity, and says what it lost it from', () => {
-    const { container } = render(<Plan {...EMPTY} sprints={[sprint({ capacity: 30 })]} velocity={40} />);
+    const { container } = render(
+      <Plan {...EMPTY} sprints={[sprint({ capacity: 30 })]} velocity={40} />,
+    );
     expect(container.querySelector('.reduced')).not.toBeNull();
     expect(container.querySelector('.reducedNote')?.textContent).toBe(
-      'Reduced from 40 pts (bank holidays / deductions)'
+      'Reduced from 40 pts (bank holidays / deductions)',
     );
   });
 
   it('leaves a full-capacity sprint unmarked', () => {
-    const { container } = render(<Plan {...EMPTY} sprints={[sprint({ capacity: 40 })]} velocity={40} />);
+    const { container } = render(
+      <Plan {...EMPTY} sprints={[sprint({ capacity: 40 })]} velocity={40} />,
+    );
     expect(container.querySelector('.reduced')).toBeNull();
     expect(container.querySelector('.reducedNote')).toBeNull();
   });
@@ -135,7 +152,9 @@ describe('Plan', () => {
   it('warns on an over-committed sprint but not on a merely tight one', () => {
     const over = render(<Plan {...EMPTY} sprints={[sprint({ used: 50, capacity: 40 })]} />);
     expect(over.container.querySelector('.chip')?.textContent).toBe('50 / 40 pts');
-    expect((over.container.querySelector('.chip') as HTMLElement).style.color).toBe('var(--danger)');
+    expect((over.container.querySelector('.chip') as HTMLElement).style.color).toBe(
+      'var(--danger)',
+    );
 
     const tight = render(<Plan {...EMPTY} sprints={[sprint({ used: 36, capacity: 40 })]} />);
     expect((tight.container.querySelector('.chip') as HTMLElement).style.color).toBe('var(--warn)');
@@ -151,14 +170,16 @@ describe('Plan', () => {
           {
             storyId: 'S-2',
             storyText: 'As a support engineer, I want to see which tenants use SSO.',
-            tasks: [{ id: 'T-1', title: 'Add the column', description: 'Render it.', label: 'Code' }],
+            tasks: [
+              { id: 'T-1', title: 'Add the column', description: 'Render it.', label: 'Code' },
+            ],
           },
         ]}
-      />
+      />,
     );
     expect(container.querySelector('.taskGroup .eyebrow')?.textContent).toBe('S-2');
     expect(container.querySelector('.groupSubject')?.textContent).toBe(
-      'As a support engineer, I want to see which tenants use SSO.'
+      'As a support engineer, I want to see which tenants use SSO.',
     );
   });
 
@@ -182,7 +203,7 @@ describe('Plan', () => {
             ],
           },
         ]}
-      />
+      />,
     );
     expect([...container.querySelectorAll('.taskNote')].map((n) => n.textContent)).toEqual([
       'Test plan: Round-trip against the dev tenant.',
@@ -211,11 +232,11 @@ describe('Plan', () => {
           targetSprints: 3,
           fields: [],
         }}
-      />
+      />,
     );
     expect(container.querySelector('.capacity .legend')?.textContent).toBe('Net 30Deducted 10');
     expect(container.querySelector('.capacity .footnote')?.textContent).toBe(
-      'Deductions — bank holidays: 2d, discovery: 5%'
+      'Deductions — bank holidays: 2d, discovery: 5%',
     );
   });
 });

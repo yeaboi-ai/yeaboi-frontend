@@ -91,7 +91,15 @@ export function Controls({
  * sprites the boards use, ~7 KB for all three layers — so the deck is smaller
  * for having gained an animated mascot.
  */
-export function Brand({ credit, generated, duck }: { credit: string; generated: string; duck: DuckState }) {
+export function Brand({
+  credit,
+  generated,
+  duck,
+}: {
+  credit: string;
+  generated: string;
+  duck: DuckState;
+}) {
   return (
     <div className={styles['brand']}>
       <Duck state={duck} size={26} />

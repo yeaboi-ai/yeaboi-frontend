@@ -42,7 +42,11 @@ export function DragPreview({ previewRef, drag, card, authorAvatar }: DragPrevie
         className={cx(styles['card'], styles['dragCard'], isAI && styles['cardAI'])}
         // The starting position only. Every frame after this one is written
         // straight to `style.transform` by the hook — see `place`.
-        style={{ width: `${drag.width}px`, transform: carriedTransform(drag), rotate: `${drag.tilt}deg` }}
+        style={{
+          width: `${drag.width}px`,
+          transform: carriedTransform(drag),
+          rotate: `${drag.tilt}deg`,
+        }}
       >
         <p className={styles['cardText']}>{card.text}</p>
         <div className={styles['cardMeta']}>
@@ -60,6 +64,6 @@ export function DragPreview({ previewRef, drag, card, authorAvatar }: DragPrevie
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }

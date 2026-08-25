@@ -47,7 +47,9 @@ describe('<CopyField>', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Copy Link' }));
 
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Could not copy Link' })).toBeTruthy());
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Could not copy Link' })).toBeTruthy(),
+    );
     expect(screen.getByText('https://x.trycloudflare.com/')).toBeTruthy();
   });
 
@@ -57,7 +59,9 @@ describe('<CopyField>', () => {
     render(<CopyField label="Code" value="K3P9-2QXA" />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Copy Code' }));
-    await vi.waitFor(() => expect(screen.getByRole('button', { name: 'Code copied' })).toBeTruthy());
+    await vi.waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Code copied' })).toBeTruthy(),
+    );
 
     vi.advanceTimersByTime(2_000);
     await vi.waitFor(() => expect(screen.getByRole('button', { name: 'Copy Code' })).toBeTruthy());
@@ -72,7 +76,7 @@ describe('<InviteQR>', () => {
         qrSrc="/api/qr?token=t"
         inviteUrl="https://x/#code=K3P9-2QXA"
         joinCode="K3P9-2QXA"
-      />
+      />,
     );
     expect(screen.getByRole('button', { name: 'Copy Invite link' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Copy Code' })).toBeTruthy();

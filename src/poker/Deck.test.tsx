@@ -15,7 +15,18 @@ import { Deck } from './Deck';
 
 function renderDeck(props: Partial<Parameters<typeof Deck>[0]> = {}) {
   const onVote = vi.fn();
-  const view = render(<Deck mine="" pending={false} disabled={false} reason="" locked={false} waiting={0} onVote={onVote} {...props} />);
+  const view = render(
+    <Deck
+      mine=""
+      pending={false}
+      disabled={false}
+      reason=""
+      locked={false}
+      waiting={0}
+      onVote={onVote}
+      {...props}
+    />,
+  );
   return { ...view, onVote };
 }
 
@@ -65,7 +76,9 @@ describe('Deck', () => {
 
   it('tells you what you voted, and how to take it back', () => {
     renderDeck({ mine: '8' });
-    expect(screen.getByRole('status').textContent).toContain('Your vote: 8 — tap it again to withdraw');
+    expect(screen.getByRole('status').textContent).toContain(
+      'Your vote: 8 — tap it again to withdraw',
+    );
   });
 
   // Moved here from the table, with the line itself: who the round is waiting
@@ -88,7 +101,19 @@ describe('Deck', () => {
     const waiting = screen.getByRole('button', { name: 'Withdraw your vote of 3' });
     expect(waiting.className).toContain('pcardWait');
 
-    rerender(<Deck mine="3" pending={false} disabled={false} reason="" locked={false} waiting={0} onVote={vi.fn()} />);
-    expect(screen.getByRole('button', { name: 'Withdraw your vote of 3' }).className).not.toContain('pcardWait');
+    rerender(
+      <Deck
+        mine="3"
+        pending={false}
+        disabled={false}
+        reason=""
+        locked={false}
+        waiting={0}
+        onVote={vi.fn()}
+      />,
+    );
+    expect(screen.getByRole('button', { name: 'Withdraw your vote of 3' }).className).not.toContain(
+      'pcardWait',
+    );
   });
 });

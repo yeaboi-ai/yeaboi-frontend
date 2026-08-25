@@ -15,7 +15,7 @@ import { Anonymize } from './Anonymize';
 describe('Anonymize', () => {
   it('renders the masked document, not a string of markup', () => {
     const { container } = render(
-      <Anonymize markdown={'# Sprint 42\n\n- shipped auth\n- fixed CI'} warnings={[]} />
+      <Anonymize markdown={'# Sprint 42\n\n- shipped auth\n- fixed CI'} warnings={[]} />,
     );
     // Document headings start at <h2>: the page's own <h1> is the report title,
     // and a second <h1> inside it breaks the outline a screen reader walks.
@@ -33,7 +33,7 @@ describe('Anonymize', () => {
 
   it('drops a javascript: link to plain text, keeping the label', () => {
     const { container } = render(
-      <Anonymize markdown="See [the ticket](javascript:alert1) for details." warnings={[]} />
+      <Anonymize markdown="See [the ticket](javascript:alert1) for details." warnings={[]} />,
     );
     expect(container.querySelector('a')).toBeNull();
     // The reader still gets the words. Dropping the whole run would silently
@@ -42,14 +42,18 @@ describe('Anonymize', () => {
   });
 
   it('keeps a tracker link live', () => {
-    const { container } = render(<Anonymize markdown="[PROJ-1](https://jira.test/PROJ-1)" warnings={[]} />);
+    const { container } = render(
+      <Anonymize markdown="[PROJ-1](https://jira.test/PROJ-1)" warnings={[]} />,
+    );
     const link = container.querySelector('a');
     expect(link?.getAttribute('href')).toBe('https://jira.test/PROJ-1');
     expect(link?.getAttribute('rel')).toBe('noopener noreferrer');
   });
 
   it('renders a table as a table', () => {
-    const { container } = render(<Anonymize markdown={'| A | B |\n|---|---|\n| 1 | 2 |'} warnings={[]} />);
+    const { container } = render(
+      <Anonymize markdown={'| A | B |\n|---|---|\n| 1 | 2 |'} warnings={[]} />,
+    );
     expect(container.querySelectorAll('th')).toHaveLength(2);
     expect(container.querySelectorAll('tbody td')).toHaveLength(2);
   });

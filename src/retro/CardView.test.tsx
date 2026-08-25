@@ -16,7 +16,10 @@ import { card } from '../test/retroState';
 import { REACTION_EMOJIS } from '../types/enums';
 import { CardView } from './CardView';
 
-function renderCard(overrides: Parameters<typeof card>[0] = {}, props: Partial<Parameters<typeof CardView>[0]> = {}) {
+function renderCard(
+  overrides: Parameters<typeof card>[0] = {},
+  props: Partial<Parameters<typeof CardView>[0]> = {},
+) {
   const handlers = {
     onEdit: vi.fn(),
     onDelete: vi.fn(),
@@ -25,7 +28,7 @@ function renderCard(overrides: Parameters<typeof card>[0] = {}, props: Partial<P
   };
   const subject = card(overrides);
   const view = render(
-    <CardView card={subject} myReactions={new Set()} locked={false} {...handlers} {...props} />
+    <CardView card={subject} myReactions={new Set()} locked={false} {...handlers} {...props} />,
   );
   return { ...view, ...handlers, subject };
 }
@@ -50,12 +53,12 @@ describe('CardView', () => {
         onDelete={vi.fn()}
         onReact={vi.fn()}
         onCardPointerDown={vi.fn()}
-      />
+      />,
     );
 
     expect(screen.getByRole('textbox', { name: 'Edit card' })).toHaveProperty(
       'value',
-      'original — half typed'
+      'original — half typed',
     );
     // …and the rest of the card did update, which is the half the freeze cost.
     expect(screen.getByRole('button', { name: 'Add 👍 reaction (1)' })).toBeTruthy();
@@ -71,11 +74,14 @@ describe('CardView', () => {
     expect(screen.queryByRole('textbox', { name: 'Edit card' })).toBeNull();
 
     await user.click(screen.getByRole('button', { name: /^Edit card/ }));
-    await user.type(screen.getByRole('textbox', { name: 'Edit card' }), ' third{Meta>}{Enter}{/Meta}');
+    await user.type(
+      screen.getByRole('textbox', { name: 'Edit card' }),
+      ' third{Meta>}{Enter}{/Meta}',
+    );
     expect(onEdit).toHaveBeenCalledWith(subject.id, 'first third');
   });
 
-  it("offers edit and delete only on your own cards", () => {
+  it('offers edit and delete only on your own cards', () => {
     renderCard({ mine: false });
     expect(screen.queryByRole('button', { name: /^Edit card/ })).toBeNull();
     expect(screen.queryByRole('button', { name: /^Delete card/ })).toBeNull();

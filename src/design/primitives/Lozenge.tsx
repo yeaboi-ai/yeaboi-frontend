@@ -43,7 +43,12 @@ const CATEGORY_CLASS: Record<LozengeCategory, string> = {
 export function Lozenge({ category, children, small, title, className }: LozengeProps) {
   return (
     <span
-      className={cx(styles['lozenge'], CATEGORY_CLASS[category], small && styles['lozengeSmall'], className)}
+      className={cx(
+        styles['lozenge'],
+        CATEGORY_CLASS[category],
+        small && styles['lozengeSmall'],
+        className,
+      )}
       title={title}
     >
       {children}

@@ -9,7 +9,15 @@
  */
 
 export { Announce, ANNOUNCE_MS, type AnnounceProps } from './Announce';
-export { Panel, Panels, Tabs, tabIds, type PanelProps, type PanelsProps, type TabsProps } from './Tabs';
+export {
+  Panel,
+  Panels,
+  Tabs,
+  tabIds,
+  type PanelProps,
+  type PanelsProps,
+  type TabsProps,
+} from './Tabs';
 export { Room, type RoomProps } from './Room';
 export { Written, type WrittenProps } from './Written';
 export {

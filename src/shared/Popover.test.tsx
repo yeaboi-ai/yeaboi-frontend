@@ -77,7 +77,7 @@ describe('Popover', () => {
       <div>
         <Toolbar />
         <main>board</main>
-      </div>
+      </div>,
     );
     fireEvent.click(trigger('Music'));
     fireEvent.pointerDown(screen.getByText('board'));

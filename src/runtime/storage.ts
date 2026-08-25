@@ -67,7 +67,7 @@ export function readEnum<T extends string>(
   kind: Store,
   key: string,
   allowed: readonly T[],
-  fallback: T
+  fallback: T,
 ): T {
   const raw = read(kind, key);
   return (allowed as readonly string[]).includes(raw ?? '') ? (raw as T) : fallback;

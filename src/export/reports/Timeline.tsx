@@ -258,7 +258,11 @@ function placeCaptions(marks: Mark[]): Caption[] {
     if (!run.length) return;
     const first = run[0] as Mark;
     const last = run[run.length - 1] as Mark;
-    consider((first.pct + last.pct) / 2, runCaption(run.flatMap((mark) => mark.events)), run.length > 1);
+    consider(
+      (first.pct + last.pct) / 2,
+      runCaption(run.flatMap((mark) => mark.events)),
+      run.length > 1,
+    );
     run = [];
   };
   for (const mark of marks) {
@@ -277,7 +281,16 @@ function placeCaptions(marks: Mark[]): Caption[] {
 /* ---- legend ------------------------------------------------------------- */
 
 /** Fixed legend order, so the same day draws the same way twice. */
-const GROUP_ORDER: readonly KindGroup[] = ['commit', 'pr', 'review', 'comment', 'ticket', 'doc', 'wip', 'ref'];
+const GROUP_ORDER: readonly KindGroup[] = [
+  'commit',
+  'pr',
+  'review',
+  'comment',
+  'ticket',
+  'doc',
+  'wip',
+  'ref',
+];
 /** A representative engine kind per group, for the legend's icon and meta. */
 const GROUP_KIND: Record<KindGroup, string> = {
   commit: 'commit',
@@ -297,7 +310,9 @@ function markAria(mark: Mark, name: string, multiDay: boolean, partners: string[
   if (mark.events.length === 1) {
     const event = mark.events[0] as TimelineEvent;
     const meta = kindMeta(event.kind);
-    const parts = [fmtWhen(event.at, multiDay), event.status, event.repo].filter(Boolean).join(', ');
+    const parts = [fmtWhen(event.at, multiDay), event.status, event.repo]
+      .filter(Boolean)
+      .join(', ');
     return `${meta.label}: ${eventLabel(event)} — ${parts}.${shared} Jump to ${name}'s update.`;
   }
   const first = mark.events[0] as TimelineEvent;
@@ -323,7 +338,8 @@ function MarkLink({
   const meta = kindMeta(head.kind);
   const count = mark.events.length;
   // Tooltip alignment is decided from the position — no measurement JS.
-  const align = mark.pct < 15 ? styles['tlTipLeft'] : mark.pct > 85 ? styles['tlTipRight'] : undefined;
+  const align =
+    mark.pct < 15 ? styles['tlTipLeft'] : mark.pct > 85 ? styles['tlTipRight'] : undefined;
   const shown = mark.events.slice(0, CLUSTER_TIP_ROWS);
   const folded = count - shown.length;
 
@@ -364,7 +380,9 @@ function MarkLink({
             {folded > 0 ? <span className={styles['tlTipMeta']}>+{folded} more</span> : null}
           </>
         )}
-        {partners.length ? <span className={styles['tlTipMeta']}>with {partners.join(', ')}</span> : null}
+        {partners.length ? (
+          <span className={styles['tlTipMeta']}>with {partners.join(', ')}</span>
+        ) : null}
       </span>
     </a>
   );
@@ -399,17 +417,26 @@ function Rail({ lane, multiDay }: { lane: Lane; multiDay: boolean }) {
         ) : null}
       </span>
       <span className={styles['tlSpan']}>
-        {lane.events.length ? `${span} · ${lane.events.length} event${lane.events.length === 1 ? '' : 's'}` : span}
+        {lane.events.length
+          ? `${span} · ${lane.events.length} event${lane.events.length === 1 ? '' : 's'}`
+          : span}
       </span>
       <span className={styles['tlTally']}>
         {GROUP_ORDER.filter((group) => tally.has(group)).map((group) => (
-          <span key={group} className={styles['tlTallyItem']} style={{ color: toneVar(kindMeta(GROUP_KIND[group]).tone) }}>
+          <span
+            key={group}
+            className={styles['tlTallyItem']}
+            style={{ color: toneVar(kindMeta(GROUP_KIND[group]).tone) }}
+          >
             <KindIcon kind={GROUP_KIND[group]} size={9} />
             {tally.get(group)}
           </span>
         ))}
         {lane.undated > 0 ? (
-          <span className={styles['tlUndated']} title="Rows with no event time — still listed in the card below">
+          <span
+            className={styles['tlUndated']}
+            title="Rows with no event time — still listed in the card below"
+          >
             +{lane.undated} undated
           </span>
         ) : null}
@@ -443,14 +470,14 @@ export function Timeline({
 
   const scale = buildScale(
     lanes.flatMap((lane) => lane.events.map((event) => event.at)),
-    bounds
+    bounds,
   );
   const { multiDay } = scale;
 
   const threadInput: ThreadInput[] = lanes.flatMap((lane, index) =>
     lane.events
       .filter((event) => event.artifact)
-      .map((event) => ({ lane: index, at: event.at, artifact: event.artifact }))
+      .map((event) => ({ lane: index, at: event.at, artifact: event.artifact })),
   );
   const { threads, dropped, partners } = buildThreads(threadInput);
   /** The other people on an artifact — stated in words, never by the line alone. */
@@ -463,7 +490,9 @@ export function Timeline({
   const rows = lanes.length + undatedOnly.length;
   const laneY = (index: number) => ((index + TRACK_CENTRE) / rows) * 100;
 
-  const present = new Set(lanes.flatMap((lane) => lane.events.map((event) => kindGroup(event.kind))));
+  const present = new Set(
+    lanes.flatMap((lane) => lane.events.map((event) => kindGroup(event.kind))),
+  );
   const legend = GROUP_ORDER.filter((group) => present.has(group));
 
   return (
@@ -479,7 +508,10 @@ export function Timeline({
               <button
                 key={group}
                 type="button"
-                className={cx(styles['tlLegendItem'], focus !== null && focus !== group && styles['tlDimmed'])}
+                className={cx(
+                  styles['tlLegendItem'],
+                  focus !== null && focus !== group && styles['tlDimmed'],
+                )}
                 style={{ color: toneVar(meta.tone) }}
                 aria-pressed={focus === group}
                 onClick={() => setFocus((current) => (current === group ? null : group))}
@@ -498,9 +530,13 @@ export function Timeline({
           would be the one omission left. */}
       {scale.compressed || dropped > 0 ? (
         <p className={styles['tlNote']}>
-          {scale.compressed ? 'Quiet stretches are compressed — each notch is labelled with how long it ran.' : ''}
+          {scale.compressed
+            ? 'Quiet stretches are compressed — each notch is labelled with how long it ran.'
+            : ''}
           {scale.compressed && dropped > 0 ? ' ' : ''}
-          {dropped > 0 ? `${dropped} further shared-work link${dropped === 1 ? '' : 's'} not drawn.` : ''}
+          {dropped > 0
+            ? `${dropped} further shared-work link${dropped === 1 ? '' : 's'} not drawn.`
+            : ''}
         </p>
       ) : null}
 
@@ -586,10 +622,14 @@ export function Timeline({
                   ) : null}
                   {marks.map((mark, index) => {
                     const dimmed =
-                      focus !== null && !mark.events.some((event) => kindGroup(event.kind) === focus);
+                      focus !== null &&
+                      !mark.events.some((event) => kindGroup(event.kind) === focus);
                     const head = mark.events[0] as TimelineEvent;
                     return (
-                      <span key={index} className={cx(styles['tlSlot'], dimmed && styles['tlDimmed'])}>
+                      <span
+                        key={index}
+                        className={cx(styles['tlSlot'], dimmed && styles['tlDimmed'])}
+                      >
                         <MarkLink
                           mark={mark}
                           name={lane.name}
@@ -607,7 +647,7 @@ export function Timeline({
                       className={cx(
                         styles['tlCap'],
                         caption.counted && styles['tlCapCount'],
-                        caption.rank >= CAPTION_LOW_RANK && styles['tlCapLow']
+                        caption.rank >= CAPTION_LOW_RANK && styles['tlCapLow'],
                       )}
                       style={{ left: `${caption.pct}%` }}
                     >

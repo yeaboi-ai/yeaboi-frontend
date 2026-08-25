@@ -60,7 +60,10 @@ export interface TicketOptions {
  * What it did not answer falls back to the values the given tickets already
  * carry, which is all the demo source and an unreachable tracker can offer.
  */
-export function ticketOptions(tickets: readonly Displayable[], tracker: TrackerOptions = {}): TicketOptions {
+export function ticketOptions(
+  tickets: readonly Displayable[],
+  tracker: TrackerOptions = {},
+): TicketOptions {
   const gather = (pick: (t: Displayable) => string): string[] =>
     [...new Set(tickets.map(pick).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   return {
@@ -120,7 +123,9 @@ function TicketForm({
 }) {
   const [summary, setSummary] = useState(ticket.summary);
   const [description, setDescription] = useState(ticket.description_text);
-  const [points, setPoints] = useState(ticket.story_points === null ? '' : fmtPoints(ticket.story_points));
+  const [points, setPoints] = useState(
+    ticket.story_points === null ? '' : fmtPoints(ticket.story_points),
+  );
   const [type, setType] = useState(ticket.type);
   const [state, setState] = useState(ticket.state);
   const [assignee, setAssignee] = useState(ticket.assignee);
@@ -147,7 +152,16 @@ function TicketForm({
     setState(ticket.state);
     setAssignee(ticket.assignee);
     setAcceptance(ticket.acceptance_text);
-  }, [ticket.key, ticket.summary, ticket.description_text, ticket.story_points, ticket.type, ticket.state, ticket.assignee, ticket.acceptance_text]);
+  }, [
+    ticket.key,
+    ticket.summary,
+    ticket.description_text,
+    ticket.story_points,
+    ticket.type,
+    ticket.state,
+    ticket.assignee,
+    ticket.acceptance_text,
+  ]);
 
   // Escape leaves the editor from anywhere on the page. An open dropdown
   // swallows its own Escape first, so the first press closes the menu.
@@ -165,7 +179,8 @@ function TicketForm({
     if (trimmed && trimmed !== ticket.summary) edit.summary = trimmed;
     if (description !== ticket.description_text) edit.description = description;
     const parsed = Number.parseFloat(points);
-    if (points.trim() !== '' && !Number.isNaN(parsed) && parsed !== ticket.story_points) edit.points = parsed;
+    if (points.trim() !== '' && !Number.isNaN(parsed) && parsed !== ticket.story_points)
+      edit.points = parsed;
     if (type !== ticket.type) edit.type = type;
     if (state !== ticket.state) edit.state = state;
     if (assignee !== ticket.assignee) edit.assignee = assignee;
@@ -205,7 +220,12 @@ function TicketForm({
       <dl className={styles['props']}>
         <PropPicker label="Type" value={type} options={options.types} onChange={setType} />
         <PropPicker label="Status" value={state} options={options.states} onChange={setState} />
-        <PropPicker label="Assignee" value={assignee} options={options.assignees} onChange={setAssignee} />
+        <PropPicker
+          label="Assignee"
+          value={assignee}
+          options={options.assignees}
+          onChange={setAssignee}
+        />
         <div className={styles['prop']}>
           <dt className={styles['propLabel']}>Points</dt>
           <dd className={styles['propValue']}>
@@ -239,7 +259,9 @@ function TicketForm({
         onInput={(event) => setAcceptance((event.target as HTMLTextAreaElement).value)}
       />
 
-      <p className={styles['editNote']}>Saving writes to the tracker, not just this board. Esc to leave.</p>
+      <p className={styles['editNote']}>
+        Saving writes to the tracker, not just this board. Esc to leave.
+      </p>
     </div>
   );
 }
@@ -272,12 +294,21 @@ function Collapsible({ label, text }: { label?: string; text: string }) {
       {label ? <Eyebrow className={styles['bodyLabel']}>{label}</Eyebrow> : null}
       <div
         ref={body}
-        className={cx(styles['desc'], !open && styles['descClipped'], clips && !open && styles['descFade'])}
+        className={cx(
+          styles['desc'],
+          !open && styles['descClipped'],
+          clips && !open && styles['descFade'],
+        )}
       >
         {text}
       </div>
       {clips ? (
-        <button type="button" className={styles['descToggle']} aria-expanded={open} onClick={() => setOpen(!open)}>
+        <button
+          type="button"
+          className={styles['descToggle']}
+          aria-expanded={open}
+          onClick={() => setOpen(!open)}
+        >
           <Icon name={open ? 'chevron-up' : 'chevron-down'} /> {open ? 'Show less' : 'Show more'}
         </button>
       ) : null}
@@ -345,7 +376,9 @@ function TicketBody({ ticket, tag, onEdit, nav }: BodyProps) {
 
       {/* Acceptance criteria get their own labelled section, and are omitted
           rather than empty-stated — most trackers simply do not have them. */}
-      {ticket.acceptance_text ? <Collapsible label="Acceptance criteria" text={ticket.acceptance_text} /> : null}
+      {ticket.acceptance_text ? (
+        <Collapsible label="Acceptance criteria" text={ticket.acceptance_text} />
+      ) : null}
     </>
   );
 }
@@ -411,8 +444,8 @@ export function TicketPanel({
       <section className={cx(styles['ticket'], styles['ticketPeek'])} aria-label="Ticket preview">
         <div className={styles['peekBanner']}>
           <span>
-            <Icon name="eye" /> Previewing <b>{peek?.key || `ticket ${peekIndex + 1}`}</b> — the team is
-            voting on <b>{liveKey || `ticket ${index + 1}`}</b>
+            <Icon name="eye" /> Previewing <b>{peek?.key || `ticket ${peekIndex + 1}`}</b> — the
+            team is voting on <b>{liveKey || `ticket ${index + 1}`}</b>
           </span>
           <span className={styles['peekActions']}>
             <Button size="s" onClick={onBackToLive}>
@@ -428,9 +461,14 @@ export function TicketPanel({
           </span>
         </div>
         {peek ? (
-          <TicketBody ticket={peek} tag={<span className={cx(kit['chip'], kit['chipAlt'])}>
-              <Icon name="eye" size={12} /> preview
-            </span>} />
+          <TicketBody
+            ticket={peek}
+            tag={
+              <span className={cx(kit['chip'], kit['chipAlt'])}>
+                <Icon name="eye" size={12} /> preview
+              </span>
+            }
+          />
         ) : (
           <p className={styles['descEmpty']}>Loading ticket…</p>
         )}
@@ -470,13 +508,23 @@ export function TicketPanel({
   const nav =
     isHost && count > 1 ? (
       <span className={styles['tknav']}>
-        <Button size="s" aria-label="Previous ticket" disabled={index <= 0} onClick={() => onGoto(index - 1)}>
+        <Button
+          size="s"
+          aria-label="Previous ticket"
+          disabled={index <= 0}
+          onClick={() => onGoto(index - 1)}
+        >
           <Icon name="chevron-left" size={14} />
         </Button>
         <span className={styles['tkpos']}>
           {index + 1} / {count}
         </span>
-        <Button size="s" aria-label="Next ticket" disabled={index >= count - 1} onClick={() => onGoto(index + 1)}>
+        <Button
+          size="s"
+          aria-label="Next ticket"
+          disabled={index >= count - 1}
+          onClick={() => onGoto(index + 1)}
+        >
           <Icon name="chevron-right" size={14} />
         </Button>
       </span>

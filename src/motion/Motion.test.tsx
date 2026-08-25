@@ -50,7 +50,7 @@ describe('motion.module.css', () => {
     expect(
       body,
       `${name} uses a "to"/100% block — under prefers-reduced-motion the end state is never reached, ` +
-        'so the resting appearance must be the plain CSS default instead'
+        'so the resting appearance must be the plain CSS default instead',
     ).not.toMatch(/(^|\})\s*(to|100%)\s*\{/);
   });
 });
@@ -71,7 +71,11 @@ describe('motion.module.css', () => {
  * asked for less motion, on whose machines nobody is looking.
  */
 describe('every animated stylesheet', () => {
-  const sheets = import.meta.glob<string>('../**/*.module.css', { query: '?raw', import: 'default', eager: true });
+  const sheets = import.meta.glob<string>('../**/*.module.css', {
+    query: '?raw',
+    import: 'default',
+    eager: true,
+  });
   const animated = Object.entries(sheets).filter(([, css]) => css.includes('@keyframes'));
 
   it('found the stylesheets to check', () => {
@@ -87,7 +91,7 @@ describe('every animated stylesheet', () => {
         tail[1],
         `@keyframes ${name} reaches full opacity only at its end — under prefers-reduced-motion ` +
           'that frame never arrives and the element stays invisible. Put the visible state in the ' +
-          'plain CSS and animate *from* the hidden one.'
+          'plain CSS and animate *from* the hidden one.',
       ).not.toMatch(/opacity\s*:\s*1\b|visibility\s*:\s*visible/);
     }
   });

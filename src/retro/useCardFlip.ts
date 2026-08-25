@@ -38,7 +38,7 @@ export function useCardFlip(
    * one — a scrollbar appearing, a composer opening, the board settling on the
    * first poll — and sliding them for those makes the board twitch at rest.
    */
-  arrangement: string
+  arrangement: string,
 ): CardFlip {
   const seen = useRef(new Map<string, { left: number; top: number }>());
   const layout = useRef<string | null>(null);

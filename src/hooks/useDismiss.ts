@@ -20,7 +20,7 @@ export function useDismiss(
   ref: RefObject<HTMLElement | null>,
   onDismiss: (reason: 'escape' | 'outside') => void,
   /** A second region that also counts as inside — a panel opened in a portal. */
-  alsoInside?: RefObject<HTMLElement | null>
+  alsoInside?: RefObject<HTMLElement | null>,
 ): void {
   useEffect(() => {
     if (!open) return;

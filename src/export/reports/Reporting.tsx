@@ -65,7 +65,7 @@ function Bullets({ items }: { items: string[] }) {
       {items.flatMap((item, i) =>
         (item.length > SPLIT_OVER ? proseBullets(item) : [item]).map((fragment, j) => (
           <li key={`${i}-${j}`}>{fragment}</li>
-        ))
+        )),
       )}
     </ul>
   );

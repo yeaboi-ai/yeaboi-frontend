@@ -51,7 +51,10 @@ function Attribution({ card }: { card: RetroCard }) {
 function Column({ column }: { column: RetroColumn }) {
   const label = RETRO_GRID_LABELS[column.grid];
   return (
-    <div className={styles['column']} style={{ '--col-tone': toneVar(GRID_TONE[column.grid]) } as never}>
+    <div
+      className={styles['column']}
+      style={{ '--col-tone': toneVar(GRID_TONE[column.grid]) } as never}
+    >
       <h3 className={styles['columnTitle']}>
         {label}
         <span className={styles['count']}>{column.cards.length}</span>
@@ -144,7 +147,8 @@ export function Retro({
           <ul className={styles['bullets']}>
             {carried.map((item, index) => (
               <li key={`${index}-${item.text.slice(0, 24)}`}>
-                <strong className={styles['status']}>[{CARRIED_STATUS_LABELS[item.status]}]</strong> {item.text}
+                <strong className={styles['status']}>[{CARRIED_STATUS_LABELS[item.status]}]</strong>{' '}
+                {item.text}
               </li>
             ))}
           </ul>

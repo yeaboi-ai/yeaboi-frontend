@@ -145,7 +145,7 @@ export function App({ boot }: { boot: RetroBoot }) {
   /** What the board is showing, held together so a sprint switch swaps once. */
   const view = useMemo(
     () => ({ cards: past ? past.cards : cards, carried: past ? past.carried : carried }),
-    [past, cards, carried]
+    [past, cards, carried],
   );
   // Stepping back is only settled once that retro's cards have arrived.
   const swap = useSwap(view, history.at, SWAP_MS, history.at === 0 || Boolean(past));
@@ -162,7 +162,9 @@ export function App({ boot }: { boot: RetroBoot }) {
   // Which emoji *this browser* has reacted with, per card. The server does not
   // put raw pids on the wire, so "did I react" is only knowable from the
   // `reacted` flag each toggle answers with.
-  const [myReactions, setMyReactions] = useState<ReadonlyMap<string, ReadonlySet<string>>>(new Map());
+  const [myReactions, setMyReactions] = useState<ReadonlyMap<string, ReadonlySet<string>>>(
+    new Map(),
+  );
 
   const chooseTheme = useCallback((next: Theme) => {
     setLocalTheme(next);
@@ -241,7 +243,13 @@ export function App({ boot }: { boot: RetroBoot }) {
    * stale. `useDuckPulse` enforces that; this only decides the resting state.
    */
   const duckRest: DuckRest =
-    status === 'retrying' ? 'offline' : locked ? 'locked' : remaining !== null && remaining <= 10 ? 'urgent' : 'idle';
+    status === 'retrying'
+      ? 'offline'
+      : locked
+        ? 'locked'
+        : remaining !== null && remaining <= 10
+          ? 'urgent'
+          : 'idle';
   const [duckState, duckPulse] = useDuckPulse(duckRest);
 
   const peopleHere = presence.length;
@@ -273,7 +281,7 @@ export function App({ boot }: { boot: RetroBoot }) {
         avatar: avatarsByName.get(name),
         cards: shownCards.filter((card) => card.author === name && card.origin !== 'ai').length,
       })),
-    [authors, avatarsByName, shownCards]
+    [authors, avatarsByName, shownCards],
   );
 
   // An author who has left mid-walkthrough would otherwise leave every column
@@ -289,7 +297,7 @@ export function App({ boot }: { boot: RetroBoot }) {
       const next = authors[(at + delta + authors.length) % authors.length];
       if (next) setFocus(next);
     },
-    [authors, focus]
+    [authors, focus],
   );
 
   // Walkthrough keys, bound at the document so they work while reading the
@@ -317,7 +325,7 @@ export function App({ boot }: { boot: RetroBoot }) {
       setTypingGrid('');
       void actions.addCard(grid, text, name);
     },
-    [actions, name]
+    [actions, name],
   );
 
   const react = useCallback(
@@ -332,7 +340,7 @@ export function App({ boot }: { boot: RetroBoot }) {
         return next;
       });
     },
-    [actions]
+    [actions],
   );
 
   const saveProfile = useCallback(
@@ -343,7 +351,7 @@ export function App({ boot }: { boot: RetroBoot }) {
       write('local', KEY.avatar, newAvatar);
       setProfileOpen(false);
     },
-    []
+    [],
   );
 
   // ── The gate ───────────────────────────────────────────────────────────
@@ -384,22 +392,24 @@ export function App({ boot }: { boot: RetroBoot }) {
       // Which retro, and how many cards, are both already on the board — the
       // rail names the one and every column counts the other. The subtitle is
       // only where the connection speaks up.
-      subtitle={status === 'retrying' ? <span className={styles['offline']}>reconnecting…</span> : undefined}
+      subtitle={
+        status === 'retrying' ? <span className={styles['offline']}>reconnecting…</span> : undefined
+      }
     >
-        <div className={styles['identity']}>
-          <button type="button" className={styles['meChip']} onClick={() => setProfileOpen(true)}>
-            <span aria-hidden="true">{avatar}</span>
-            <span className={styles['meName']}>{name || 'Set your name'}</span>
-            <span className={styles['pen']}>
-              <Icon name="pencil" size={12} />
-            </span>
-          </button>
+      <div className={styles['identity']}>
+        <button type="button" className={styles['meChip']} onClick={() => setProfileOpen(true)}>
+          <span aria-hidden="true">{avatar}</span>
+          <span className={styles['meName']}>{name || 'Set your name'}</span>
+          <span className={styles['pen']}>
+            <Icon name="pencil" size={12} />
+          </span>
+        </button>
 
-          {/* One roster, not two. The Room's count is the headline and its
+        {/* One roster, not two. The Room's count is the headline and its
               hover deals the room out; a row of the same faces beside it said
               the same thing twice and only fitted four of them. */}
-          <Room people={presence} meName={name} />
-        </div>
+        <Room people={presence} meName={name} />
+      </div>
     </Toolbar>
   );
 
@@ -411,74 +421,74 @@ export function App({ boot }: { boot: RetroBoot }) {
       className={cx(kit['board'], styles['app'])}
       dock={
         <>
-            <Visualizer playing={music.playing} />
+          <Visualizer playing={music.playing} />
 
-            {isHost ? (
-              <IconButton
-                icon={<Icon name={locked ? 'lock' : 'lock-open'} size={16} />}
-                label={locked ? 'Unlock the board' : 'Lock the board'}
-                active={locked}
-                onClick={() => void actions.setLocked(!locked)}
-              />
-            ) : null}
-
-            <Popover trigger={<Icon name="music" size={16} />} label="Music">
-              <MusicPlayer
-                music={music}
-                channels={boot.musicChannels}
-                footer={
-                  isHost ? (
-                    <Button onClick={() => void actions.castMusic(music.playing, music.channel)}>
-                      <Icon name="megaphone" /> Play for everyone
-                    </Button>
-                  ) : null
-                }
-              />
-            </Popover>
-
-            <Popover
-              trigger={
-                <>
-                  <Icon name="timer" size={16} />
-                  <TimerReadout remaining={remaining} />
-                </>
-              }
-              label="Timer"
-            >
-              {isHost ? (
-                <TimerControls
-                  running={Boolean(snapshot?.timer.running)}
-                  onStart={(seconds) => void actions.startTimer(seconds)}
-                  onStop={() => void actions.stopTimer()}
-                />
-              ) : (
-                <p className={styles['popNote']}>The host controls the timer.</p>
-              )}
-            </Popover>
-
-            <Popover trigger={<Icon name="contrast" size={16} />} label="Theme">
-              <ThemeSwitcher
-                value={theme}
-                onChange={chooseTheme}
-                footer={
-                  isHost ? (
-                    <Button onClick={() => void actions.castTheme(theme)}>
-                      <Icon name="megaphone" /> Apply to everyone
-                    </Button>
-                  ) : null
-                }
-              />
-            </Popover>
-
+          {isHost ? (
             <IconButton
-              icon={<Icon name="mail" size={16} />}
-              label="Invite the team"
-              tone="primary"
-              compact
-              onClick={() => setInviteOpen(true)}
-            >
-              Invite
-            </IconButton>
+              icon={<Icon name={locked ? 'lock' : 'lock-open'} size={16} />}
+              label={locked ? 'Unlock the board' : 'Lock the board'}
+              active={locked}
+              onClick={() => void actions.setLocked(!locked)}
+            />
+          ) : null}
+
+          <Popover trigger={<Icon name="music" size={16} />} label="Music">
+            <MusicPlayer
+              music={music}
+              channels={boot.musicChannels}
+              footer={
+                isHost ? (
+                  <Button onClick={() => void actions.castMusic(music.playing, music.channel)}>
+                    <Icon name="megaphone" /> Play for everyone
+                  </Button>
+                ) : null
+              }
+            />
+          </Popover>
+
+          <Popover
+            trigger={
+              <>
+                <Icon name="timer" size={16} />
+                <TimerReadout remaining={remaining} />
+              </>
+            }
+            label="Timer"
+          >
+            {isHost ? (
+              <TimerControls
+                running={Boolean(snapshot?.timer.running)}
+                onStart={(seconds) => void actions.startTimer(seconds)}
+                onStop={() => void actions.stopTimer()}
+              />
+            ) : (
+              <p className={styles['popNote']}>The host controls the timer.</p>
+            )}
+          </Popover>
+
+          <Popover trigger={<Icon name="contrast" size={16} />} label="Theme">
+            <ThemeSwitcher
+              value={theme}
+              onChange={chooseTheme}
+              footer={
+                isHost ? (
+                  <Button onClick={() => void actions.castTheme(theme)}>
+                    <Icon name="megaphone" /> Apply to everyone
+                  </Button>
+                ) : null
+              }
+            />
+          </Popover>
+
+          <IconButton
+            icon={<Icon name="mail" size={16} />}
+            label="Invite the team"
+            tone="primary"
+            compact
+            onClick={() => setInviteOpen(true)}
+          >
+            Invite
+          </IconButton>
         </>
       }
     >
@@ -487,84 +497,90 @@ export function App({ boot }: { boot: RetroBoot }) {
           board, which takes the rest — the same relationship they had when
           `.app` itself was the flex column. */}
       <div className={styles['boardRegion']}>
-      {/* Why nothing can be written, at the bottom middle where the composers
+        {/* Why nothing can be written, at the bottom middle where the composers
           were. Not a stripe across the top: it is a footnote to a board you can
           still read, not a headline. `aria-hidden`, because the same sentence is
           in the live region below and announcing it twice is announcing it
           wrong. */}
-      {lock.mounted ? (
-        <p
-          className={cx(
-            styles['lockNote'],
-            locked ? styles['lockNoteLocked'] : styles['lockNotePast'],
-            lock.leaving && styles['lockNoteOut']
-          )}
-          aria-hidden="true"
-        >
-          <Icon name={locked ? 'lock' : 'rotate-ccw'} size={13} />
-          {locked ? 'The host locked the board' : 'A retro that already happened'}
-        </p>
-      ) : null}
+        {lock.mounted ? (
+          <p
+            className={cx(
+              styles['lockNote'],
+              locked ? styles['lockNoteLocked'] : styles['lockNotePast'],
+              lock.leaving && styles['lockNoteOut'],
+            )}
+            aria-hidden="true"
+          >
+            <Icon name={locked ? 'lock' : 'rotate-ccw'} size={13} />
+            {locked ? 'The host locked the board' : 'A retro that already happened'}
+          </p>
+        ) : null}
 
-      {/* A sighted user reads "which retro" off the rail's picker, which goes
+        {/* A sighted user reads "which retro" off the rail's picker, which goes
           accent-coloured on a past one. Said out loud here for everyone else. */}
-      <p className={styles['srOnly']} role="status" aria-live="polite">
-        {past ? `Showing ${past.sprint_name || 'a past retro'}, ${past.date}. ` : ''}
-        {locked ? 'The host locked the board.' : ''}
-      </p>
+        <p className={styles['srOnly']} role="status" aria-live="polite">
+          {past ? `Showing ${past.sprint_name || 'a past retro'}, ${past.date}. ` : ''}
+          {locked ? 'The host locked the board.' : ''}
+        </p>
 
-      {musicBlocked ? (
-        <button
-          type="button"
-          className={styles['musicBanner']}
-          onClick={() => void music.play().then(() => setMusicBlocked(false)).catch(() => {})}
-        >
-          <Icon name="play" size={14} /> The host started music — tap to listen
-        </button>
-      ) : null}
+        {musicBlocked ? (
+          <button
+            type="button"
+            className={styles['musicBanner']}
+            onClick={() =>
+              void music
+                .play()
+                .then(() => setMusicBlocked(false))
+                .catch(() => {})
+            }
+          >
+            <Icon name="play" size={14} /> The host started music — tap to listen
+          </button>
+        ) : null}
 
-      <div className={styles['boardLayout']}>
-      <Board
-        key={swap.key}
-        className={cx(swap.swapped && (swap.leaving ? styles['boardOut'] : styles['boardIn']))}
-        cards={swap.payload.cards}
-        avatars={avatarsByName}
-        myReactions={myReactions}
-        typing={past ? NO_TYPING_BY_GRID : typingByGrid}
-        locked={readOnly}
-        focus={focus}
-        arrivals={past ? NO_ARRIVALS : arrivals}
-        onAddCard={addCard}
-        onTyping={onTyping}
-        onEdit={(cardId, text) => void actions.editCard(cardId, text)}
-        onDelete={(cardId) => void actions.deleteCard(cardId)}
-        onReact={(cardId, emoji) => void react(cardId, emoji)}
-        onMove={(cardId, grid, index) => void actions.moveCard(cardId, grid, index)}
-      />
+        <div className={styles['boardLayout']}>
+          <Board
+            key={swap.key}
+            className={cx(swap.swapped && (swap.leaving ? styles['boardOut'] : styles['boardIn']))}
+            cards={swap.payload.cards}
+            avatars={avatarsByName}
+            myReactions={myReactions}
+            typing={past ? NO_TYPING_BY_GRID : typingByGrid}
+            locked={readOnly}
+            focus={focus}
+            arrivals={past ? NO_ARRIVALS : arrivals}
+            onAddCard={addCard}
+            onTyping={onTyping}
+            onEdit={(cardId, text) => void actions.editCard(cardId, text)}
+            onDelete={(cardId) => void actions.deleteCard(cardId)}
+            onReact={(cardId, emoji) => void react(cardId, emoji)}
+            onMove={(cardId, grid, index) => void actions.moveCard(cardId, grid, index)}
+          />
 
-      {isHost ? (
-        <HostRail
-          history={history}
-          liveLabel={boot.sprint || 'This retro'}
-          carried={swap.payload.carried}
-          onSetCarriedStatus={(itemId, status_) => void actions.setCarriedStatus(itemId, status_)}
-          people={roster}
-          focus={focus}
-          onFocus={setFocus}
-          suggesting={suggesting}
-          onSuggest={() => {
-            setSuggesting(true);
-            void actions.suggestActions().then((message) => {
-              setSuggesting(false);
-              setSuggestion(message);
-            });
-          }}
-          past={history.at > 0}
-          viewKey={swap.key}
-        />
-      ) : null}
-
-      </div>
+          {isHost ? (
+            <HostRail
+              history={history}
+              liveLabel={boot.sprint || 'This retro'}
+              carried={swap.payload.carried}
+              onSetCarriedStatus={(itemId, status_) =>
+                void actions.setCarriedStatus(itemId, status_)
+              }
+              people={roster}
+              focus={focus}
+              onFocus={setFocus}
+              suggesting={suggesting}
+              onSuggest={() => {
+                setSuggesting(true);
+                void actions.suggestActions().then((message) => {
+                  setSuggesting(false);
+                  setSuggestion(message);
+                });
+              }}
+              past={history.at > 0}
+              viewKey={swap.key}
+            />
+          ) : null}
+        </div>
       </div>
 
       {/* Overlays and modals are fixed-position, so they take no part in the
@@ -592,8 +608,8 @@ export function App({ boot }: { boot: RetroBoot }) {
             screen are worse than no instructions. */}
         {invite.invite?.inviteUrl ? (
           <p className={styles['popNote']}>
-            Send the link, or let them scan it — either one lands them straight on the board. Keep both off
-            anywhere public.
+            Send the link, or let them scan it — either one lands them straight on the board. Keep
+            both off anywhere public.
           </p>
         ) : null}
         <Toast message={invite.notice} onDismiss={invite.dismiss} />

@@ -27,9 +27,15 @@ export function Legend({ items, className }: { items: readonly LegendItem[]; cla
         <span key={`${item.label}-${item.tone}`}>
           {/* aria-hidden: the colour is decoration, the label already says what
               this is, and announcing "image" before every entry is noise. */}
-          <i className={styles['legendSwatch']} style={{ background: toneVar(item.tone) }} aria-hidden="true" />
+          <i
+            className={styles['legendSwatch']}
+            style={{ background: toneVar(item.tone) }}
+            aria-hidden="true"
+          />
           {item.label}
-          {item.count === undefined ? null : <span className={styles['legendCount']}> {item.count}</span>}
+          {item.count === undefined ? null : (
+            <span className={styles['legendCount']}> {item.count}</span>
+          )}
         </span>
       ))}
     </div>
@@ -45,7 +51,10 @@ export function Legend({ items, className }: { items: readonly LegendItem[]; cla
  */
 export function countedSegments(
   counts: readonly (readonly [string, number])[],
-  { palette = SERIES_TONES, overflowLabel = 'other' }: { palette?: readonly Tone[]; overflowLabel?: string } = {}
+  {
+    palette = SERIES_TONES,
+    overflowLabel = 'other',
+  }: { palette?: readonly Tone[]; overflowLabel?: string } = {},
 ): { segments: Segment[]; legend: LegendItem[] } {
   const pairs = counts.filter(([, n]) => n > 0).sort((a, b) => b[1] - a[1]);
   if (!pairs.length) return { segments: [], legend: [] };

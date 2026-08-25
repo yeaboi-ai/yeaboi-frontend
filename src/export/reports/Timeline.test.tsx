@@ -35,7 +35,11 @@ function evidence(over: Partial<EvidenceItem> = {}): EvidenceItem {
   };
 }
 
-function member(rows: EvidenceItem[], name = 'Ada Lovelace', over: Partial<StandupMember> = {}): StandupMember {
+function member(
+  rows: EvidenceItem[],
+  name = 'Ada Lovelace',
+  over: Partial<StandupMember> = {},
+): StandupMember {
   return {
     name,
     summary: [],
@@ -55,9 +59,14 @@ describe('Timeline', () => {
   it('renders nothing when no evidence carries a parseable time', () => {
     const { container } = render(
       <Timeline
-        members={[member([evidence({ time: '' }), evidence({ key: 'x', url: 'https://g/x', time: 'not a date' })])]}
+        members={[
+          member([
+            evidence({ time: '' }),
+            evidence({ key: 'x', url: 'https://g/x', time: 'not a date' }),
+          ]),
+        ]}
         window={WINDOW}
-      />
+      />,
     );
     expect(container.firstChild).toBeNull();
   });
@@ -80,7 +89,7 @@ describe('Timeline', () => {
           ]),
         ]}
         window={WINDOW}
-      />
+      />,
     );
     const captions = [...container.querySelectorAll('.tlCap')].map((node) => node.textContent);
     expect(captions).toContain('#91 merged');
@@ -117,7 +126,7 @@ describe('Timeline', () => {
           ]),
         ]}
         window={WINDOW}
-      />
+      />,
     );
     const captions = [...container.querySelectorAll('.tlCap')].map((node) => node.textContent);
     expect(captions).toEqual(['2 commits', '2 commits']);
@@ -129,7 +138,13 @@ describe('Timeline', () => {
       <Timeline
         members={[
           member([
-            evidence({ kind: 'issue', key: 'YB-1', url: 'https://j/1', status: 'Done', time: '2026-07-13T09:00:00' }),
+            evidence({
+              kind: 'issue',
+              key: 'YB-1',
+              url: 'https://j/1',
+              status: 'Done',
+              time: '2026-07-13T09:00:00',
+            }),
             evidence({
               kind: 'issue',
               key: 'YB-2',
@@ -140,7 +155,7 @@ describe('Timeline', () => {
           ]),
         ]}
         window={WINDOW}
-      />
+      />,
     );
     expect(container.querySelectorAll('.tlDot')).toHaveLength(2);
     expect(container.querySelectorAll('.tlCap')).toHaveLength(1);
@@ -154,12 +169,17 @@ describe('Timeline', () => {
         members={[
           member([
             evidence({ time: '2026-07-13T09:12:00' }),
-            evidence({ kind: 'pr', key: '#91', url: 'https://g/pr/91', time: '2026-07-13T16:45:00' }),
+            evidence({
+              kind: 'pr',
+              key: '#91',
+              url: 'https://g/pr/91',
+              time: '2026-07-13T16:45:00',
+            }),
             evidence({ kind: 'wip', key: 'YB-9', url: 'https://j/YB-9', time: '' }),
           ]),
         ]}
         window={WINDOW}
-      />
+      />,
     );
     expect(container.querySelector('.tlSpan')?.textContent).toBe('09:12 → 16:45 · 2 events');
     expect(container.querySelector('.tlTally')?.textContent).toContain('1');
@@ -175,10 +195,13 @@ describe('Timeline', () => {
       <Timeline
         members={[
           member([evidence()], 'Ada Lovelace'),
-          member([evidence({ kind: 'wip', key: 'YB-9', url: 'https://j/YB-9', time: '' })], 'Grace Hopper'),
+          member(
+            [evidence({ kind: 'wip', key: 'YB-9', url: 'https://j/YB-9', time: '' })],
+            'Grace Hopper',
+          ),
         ]}
         window={WINDOW}
-      />
+      />,
     );
     expect([...container.querySelectorAll('.tlWord')].map((n) => n.textContent)).toEqual([
       'Ada Lovelace',
@@ -197,7 +220,7 @@ describe('Timeline', () => {
       <Timeline
         members={[member([evidence()], 'Ada Lovelace', { blockers: [{ s: 'Staging is down' }] })]}
         window={WINDOW}
-      />
+      />,
     );
     expect(container.querySelector('.tlFlag')).not.toBeNull();
     rerender(<Timeline members={[member([evidence()])]} window={WINDOW} />);
@@ -216,10 +239,12 @@ describe('Timeline', () => {
           ]),
         ]}
         window={{ start: '2026-07-13T09:00:00', end: '2026-07-13T15:00:00' }}
-      />
+      />,
     );
     expect(container.querySelector('.tlNote')?.textContent).toContain('compressed');
-    expect([...container.querySelectorAll('.tlGapLabel')].map((n) => n.textContent)).toEqual(['5h 40m']);
+    expect([...container.querySelectorAll('.tlGapLabel')].map((n) => n.textContent)).toEqual([
+      '5h 40m',
+    ]);
     expect(container.querySelectorAll('.tlGap').length).toBeGreaterThan(0);
   });
 
@@ -230,10 +255,10 @@ describe('Timeline', () => {
           member([
             evidence({ time: '2026-07-13T09:00:00' }),
             evidence({ key: 'b2', url: 'https://g/b2', time: '2026-07-13T09:20:00' }),
-          ])
+          ]),
         ]}
         window={{ start: '2026-07-13T09:00:00', end: '2026-07-13T09:20:00' }}
-      />
+      />,
     );
     expect(container.querySelector('.tlNote')).toBeNull();
     expect(container.querySelector('.tlGapLabel')).toBeNull();
@@ -249,7 +274,7 @@ describe('Timeline', () => {
           ]),
         ]}
         window={WINDOW}
-      />
+      />,
     );
     const lefts = [...marks(container)].map((node) => parseFloat((node as HTMLElement).style.left));
     // Drawn to scale inside a midnight-to-18:00 window these sat 2% apart.
@@ -266,7 +291,7 @@ describe('Timeline', () => {
           ]),
         ]}
         window={{ start: '2026-07-10T00:00:00', end: '2026-07-13T18:00:00' }}
-      />
+      />,
     );
     const dayTicks = [...container.querySelectorAll('.tlTickDay')].map((t) => t.textContent);
     expect(dayTicks.length).toBeGreaterThan(0);
@@ -274,7 +299,9 @@ describe('Timeline', () => {
   });
 
   it('derives the axis from the events when the window is empty', () => {
-    const { container } = render(<Timeline members={[member([evidence()])]} window={{ start: '', end: '' }} />);
+    const { container } = render(
+      <Timeline members={[member([evidence()])]} window={{ start: '', end: '' }} />,
+    );
     expect(container.querySelectorAll('.tlTick').length).toBeGreaterThan(0);
     const left = parseFloat((container.querySelector('.tlMinor') as HTMLElement).style.left);
     expect(left).toBeGreaterThan(40);
@@ -283,7 +310,7 @@ describe('Timeline', () => {
 
   it('plots events that fall outside the window instead of clipping them', () => {
     const { container } = render(
-      <Timeline members={[member([evidence({ time: '2026-07-12T09:00:00' })])]} window={WINDOW} />
+      <Timeline members={[member([evidence({ time: '2026-07-12T09:00:00' })])]} window={WINDOW} />,
     );
     const left = parseFloat((container.querySelector('.tlMinor') as HTMLElement).style.left);
     expect(left).toBeGreaterThanOrEqual(0);
@@ -298,11 +325,16 @@ describe('Timeline', () => {
         members={[
           member([
             evidence({ time: '2026-07-13T09:00:00' }),
-            evidence({ kind: 'pr', key: '#91', url: 'https://g/pr/91', time: '2026-07-13T15:00:00' }),
+            evidence({
+              kind: 'pr',
+              key: '#91',
+              url: 'https://g/pr/91',
+              time: '2026-07-13T15:00:00',
+            }),
           ]),
         ]}
         window={WINDOW}
-      />
+      />,
     );
     expect(container.querySelectorAll('.tlMinor')).toHaveLength(1);
     expect(container.querySelectorAll('.tlDot')).toHaveLength(1);
@@ -315,7 +347,9 @@ describe('Timeline', () => {
       evidence({ kind: 'issue', key: 'YB-1', url: 'https://j/1', time: '2026-07-13T09:15:00' }),
       evidence({ kind: 'issue', key: 'YB-2', url: 'https://j/2', time: '2026-07-13T09:15:04' }),
     ];
-    const { container, rerender } = render(<Timeline members={[member(twoClose)]} window={WINDOW} />);
+    const { container, rerender } = render(
+      <Timeline members={[member(twoClose)]} window={WINDOW} />,
+    );
     expect(container.querySelectorAll('.tlDot')).toHaveLength(1);
     expect(container.querySelector('.tlBadge')?.textContent).toBe('×2');
 
@@ -342,7 +376,7 @@ describe('Timeline', () => {
 
   it('renders an unknown kind without throwing, as minor work', () => {
     const { container } = render(
-      <Timeline members={[member([evidence({ kind: 'weird-new-kind' })])]} window={WINDOW} />
+      <Timeline members={[member([evidence({ kind: 'weird-new-kind' })])]} window={WINDOW} />,
     );
     const mark = container.querySelector('.tlMinor');
     expect(mark).not.toBeNull();
@@ -357,8 +391,16 @@ describe('Timeline', () => {
       <Timeline
         members={[
           member(
-            [evidence({ kind: 'pr', key: '#91', url: pr, status: 'merged', time: '2026-07-13T14:00:00' })],
-            'Ada Lovelace'
+            [
+              evidence({
+                kind: 'pr',
+                key: '#91',
+                url: pr,
+                status: 'merged',
+                time: '2026-07-13T14:00:00',
+              }),
+            ],
+            'Ada Lovelace',
           ),
           member(
             [
@@ -371,11 +413,11 @@ describe('Timeline', () => {
                 time: '2026-07-13T11:00:00',
               }),
             ],
-            'Grace Hopper'
+            'Grace Hopper',
           ),
         ]}
         window={WINDOW}
-      />
+      />,
     );
     expect(container.querySelectorAll('.tlThread')).toHaveLength(1);
     // The line is aria-hidden, so the relationship must also be said in words.
@@ -388,30 +430,45 @@ describe('Timeline', () => {
     const { container } = render(
       <Timeline
         members={[
-          member([evidence({ kind: 'pr', key: '#91', url: 'https://github.com/acme/web/pull/91' })], 'Ada'),
-          member([evidence({ kind: 'pr', key: '#92', url: 'https://github.com/acme/web/pull/92' })], 'Grace'),
+          member(
+            [evidence({ kind: 'pr', key: '#91', url: 'https://github.com/acme/web/pull/91' })],
+            'Ada',
+          ),
+          member(
+            [evidence({ kind: 'pr', key: '#92', url: 'https://github.com/acme/web/pull/92' })],
+            'Grace',
+          ),
         ]}
         window={WINDOW}
-      />
+      />,
     );
     expect(container.querySelectorAll('.tlThread')).toHaveLength(0);
-    expect([...marks(container)].every((n) => !n.getAttribute('aria-label')?.includes('Also touched'))).toBe(true);
+    expect(
+      [...marks(container)].every((n) => !n.getAttribute('aria-label')?.includes('Also touched')),
+    ).toBe(true);
   });
 
   /* ---- contracts and hostile data -------------------------------------- */
 
   it('links every mark to the member card anchor the jump strip uses', () => {
     const { container } = render(<Timeline members={[member([evidence()])]} window={WINDOW} />);
-    expect(container.querySelector('.tlMinor')?.getAttribute('href')).toBe(`#m-${memberSlug('Ada Lovelace')}`);
+    expect(container.querySelector('.tlMinor')?.getAttribute('href')).toBe(
+      `#m-${memberSlug('Ada Lovelace')}`,
+    );
     expect(memberSlug('Ada Lovelace')).toBe('ada-lovelace');
   });
 
   it('excludes undated rows from the plot rather than guessing a position', () => {
     const { container } = render(
       <Timeline
-        members={[member([evidence(), evidence({ kind: 'wip', key: 'YB-9', url: 'https://j/YB-9', time: '' })])]}
+        members={[
+          member([
+            evidence(),
+            evidence({ kind: 'wip', key: 'YB-9', url: 'https://j/YB-9', time: '' }),
+          ]),
+        ]}
         window={WINDOW}
-      />
+      />,
     );
     expect(marks(container)).toHaveLength(1);
     expect(container.querySelector('.tlUndated')?.textContent).toBe('+1 undated');
@@ -423,13 +480,20 @@ describe('Timeline', () => {
         members={[
           member([
             evidence(),
-            evidence({ kind: 'pr', key: '#91', url: 'https://g/pr/91', time: '2026-07-13T15:00:00' }),
+            evidence({
+              kind: 'pr',
+              key: '#91',
+              url: 'https://g/pr/91',
+              time: '2026-07-13T15:00:00',
+            }),
           ]),
         ]}
         window={WINDOW}
-      />
+      />,
     );
-    const commitKey = [...container.querySelectorAll('.tlLegendItem')].find((b) => b.textContent === 'commit');
+    const commitKey = [...container.querySelectorAll('.tlLegendItem')].find(
+      (b) => b.textContent === 'commit',
+    );
     fireEvent.click(commitKey as Element);
     expect(commitKey?.getAttribute('aria-pressed')).toBe('true');
     expect(container.querySelectorAll('.tlSlot.tlDimmed')).toHaveLength(1);
@@ -443,7 +507,7 @@ describe('Timeline', () => {
       <Timeline
         members={[member([evidence({ title: hostile, repo: hostile, status: hostile })], hostile)]}
         window={WINDOW}
-      />
+      />,
     );
     expect(container.querySelector('img')).toBeNull();
     expect(container.textContent).toContain(hostile);
@@ -452,13 +516,19 @@ describe('Timeline', () => {
   it('never shows a doc row machine id — the title is the handle', () => {
     const { container } = render(
       <Timeline
-        members={[member([evidence({ kind: 'page', key: '1892385692', title: 'MFA Runbook', url: 'https://c/p' })])]}
+        members={[
+          member([
+            evidence({ kind: 'page', key: '1892385692', title: 'MFA Runbook', url: 'https://c/p' }),
+          ]),
+        ]}
         window={WINDOW}
-      />
+      />,
     );
     expect(container.textContent).not.toContain('1892385692');
     expect(container.querySelector('.tlDot')?.getAttribute('aria-label')).toContain('MFA Runbook');
-    expect([...container.querySelectorAll('.tlCap')].map((n) => n.textContent)).toEqual(['MFA Runbook']);
+    expect([...container.querySelectorAll('.tlCap')].map((n) => n.textContent)).toEqual([
+      'MFA Runbook',
+    ]);
   });
 
   it('has no axe violations on a populated board', async () => {
@@ -469,18 +539,31 @@ describe('Timeline', () => {
           member(
             [
               evidence({ time: '2026-07-13T09:00:00' }),
-              evidence({ kind: 'pr', key: '#91', url: pr, status: 'merged', time: '2026-07-13T15:00:00' }),
+              evidence({
+                kind: 'pr',
+                key: '#91',
+                url: pr,
+                status: 'merged',
+                time: '2026-07-13T15:00:00',
+              }),
               evidence({ kind: 'wip', key: 'YB-9', url: 'https://j/YB-9', time: '' }),
             ],
-            'Ada Lovelace'
+            'Ada Lovelace',
           ),
           member(
-            [evidence({ kind: 'review', key: 'review:1', url: `${pr}#pullrequestreview-1`, status: 'approved' })],
-            'Grace Hopper'
+            [
+              evidence({
+                kind: 'review',
+                key: 'review:1',
+                url: `${pr}#pullrequestreview-1`,
+                status: 'approved',
+              }),
+            ],
+            'Grace Hopper',
           ),
         ]}
         window={WINDOW}
-      />
+      />,
     );
     expect(await axe(container)).toHaveNoViolations();
   });

@@ -20,4 +20,6 @@ for (const mode of Object.keys(ENTRIES)) {
     process.exit(res.status ?? 1);
   }
 }
-console.log(`\n✓ built ${Object.keys(ENTRIES).length} entr${Object.keys(ENTRIES).length === 1 ? 'y' : 'ies'}`);
+console.log(
+  `\n✓ built ${Object.keys(ENTRIES).length} entr${Object.keys(ENTRIES).length === 1 ? 'y' : 'ies'}`,
+);

@@ -56,7 +56,15 @@ export function toneMix(tone: Tone, percent: number, into = 'transparent'): stri
  * overflow bucket folds into `muted` instead of the palette inventing hues that
  * no theme defines.
  */
-export const SERIES_TONES: readonly Tone[] = ['accent', 'accent2', 'info', 'ok', 'warn', 'high', 'medium'];
+export const SERIES_TONES: readonly Tone[] = [
+  'accent',
+  'accent2',
+  'info',
+  'ok',
+  'warn',
+  'high',
+  'medium',
+];
 
 /** The subset used for deterministic avatar colours. Mirrors `html_theme._AVATAR_VARS`. */
 export const AVATAR_TONES: readonly Tone[] = ['accent', 'accent2', 'info', 'ok', 'warn', 'high'];

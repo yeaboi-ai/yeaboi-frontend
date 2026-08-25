@@ -19,7 +19,7 @@ export function useEditPresence(
   actions: EditActions,
   identity: { name: string; avatar: string },
   editingPath: string,
-  enabled: boolean
+  enabled: boolean,
 ): void {
   // Held in a ref so changing your name does not restart the interval — the
   // next beat simply carries the new value.

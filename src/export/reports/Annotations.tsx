@@ -49,7 +49,9 @@ export function Annotations({ rows }: { rows: readonly AnnotationRow[] }) {
               {/* Where it was left. The Markdown twin says this too, and a note
                   anchored to one member reading as a document-level note is a
                   real difference in what the document claims. */}
-              {row.anchor ? <span className={styles['annotationWhere']}>on {formatPath(row.anchor)}</span> : null}
+              {row.anchor ? (
+                <span className={styles['annotationWhere']}>on {formatPath(row.anchor)}</span>
+              ) : null}
               <When at={row.at} />
             </p>
           </li>

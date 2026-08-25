@@ -58,7 +58,13 @@ function scriptedFetch(responses: Response[]) {
   return mock;
 }
 
-function Probe({ store, enabled = true }: { store: ReturnType<typeof createBoardStore<Snap>>; enabled?: boolean }) {
+function Probe({
+  store,
+  enabled = true,
+}: {
+  store: ReturnType<typeof createBoardStore<Snap>>;
+  enabled?: boolean;
+}) {
   const status = useBoardStream({ session: SESSION, store, enabled });
   return <span data-testid="status">{status}</span>;
 }
@@ -136,7 +142,7 @@ describe('useBoardStream', () => {
     render(
       <StrictMode>
         <Probe store={store} />
-      </StrictMode>
+      </StrictMode>,
     );
     await waitFor(() => expect(store.getSnapshot()).toEqual({ revision: 2 }));
 

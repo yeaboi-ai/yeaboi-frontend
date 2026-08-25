@@ -89,7 +89,7 @@ export function useHistory(session: Session): History {
         });
       }
     },
-    [session]
+    [session],
   );
 
   const go = useCallback(
@@ -104,7 +104,7 @@ export function useHistory(session: Session): History {
         });
       }
     },
-    [session]
+    [session],
   );
 
   const reset = useCallback(() => setAt(0), []);

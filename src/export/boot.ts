@@ -402,8 +402,7 @@ export interface PlanSprint {
  * * `note` is subordinate text — a ticket summary beside its key.
  */
 export type Cell =
-  | string
-  | { t: string; tone?: Tone; pct?: number; href?: string; note?: string; person?: boolean };
+  string | { t: string; tone?: Tone; pct?: number; href?: string; note?: string; person?: boolean };
 
 /**
  * A block of generated document content.
@@ -479,7 +478,13 @@ export interface Annotated {
 
 export type ExportReport = (
   | { kind: 'anonymize'; markdown: string; warnings: string[] }
-  | { kind: 'roadmap'; summary: string; projects: RoadmapProject[]; warnings: string[]; edit?: EditMap }
+  | {
+      kind: 'roadmap';
+      summary: string;
+      projects: RoadmapProject[];
+      warnings: string[];
+      edit?: EditMap;
+    }
   | {
       kind: 'performance';
       engineer: string;

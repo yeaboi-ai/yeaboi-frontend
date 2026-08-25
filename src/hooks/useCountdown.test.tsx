@@ -38,9 +38,7 @@ describe('useCountdown', () => {
   });
 
   it('counts down from the server end time', () => {
-    render(
-      <Probe timer={{ running: true, end_epoch: NOW / 1000 + 90, now_epoch: NOW / 1000 }} />
-    );
+    render(<Probe timer={{ running: true, end_epoch: NOW / 1000 + 90, now_epoch: NOW / 1000 }} />);
     expect(remaining()).toBe('90');
 
     act(() => void vi.advanceTimersByTime(5000));
@@ -70,13 +68,15 @@ describe('useCountdown', () => {
     // The other half of the same rule: a new reading *must* move the offset, or
     // a browser clock that drifts during a long session never gets corrected.
     const { rerender } = render(
-      <Probe timer={{ running: true, end_epoch: NOW / 1000 + 90, now_epoch: NOW / 1000 }} />
+      <Probe timer={{ running: true, end_epoch: NOW / 1000 + 90, now_epoch: NOW / 1000 }} />,
     );
     act(() => void vi.advanceTimersByTime(10_000));
     expect(remaining()).toBe('80');
 
     // The server says only 30 s are left — the browser's clock was 50 s slow.
-    rerender(<Probe timer={{ running: true, end_epoch: NOW / 1000 + 90, now_epoch: NOW / 1000 + 60 }} />);
+    rerender(
+      <Probe timer={{ running: true, end_epoch: NOW / 1000 + 90, now_epoch: NOW / 1000 + 60 }} />,
+    );
     act(() => void vi.advanceTimersByTime(250));
     expect(remaining()).toBe('30');
   });
@@ -102,7 +102,12 @@ describe('useCountdown', () => {
     // and the alarm re-fire four times a second for as long as the finished
     // timer stays on screen.
     const onFinish = vi.fn();
-    render(<Probe timer={{ running: true, end_epoch: NOW / 1000 + 1, now_epoch: NOW / 1000 }} onFinish={onFinish} />);
+    render(
+      <Probe
+        timer={{ running: true, end_epoch: NOW / 1000 + 1, now_epoch: NOW / 1000 }}
+        onFinish={onFinish}
+      />,
+    );
 
     act(() => void vi.advanceTimersByTime(10_000));
     expect(onFinish).toHaveBeenCalledTimes(1);
@@ -111,12 +116,18 @@ describe('useCountdown', () => {
   it('fires again for a new timer', () => {
     const onFinish = vi.fn();
     const { rerender } = render(
-      <Probe timer={{ running: true, end_epoch: NOW / 1000 + 1, now_epoch: NOW / 1000 }} onFinish={onFinish} />
+      <Probe
+        timer={{ running: true, end_epoch: NOW / 1000 + 1, now_epoch: NOW / 1000 }}
+        onFinish={onFinish}
+      />,
     );
     act(() => void vi.advanceTimersByTime(3000));
 
     rerender(
-      <Probe timer={{ running: true, end_epoch: NOW / 1000 + 5, now_epoch: NOW / 1000 }} onFinish={onFinish} />
+      <Probe
+        timer={{ running: true, end_epoch: NOW / 1000 + 5, now_epoch: NOW / 1000 }}
+        onFinish={onFinish}
+      />,
     );
     act(() => void vi.advanceTimersByTime(10_000));
 
@@ -125,7 +136,7 @@ describe('useCountdown', () => {
 
   it('clears when the host stops the timer', () => {
     const { rerender } = render(
-      <Probe timer={{ running: true, end_epoch: NOW / 1000 + 90, now_epoch: NOW / 1000 }} />
+      <Probe timer={{ running: true, end_epoch: NOW / 1000 + 90, now_epoch: NOW / 1000 }} />,
     );
     rerender(<Probe timer={{ running: false }} />);
     expect(remaining()).toBe('none');

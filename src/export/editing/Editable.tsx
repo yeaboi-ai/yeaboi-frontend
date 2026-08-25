@@ -59,7 +59,14 @@ export interface EditableProps extends Common {
   inline?: boolean;
 }
 
-export function Editable({ path, label, value, children, multiline = true, inline = false }: EditableProps) {
+export function Editable({
+  path,
+  label,
+  value,
+  children,
+  multiline = true,
+  inline = false,
+}: EditableProps) {
   const editing = useEditing();
   if (!editing) return <>{children}</>;
   return (
@@ -69,7 +76,14 @@ export function Editable({ path, label, value, children, multiline = true, inlin
   );
 }
 
-function EditableLive({ path, label, value, children, multiline, inline }: Required<EditableProps>) {
+function EditableLive({
+  path,
+  label,
+  value,
+  children,
+  multiline,
+  inline,
+}: Required<EditableProps>) {
   const editing = useEditing()!;
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -140,7 +154,9 @@ function EditableLive({ path, label, value, children, multiline, inline }: Requi
               <span className={styles['srOnly']}> (edited)</span>
             </button>
           ) : null}
-          {others.length ? <span className={styles['busy']}>{others.join(', ')} editing…</span> : null}
+          {others.length ? (
+            <span className={styles['busy']}>{others.join(', ')} editing…</span>
+          ) : null}
         </span>
       </span>
     );
@@ -148,7 +164,14 @@ function EditableLive({ path, label, value, children, multiline, inline }: Requi
 
   return (
     <span className={styles['editor']}>
-      <Field label={label} multiline={multiline} value={draft} onChange={setDraft} onCancel={close} onSave={save} />
+      <Field
+        label={label}
+        multiline={multiline}
+        value={draft}
+        onChange={setDraft}
+        onCancel={close}
+        onSave={save}
+      />
       <span className={styles['actions']}>
         <Button onClick={save} disabled={busy || !draft.trim()} tone="primary" size="s">
           Save

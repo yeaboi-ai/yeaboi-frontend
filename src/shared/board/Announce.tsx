@@ -44,6 +44,6 @@ export function Announce({ when, children, ms = ANNOUNCE_MS }: AnnounceProps) {
     <div className={styles['veil']} role="status">
       <p className={styles['announce']}>{children}</p>
     </div>,
-    document.body
+    document.body,
   );
 }

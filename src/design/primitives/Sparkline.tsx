@@ -37,7 +37,7 @@ export interface SparklineProps {
 /** Pad a series' own range so a narrow band still reads as a line, not a rule. */
 export function sparklineDomain(
   values: readonly number[],
-  { pad = 8, floor, ceiling }: { pad?: number; floor?: number; ceiling?: number } = {}
+  { pad = 8, floor, ceiling }: { pad?: number; floor?: number; ceiling?: number } = {},
 ): { vmin: number; vmax: number } {
   const lo = Math.min(...values) - pad;
   const hi = Math.max(...values) + pad;

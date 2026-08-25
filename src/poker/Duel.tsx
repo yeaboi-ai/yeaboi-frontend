@@ -87,7 +87,7 @@ export function Duel({ duel, remaining, isHost, onNextTurn, onCloseDuel }: DuelP
     return (
       <div className={styles['duel']}>
         <div className={styles['duelHead']}>
-{duel.low.name} vs {duel.high.name}
+          {duel.low.name} vs {duel.high.name}
         </div>
         <p className={styles['duelTranscript']}>{duel.transcript}</p>
       </div>
@@ -106,7 +106,6 @@ export function Duel({ duel, remaining, isHost, onNextTurn, onCloseDuel }: DuelP
 
   return (
     <div className={styles['duel']}>
-
       <div className={styles['dualrow']}>
         <Duelist duel={duel} role="low" />
         {/* Between them, because that is what all of it is about: the clock is
@@ -120,7 +119,12 @@ export function Duel({ duel, remaining, isHost, onNextTurn, onCloseDuel }: DuelP
           )}
           {isHost ? (
             <div className={styles['vsActs']}>
-              <Button size="s" disabled={duel.turn !== 'low'} title="Hand the floor to the high voter" onClick={onNextTurn}>
+              <Button
+                size="s"
+                disabled={duel.turn !== 'low'}
+                title="Hand the floor to the high voter"
+                onClick={onNextTurn}
+              >
                 Next turn ›
               </Button>
               <Button size="s" onClick={onCloseDuel}>
@@ -134,7 +138,9 @@ export function Duel({ duel, remaining, isHost, onNextTurn, onCloseDuel }: DuelP
 
       <Announce when={myTurn}>You&rsquo;re up — make your case!</Announce>
 
-      {duel.recording.host ? <p className={styles['hint']}>Host room mic is recording the debate.</p> : null}
+      {duel.recording.host ? (
+        <p className={styles['hint']}>Host room mic is recording the debate.</p>
+      ) : null}
     </div>
   );
 }

@@ -17,7 +17,14 @@ import { act, render, renderHook } from '@testing-library/preact';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import duckCss from './duck.module.css?raw';
-import { Duck, useDuckIdle, useDuckPulse, type DuckPulse, type DuckRest, type DuckState } from './Duck';
+import {
+  Duck,
+  useDuckIdle,
+  useDuckPulse,
+  type DuckPulse,
+  type DuckRest,
+  type DuckState,
+} from './Duck';
 
 describe('<Duck>', () => {
   it('is hidden from assistive tech', () => {
@@ -99,7 +106,9 @@ describe('the resting rig', () => {
     const duck = container.firstElementChild;
     expect(duck?.getAttribute('data-jam')).toBe('true');
     expect(duck?.getAttribute('data-state')).toBe('offline');
-    expect(duckCss.indexOf('[data-jam="true"]')).toBeLessThan(duckCss.indexOf('[data-state="offline"]'));
+    expect(duckCss.indexOf('[data-jam="true"]')).toBeLessThan(
+      duckCss.indexOf('[data-state="offline"]'),
+    );
   });
 
   it.each(['locked', 'offline'])('cancels the entrance for %s', (state) => {
@@ -118,7 +127,9 @@ describe('the resting rig', () => {
       const start = duckCss.indexOf(`@keyframes ${name} {`);
       expect(start, `no @keyframes ${name}`).toBeGreaterThan(-1);
       const body = duckCss.slice(start, duckCss.indexOf('\n}', start));
-      const degrees = [...body.matchAll(/rotate\((-?[\d.]+)deg\)/g)].map((m) => Math.abs(Number(m[1])));
+      const degrees = [...body.matchAll(/rotate\((-?[\d.]+)deg\)/g)].map((m) =>
+        Math.abs(Number(m[1])),
+      );
       return Math.max(...degrees);
     };
     expect(peakRotation('wing-flap-hard')).toBeGreaterThan(peakRotation('wing-flap') * 1.5);
@@ -173,9 +184,12 @@ describe('useDuckIdle', () => {
   });
 
   it('drops a running mannerism the moment it is disabled', () => {
-    const { result, rerender } = renderHook<DuckIdleResult, { on: boolean }>(({ on }) => useDuckIdle(on), {
-      initialProps: { on: true },
-    });
+    const { result, rerender } = renderHook<DuckIdleResult, { on: boolean }>(
+      ({ on }) => useDuckIdle(on),
+      {
+        initialProps: { on: true },
+      },
+    );
     act(() => void vi.advanceTimersByTime(6_100));
     expect(result.current).toBe('tilt');
 
@@ -208,7 +222,7 @@ describe('duck.module.css', () => {
     // lookahead then sees " none", and the guard passes on the very thing it
     // exists to catch.
     expect(body, `${state} must not rely on a keyframe — the global guard kills it`).not.toMatch(
-      /animation\s*:(?!\s*none\b)/
+      /animation\s*:(?!\s*none\b)/,
     );
   });
 });
@@ -248,10 +262,10 @@ describe('useDuckPulse', () => {
   it('never lets a decorative pulse mask a meaningful resting state', () => {
     // The failure this prevents: a card arrives just as the tunnel dies, the
     // duck flaps, and the board looks healthy while it is in fact stale.
-    const { result, rerender } = renderHook<[DuckState, (p: DuckPulse) => void], { rest: DuckRest }>(
-      ({ rest }) => useDuckPulse(rest),
-      { initialProps: { rest: 'idle' } }
-    );
+    const { result, rerender } = renderHook<
+      [DuckState, (p: DuckPulse) => void],
+      { rest: DuckRest }
+    >(({ rest }) => useDuckPulse(rest), { initialProps: { rest: 'idle' } });
 
     act(() => result.current[1]('card'));
     act(() => void vi.advanceTimersByTime(1));

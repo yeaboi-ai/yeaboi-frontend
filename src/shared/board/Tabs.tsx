@@ -31,7 +31,13 @@ export function tabIds(label: string, id: string): { tab: string; panel: string 
   return { tab: `${slug}-tab-${id}`, panel: `${slug}-panel-${id}` };
 }
 
-export function Tabs<Id extends string>({ tabs, current, onPick, label, className }: TabsProps<Id>) {
+export function Tabs<Id extends string>({
+  tabs,
+  current,
+  onPick,
+  label,
+  className,
+}: TabsProps<Id>) {
   return (
     <div className={cx(styles['tabs'], className)} role="tablist" aria-label={label}>
       {tabs.map((tab) => {

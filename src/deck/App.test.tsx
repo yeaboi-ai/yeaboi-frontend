@@ -142,11 +142,19 @@ describe('App', () => {
       const app = container.firstElementChild as HTMLElement;
       const root = document.documentElement;
 
-      expect(app.style.getPropertyValue('--deck-heading')).toBe('var(--deck-accent2, var(--accent2))');
-      expect(root.style.getPropertyValue('--deck-accent2')).toBe(DECK_WIRE.palettes['midnight']!.accent2);
+      expect(app.style.getPropertyValue('--deck-heading')).toBe(
+        'var(--deck-accent2, var(--accent2))',
+      );
+      expect(root.style.getPropertyValue('--deck-accent2')).toBe(
+        DECK_WIRE.palettes['midnight']!.accent2,
+      );
       await user.keyboard('t');
-      expect(app.style.getPropertyValue('--deck-heading')).toBe('var(--deck-accent2, var(--accent2))');
-      expect(root.style.getPropertyValue('--deck-accent2')).toBe(DECK_WIRE.palettes['aurora']!.accent2);
+      expect(app.style.getPropertyValue('--deck-heading')).toBe(
+        'var(--deck-accent2, var(--accent2))',
+      );
+      expect(root.style.getPropertyValue('--deck-accent2')).toBe(
+        DECK_WIRE.palettes['aurora']!.accent2,
+      );
     });
 
     it('are left unset when the user chose none', () => {

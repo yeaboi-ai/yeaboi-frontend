@@ -14,7 +14,15 @@
  * viewport. `app` is always compact — its screen cannot spend 260px.
  */
 
-import { Children, Fragment, isValidElement, useCallback, useRef, useState, type ReactNode } from 'react';
+import {
+  Children,
+  Fragment,
+  isValidElement,
+  useCallback,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 
 import { Duck, Eyebrow, TerminalFrame, Wordmark } from '../design/primitives';
 import { useFillsDisplay } from '../hooks/useFillsDisplay';
@@ -81,7 +89,9 @@ export interface PageShellProps {
 
 /** A dock's controls, whether handed over as a fragment or as a list. */
 function dockItems(dock: ReactNode): ReactNode[] {
-  const element = isValidElement(dock) ? (dock as { type: unknown; props: { children?: ReactNode } }) : null;
+  const element = isValidElement(dock)
+    ? (dock as { type: unknown; props: { children?: ReactNode } })
+    : null;
   if (element && element.type === Fragment) return Children.toArray(element.props.children);
   return Children.toArray(dock);
 }
@@ -187,7 +197,12 @@ export function PageShell({
 
   return (
     <div
-      className={cx(styles['page'], app && styles['shellApp'], app && curved && styles['shellCurved'], className)}
+      className={cx(
+        styles['page'],
+        app && styles['shellApp'],
+        app && curved && styles['shellCurved'],
+        className,
+      )}
       {...data}
     >
       {/* Divs, not <header>: a second unlabelled `banner` landmark fails axe. */}

@@ -36,7 +36,9 @@ export function MusicPlayer({ music, channels, footer, className }: MusicPlayerP
           type="button"
           className={cx(styles['musicPlay'], music.connecting && styles['musicPlayBusy'])}
           onClick={() => music.toggle()}
-          aria-label={music.playing ? 'Pause music' : music.connecting ? 'Connecting' : 'Play music'}
+          aria-label={
+            music.playing ? 'Pause music' : music.connecting ? 'Connecting' : 'Play music'
+          }
         >
           <Icon name={music.playing || music.connecting ? 'pause' : 'play'} size={18} />
         </button>

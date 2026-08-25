@@ -131,7 +131,9 @@ export function Poker({
               key: 'Ticket',
               // The chip is the link; an unsafe `url` degrades to a plain chip
               // rather than disappearing, because the key is the identity.
-              cell: (ticket) => <Chip {...(ticket.url ? { href: ticket.url } : {})}>{ticket.key}</Chip>,
+              cell: (ticket) => (
+                <Chip {...(ticket.url ? { href: ticket.url } : {})}>{ticket.key}</Chip>
+              ),
             },
             { key: 'Summary', cell: (ticket) => ticket.summary },
             { key: 'Before', numeric: true, cell: (ticket) => points(ticket.before) },
@@ -139,7 +141,11 @@ export function Poker({
               key: 'Final',
               numeric: true,
               cell: (ticket) =>
-                ticket.estimated ? points(ticket.final) : <em className={styles['skipped']}>skipped</em>,
+                ticket.estimated ? (
+                  points(ticket.final)
+                ) : (
+                  <em className={styles['skipped']}>skipped</em>
+                ),
             },
             { key: 'Votes', cell: (ticket) => <Votes votes={ticket.votes} /> },
           ]}

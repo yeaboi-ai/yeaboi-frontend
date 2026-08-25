@@ -90,7 +90,10 @@ function Stats({ stats }: { stats: PerfStat[] }) {
             {/* The bar sits inside the tile it describes: a ratio's bar under
                 the whole grid reads as page progress, not as "12 of 14". */}
             {stat.of ? (
-              <StatBar pct={(stat.value / stat.of) * 100} label={`${stat.label}: ${statValue(stat)}`} />
+              <StatBar
+                pct={(stat.value / stat.of) * 100}
+                label={`${stat.label}: ${statValue(stat)}`}
+              />
             ) : null}
           </StatTile>
         ))}
@@ -184,7 +187,7 @@ function Section({ section }: { section: PerfSection }) {
           // is invalid outside an <li> and indents for no reason.
           (item.length > SPLIT_OVER ? proseBullets(item) : [item]).map((fragment, j) => (
             <li key={`${i}-${j}`}>{fragment}</li>
-          ))
+          )),
         )}
       </ul>
     </section>

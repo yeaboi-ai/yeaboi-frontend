@@ -96,7 +96,10 @@ export function CarriedStrip({ items, onSetStatus, locked }: CarriedStripProps) 
                   disabled={locked}
                   aria-label={`Status for: ${item.text.slice(0, 60)}`}
                   onChange={(event) =>
-                    onSetStatus(item.id, (event.target as HTMLSelectElement).value as CarriedStatuses)
+                    onSetStatus(
+                      item.id,
+                      (event.target as HTMLSelectElement).value as CarriedStatuses,
+                    )
                   }
                 >
                   {CARRIED_STATUSES.map((value) => (

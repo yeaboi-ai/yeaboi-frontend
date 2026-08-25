@@ -32,7 +32,6 @@ describe('Table', () => {
     }
   });
 
-
   it('shows the values once revealed, with each seat announced', () => {
     render(<Table votes={[shown('Ada', '3'), shown('Grace', '13')]} revealed />);
     expect(screen.getByText('3')).toBeTruthy();
@@ -43,7 +42,9 @@ describe('Table', () => {
   });
 
   it('staggers the flip by seat, so the reveal sweeps the table', () => {
-    const { container } = render(<Table votes={[shown('Ada', '3'), shown('Grace', '13')]} revealed />);
+    const { container } = render(
+      <Table votes={[shown('Ada', '3'), shown('Grace', '13')]} revealed />,
+    );
     const cards = container.querySelectorAll('.vcard');
     // The index drives `animation-delay` in CSS. Without it every card turns at
     // once, which is the silent reveal this redesign set out to fix.

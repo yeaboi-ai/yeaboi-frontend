@@ -87,7 +87,7 @@ export function Board({
       skipRef.current?.(cardId);
       onMove(cardId, grid, index);
     },
-    [onMove]
+    [onMove],
   );
   const { drag, previewRef, onCardPointerDown, announcement } = useCardDrag({
     onMove: onMoveCard,

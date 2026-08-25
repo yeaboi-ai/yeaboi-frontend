@@ -50,7 +50,7 @@ export function CopyField({ label, value, mono, className }: CopyFieldProps) {
     () => () => {
       if (timer.current !== null) clearTimeout(timer.current);
     },
-    []
+    [],
   );
 
   const copy = useCallback(async () => {
@@ -64,7 +64,11 @@ export function CopyField({ label, value, mono, className }: CopyFieldProps) {
   // outcome from the control it just activated rather than from a live region
   // somewhere else on the page.
   const buttonLabel =
-    state === 'copied' ? `${label} copied` : state === 'failed' ? `Could not copy ${label}` : `Copy ${label}`;
+    state === 'copied'
+      ? `${label} copied`
+      : state === 'failed'
+        ? `Could not copy ${label}`
+        : `Copy ${label}`;
 
   return (
     <div className={cx(styles['copyField'], className)}>

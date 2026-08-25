@@ -66,10 +66,14 @@ export function createEditActions(
   session: Session,
   store: BoardStore<EditDocState>,
   identity: () => Identity,
-  revision: () => number
+  revision: () => number,
 ): EditActions {
   async function mutate(path: string, body: Record<string, unknown>): Promise<EditOutcome> {
-    const result = await postJSON<{ ok?: boolean; error?: string; state?: EditDocState }>(session, path, body);
+    const result = await postJSON<{ ok?: boolean; error?: string; state?: EditDocState }>(
+      session,
+      path,
+      body,
+    );
     // Every answer carries fresh state, including the refusals — so a conflict
     // updates the page to the newer text at the same moment it reports one.
     // The store's monotonic guard drops it if it is somehow behind.

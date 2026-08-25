@@ -132,7 +132,7 @@ export function buttonClass({
     (active || emphasis) && styles['btnActive'],
     attention && styles['btnAttention'],
     block && styles['btnBlock'],
-    className
+    className,
   );
 }
 
@@ -160,7 +160,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
     type = 'button',
     ...rest
   },
-  ref
+  ref,
 ) {
   return (
     <button

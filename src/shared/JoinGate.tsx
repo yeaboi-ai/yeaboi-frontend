@@ -95,7 +95,10 @@ type Phase = 'idle' | 'checking' | 'error';
  * pasted with surrounding whitespace, a lowercase spelling, or no dash at all.
  */
 export function normalizeCode(raw: string): string {
-  const body = raw.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, CODE_LENGTH);
+  const body = raw
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
+    .slice(0, CODE_LENGTH);
   return body.length > 4 ? `${body.slice(0, 4)}-${body.slice(4)}` : body;
 }
 
@@ -369,7 +372,11 @@ export function JoinGate({
               {busy ? 'Checking…' : cta}
             </Button>
             {/* Reserved height so the card does not jump when a message appears. */}
-            <p id={statusId} className={cx(styles.status, phase === 'error' && styles.bad)} role="alert">
+            <p
+              id={statusId}
+              className={cx(styles.status, phase === 'error' && styles.bad)}
+              role="alert"
+            >
               {message}
             </p>
           </form>

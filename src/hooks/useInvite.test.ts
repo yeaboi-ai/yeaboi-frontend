@@ -111,9 +111,12 @@ describe('useInvite', () => {
 
   it('refetches on reopen, so a tunnel started mid-session is picked up', async () => {
     const fetchMock = answerWith(INVITE);
-    const { rerender } = renderHook<void, { open: boolean }>(({ open }) => void useInvite(SESSION, open), {
-      initialProps: { open: true },
-    });
+    const { rerender } = renderHook<void, { open: boolean }>(
+      ({ open }) => void useInvite(SESSION, open),
+      {
+        initialProps: { open: true },
+      },
+    );
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
 
     rerender({ open: false });
@@ -124,7 +127,7 @@ describe('useInvite', () => {
   it('survives the host closing the board while the panel opens', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () => Promise.reject(new Error('connection refused')))
+      vi.fn(async () => Promise.reject(new Error('connection refused'))),
     );
     const { result } = renderHook(() => useInvite(SESSION, true));
 

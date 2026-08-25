@@ -37,25 +37,35 @@ describe('Shell', () => {
     render(
       <Shell chrome={chrome()} theme="midnight">
         <p>body</p>
-      </Shell>
+      </Shell>,
     );
-    expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual(['Roadmap — Q3 2026']);
+    expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual([
+      'Roadmap — Q3 2026',
+    ]);
   });
 
   it('labels the wordmark, because the glyphs are geometry to a screen reader', () => {
     render(
       <Shell chrome={chrome()} theme="midnight">
         <p>body</p>
-      </Shell>
+      </Shell>,
     );
     expect(screen.getByRole('img', { name: 'roadmap' })).toBeTruthy();
   });
 
   it('renders each header fact as a labelled eyebrow', () => {
     const { container } = render(
-      <Shell chrome={chrome({ facts: [['SOURCE', 'local'], ['ANALYZED', '2026-07-20']] })} theme="midnight">
+      <Shell
+        chrome={chrome({
+          facts: [
+            ['SOURCE', 'local'],
+            ['ANALYZED', '2026-07-20'],
+          ],
+        })}
+        theme="midnight"
+      >
         <p>body</p>
-      </Shell>
+      </Shell>,
     );
     expect(container.textContent).toContain('SOURCE');
     expect(container.textContent).toContain('local');
@@ -66,14 +76,14 @@ describe('Shell', () => {
     const { container, rerender } = render(
       <Shell chrome={chrome()} theme="midnight">
         <p>body</p>
-      </Shell>
+      </Shell>,
     );
     expect(container.querySelector('nav')).toBeNull();
 
     rerender(
       <Shell chrome={chrome({ nav: [['projects', 'Projects']] })} theme="midnight">
         <p>body</p>
-      </Shell>
+      </Shell>,
     );
     expect(screen.getByRole('link', { name: 'Projects' }).getAttribute('href')).toBe('#projects');
   });
@@ -83,7 +93,7 @@ describe('Shell', () => {
     render(
       <Shell chrome={chrome()} theme="midnight">
         <p>body</p>
-      </Shell>
+      </Shell>,
     );
 
     await user.click(screen.getByRole('radio', { name: 'forest' }));
@@ -95,16 +105,18 @@ describe('Shell', () => {
     render(
       <Shell chrome={chrome()} theme="solarized">
         <p>body</p>
-      </Shell>
+      </Shell>,
     );
-    expect(screen.getByRole('radio', { name: 'solarized' }).getAttribute('aria-checked')).toBe('true');
+    expect(screen.getByRole('radio', { name: 'solarized' }).getAttribute('aria-checked')).toBe(
+      'true',
+    );
   });
 
   it('renders the report body', () => {
     render(
       <Shell chrome={chrome()} theme="midnight">
         <p>the report</p>
-      </Shell>
+      </Shell>,
     );
     expect(screen.getByText('the report')).toBeTruthy();
   });

@@ -36,7 +36,13 @@ import { useHostBroadcast } from '../hooks/useHostBroadcast';
 import { useInvite } from '../hooks/useInvite';
 import { useMusic } from '../hooks/useMusic';
 import { usePendingOverlay } from '../hooks/usePendingOverlay';
-import { apiUrl, loadSession, pollState, stripCredentialsFromUrl, type Session } from '../runtime/api';
+import {
+  apiUrl,
+  loadSession,
+  pollState,
+  stripCredentialsFromUrl,
+  type Session,
+} from '../runtime/api';
 import { participantId, read, write } from '../runtime/storage';
 import { applyTheme, setTheme, storedTheme, THEME_KEYS, type Theme } from '../runtime/theme';
 import {
@@ -121,7 +127,8 @@ export function App({ boot }: { boot: PokerBoot }) {
   const ticketIndex = snapshot?.ticket_index ?? 0;
   const ticketCount = snapshot?.ticket_count ?? 0;
   const recording =
-    Boolean(snapshot?.room_mic) || Boolean(duel && (duel.recording.host || duel.recording.low || duel.recording.high));
+    Boolean(snapshot?.room_mic) ||
+    Boolean(duel && (duel.recording.host || duel.recording.low || duel.recording.high));
 
   // ── Local UI state ─────────────────────────────────────────────────────
   const [theme, setLocalTheme] = useState<Theme>(() => storedTheme(THEME_KEYS.site) ?? 'midnight');
@@ -231,7 +238,7 @@ export function App({ boot }: { boot: PokerBoot }) {
         }
       });
     },
-    [actions, vote]
+    [actions, vote],
   );
 
   // ── The reveal, made loud ──────────────────────────────────────────────
@@ -245,7 +252,9 @@ export function App({ boot }: { boot: PokerBoot }) {
       const cast = votes.filter((seat) => seat.value !== undefined).length;
       setAnnouncement(`Votes revealed — ${cast} ${cast === 1 ? 'vote' : 'votes'} in.`);
     } else if (phase === 'duel') {
-      setAnnouncement(`The floor is open: ${duel?.low.name ?? 'low'} versus ${duel?.high.name ?? 'high'}.`);
+      setAnnouncement(
+        `The floor is open: ${duel?.low.name ?? 'low'} versus ${duel?.high.name ?? 'high'}.`,
+      );
     } else if (phase === 'voting') {
       setAnnouncement('New round — the deck is open.');
     }
@@ -260,7 +269,13 @@ export function App({ boot }: { boot: PokerBoot }) {
    * mask any of them.
    */
   const duckRest: DuckRest =
-    status === 'retrying' ? 'offline' : locked ? 'locked' : remaining !== null && remaining <= 10 ? 'urgent' : 'idle';
+    status === 'retrying'
+      ? 'offline'
+      : locked
+        ? 'locked'
+        : remaining !== null && remaining <= 10
+          ? 'urgent'
+          : 'idle';
   const [duckState, duckPulse] = useDuckPulse(duckRest);
 
   useEffect(() => {
@@ -291,20 +306,23 @@ export function App({ boot }: { boot: PokerBoot }) {
     });
   }, []);
 
-  const saveProfile = useCallback(({ name: newName, avatar: newAvatar }: { name: string; avatar: string }) => {
-    setName(newName);
-    setAvatar(newAvatar);
-    write('local', KEY.name, newName);
-    write('local', KEY.avatar, newAvatar);
-    setProfileOpen(false);
-  }, []);
+  const saveProfile = useCallback(
+    ({ name: newName, avatar: newAvatar }: { name: string; avatar: string }) => {
+      setName(newName);
+      setAvatar(newAvatar);
+      write('local', KEY.name, newName);
+      write('local', KEY.avatar, newAvatar);
+      setProfileOpen(false);
+    },
+    [],
+  );
 
   const saveEdit = useCallback(
     (edit: TicketEdit) => {
       if (!ticket) return;
       run(actions.editTicket(ticket.key, edit));
     },
-    [actions, run, ticket]
+    [actions, run, ticket],
   );
 
   const openEdit = useCallback(() => {
@@ -390,7 +408,9 @@ export function App({ boot }: { boot: PokerBoot }) {
                     clears the phase and the timer in one revision, but for the
                     render in between the old count was still here — so the
                     readout appeared, widened the dock, and folded away again. */}
-                <TimerReadout remaining={phase === 'duel' || !snapshot?.timer.running ? null : remaining} />
+                <TimerReadout
+                  remaining={phase === 'duel' || !snapshot?.timer.running ? null : remaining}
+                />
               </>
             }
             label="Timer"
@@ -434,38 +454,43 @@ export function App({ boot }: { boot: PokerBoot }) {
       }
       bar={
         <Toolbar
-        // No `brand`: the masthead above already sets the word in the six-row
-        // face. See the note on Toolbar's prop.
-        mark={<Duck state={duckState} jamming={music.playing} size={30} />}
-        subtitle={
-          <>
-            {status === 'retrying' ? <span className={styles['offline']}>reconnecting…</span> : null}
-          </>
-        }
-      >
-        <div className={styles['identity']}>
-          <button type="button" className={styles['meChip']} onClick={() => setProfileOpen(true)}>
-            <span aria-hidden="true">{avatar}</span>
-            <span className={styles['meName']}>{name || 'Set your name'}</span>
+          // No `brand`: the masthead above already sets the word in the six-row
+          // face. See the note on Toolbar's prop.
+          mark={<Duck state={duckState} jamming={music.playing} size={30} />}
+          subtitle={
+            <>
+              {status === 'retrying' ? (
+                <span className={styles['offline']}>reconnecting…</span>
+              ) : null}
+            </>
+          }
+        >
+          <div className={styles['identity']}>
+            <button type="button" className={styles['meChip']} onClick={() => setProfileOpen(true)}>
+              <span aria-hidden="true">{avatar}</span>
+              <span className={styles['meName']}>{name || 'Set your name'}</span>
+            </button>
 
-          </button>
+            <PresenceRow people={presence.filter((person) => person.name !== name)} />
 
-          <PresenceRow people={presence.filter((person) => person.name !== name)} />
+            <Room people={presence} meName={name} />
 
-          <Room people={presence} meName={name} />
-
-          {/* Everyone's to see, not the host's: the one person who knows a mic
+            {/* Everyone's to see, not the host's: the one person who knows a mic
               is open is the one who opened it, and the rest of the room is who
               is being recorded. A light rather than a label — it sits beside
               the headcount, which is the other thing that is true of the room
               as a whole. `role="status"` announces it once when it starts. */}
-          {recording ? (
-            <span className={styles['recBadge']} role="status" title="The debate is being recorded">
-              <span className={styles['recDot']} aria-hidden="true" />
-              <span className={kit['srOnly']}>Recording</span>
-            </span>
-          ) : null}
-        </div>
+            {recording ? (
+              <span
+                className={styles['recBadge']}
+                role="status"
+                title="The debate is being recorded"
+              >
+                <span className={styles['recDot']} aria-hidden="true" />
+                <span className={kit['srOnly']}>Recording</span>
+              </span>
+            ) : null}
+          </div>
         </Toolbar>
       }
     >
@@ -474,140 +499,151 @@ export function App({ boot }: { boot: PokerBoot }) {
           the bottom of this region rather than the viewport — which is where
           the credit begins, so the two no longer fight. */}
       <div className={kit['scroll']}>
-      {musicBlocked ? (
-        <button
-          type="button"
-          className={styles['musicBanner']}
-          onClick={() =>
-            void music
-              .play()
-              .then(() => setMusicBlocked(false))
-              .catch(() => {})
-          }
-        >
-          <Icon name="play" /> The host started music — tap to listen
-        </button>
-      ) : null}
+        {musicBlocked ? (
+          <button
+            type="button"
+            className={styles['musicBanner']}
+            onClick={() =>
+              void music
+                .play()
+                .then(() => setMusicBlocked(false))
+                .catch(() => {})
+            }
+          >
+            <Icon name="play" /> The host started music — tap to listen
+          </button>
+        ) : null}
 
-      <div className={kit['layout']}>
-        <Rail
-          tickets={tickets}
-          current={ticketIndex}
-          peeking={peekIndex}
-          estimated={estimated}
-          scope={boot.scope}
-          open={railOpen}
-          // The host's click moves the room. Previewing is what a *guest* does
-          // with the rail — they cannot move it — and asking the one person who
-          // can to preview first and then confirm is a step for nothing.
-          onPick={(next) => (isHost ? run(actions.goto(next)) : setPeekIndex(next))}
-          onClose={() => setRailOpen(false)}
-        />
-        {/* Tapping outside the drawer closes it. A div rather than a button
+        <div className={kit['layout']}>
+          <Rail
+            tickets={tickets}
+            current={ticketIndex}
+            peeking={peekIndex}
+            estimated={estimated}
+            scope={boot.scope}
+            open={railOpen}
+            // The host's click moves the room. Previewing is what a *guest* does
+            // with the rail — they cannot move it — and asking the one person who
+            // can to preview first and then confirm is a step for nothing.
+            onPick={(next) => (isHost ? run(actions.goto(next)) : setPeekIndex(next))}
+            onClose={() => setRailOpen(false)}
+          />
+          {/* Tapping outside the drawer closes it. A div rather than a button
             because it is a dismissal surface, not a control — the drawer's own
             toggle in the toolbar is the keyboard path. */}
-        {railOpen ? <div className={kit['railBackdrop']} onClick={() => setRailOpen(false)} /> : null}
+          {railOpen ? (
+            <div className={kit['railBackdrop']} onClick={() => setRailOpen(false)} />
+          ) : null}
 
-        <main className={kit['main']}>
-          <TicketPanel
-            ticket={ticket}
-            loaded={snapshot !== null}
-            phase={phase}
-            index={ticketIndex}
-            count={ticketCount}
-            peek={peek}
-            peekIndex={peekIndex}
-            liveKey={tickets[ticketIndex]?.key ?? ''}
-            isHost={isHost}
-            onEdit={openEdit}
-            editing={editOpen}
-            options={ticketOptions(ticket ? [ticket] : [], trackerOptions)}
-            onSaveEdit={saveEdit}
-            onCancelEdit={() => setEditOpen(false)}
-            onGoto={(next) => run(actions.goto(next))}
-            onBackToLive={() => setPeekIndex(null)}
-            onGotoPeek={() => {
-              const target = peekIndex;
-              setPeekIndex(null);
-              if (target !== null) run(actions.goto(target));
-            }}
-          />
+          <main className={kit['main']}>
+            <TicketPanel
+              ticket={ticket}
+              loaded={snapshot !== null}
+              phase={phase}
+              index={ticketIndex}
+              count={ticketCount}
+              peek={peek}
+              peekIndex={peekIndex}
+              liveKey={tickets[ticketIndex]?.key ?? ''}
+              isHost={isHost}
+              onEdit={openEdit}
+              editing={editOpen}
+              options={ticketOptions(ticket ? [ticket] : [], trackerOptions)}
+              onSaveEdit={saveEdit}
+              onCancelEdit={() => setEditOpen(false)}
+              onGoto={(next) => run(actions.goto(next))}
+              onBackToLive={() => setPeekIndex(null)}
+              onGotoPeek={() => {
+                const target = peekIndex;
+                setPeekIndex(null);
+                if (target !== null) run(actions.goto(target));
+              }}
+            />
 
-          <Results
-            distribution={snapshot?.distribution ?? {}}
-            median={snapshot?.median ?? null}
-            suggestion={snapshot?.suggestion ?? null}
-            ai={snapshot?.ai ?? { pending: false, from_llm: false, note: '', suggested: null, confidence: '', evidence: [] }}
-            duel={duel}
-            remaining={remaining}
-            isHost={isHost}
-            onNextTurn={() => run(actions.nextTurn())}
-            onCloseDuel={() => run(actions.closeDuel())}
-            revealed={revealed}
-          />
+            <Results
+              distribution={snapshot?.distribution ?? {}}
+              median={snapshot?.median ?? null}
+              suggestion={snapshot?.suggestion ?? null}
+              ai={
+                snapshot?.ai ?? {
+                  pending: false,
+                  from_llm: false,
+                  note: '',
+                  suggested: null,
+                  confidence: '',
+                  evidence: [],
+                }
+              }
+              duel={duel}
+              remaining={remaining}
+              isHost={isHost}
+              onNextTurn={() => run(actions.nextTurn())}
+              onCloseDuel={() => run(actions.closeDuel())}
+              revealed={revealed}
+            />
 
-          <Table
-            votes={votes}
-            revealed={revealed}
-            arguing={duel && duel.status === 'live' ? [duel.low.name, duel.high.name] : undefined}
-          />
+            <Table
+              votes={votes}
+              revealed={revealed}
+              arguing={duel && duel.status === 'live' ? [duel.low.name, duel.high.name] : undefined}
+            />
 
-          <Deck
-            mine={vote.value}
-            pending={vote.pending}
-            disabled={deckClosed}
-            reason={deckReason}
-            locked={locked}
-            waiting={votes.filter((seat) => !seat.voted).length}
-            onVote={castVote}
-          />
-        </main>
+            <Deck
+              mine={vote.value}
+              pending={vote.pending}
+              disabled={deckClosed}
+              reason={deckReason}
+              locked={locked}
+              waiting={votes.filter((seat) => !seat.voted).length}
+              onVote={castVote}
+            />
+          </main>
 
-        {isHost && snapshot ? (
-          <Console
-            state={snapshot}
-            allIn={allIn}
-            notice={notice}
-            onReveal={() => run(actions.reveal())}
-            onRevote={() => run(actions.revote())}
-            onAskAi={() => run(actions.askAi())}
-            onOpenDuel={(seconds) => run(actions.openDuel(seconds))}
-            onCloseDuel={() => run(actions.closeDuel())}
-            mic={mic}
-            onFinalize={(points) => run(actions.finalize(points))}
-          />
-        ) : null}
-      </div>
+          {isHost && snapshot ? (
+            <Console
+              state={snapshot}
+              allIn={allIn}
+              notice={notice}
+              onReveal={() => run(actions.reveal())}
+              onRevote={() => run(actions.revote())}
+              onAskAi={() => run(actions.askAi())}
+              onOpenDuel={(seconds) => run(actions.openDuel(seconds))}
+              onCloseDuel={() => run(actions.closeDuel())}
+              mic={mic}
+              onFinalize={(points) => run(actions.finalize(points))}
+            />
+          ) : null}
+        </div>
 
-      {/* Phase changes are visual everywhere else on this page. */}
-      <div className={kit['srOnly']} role="status" aria-live="polite" aria-atomic="true">
-        {announcement}
-      </div>
+        {/* Phase changes are visual everywhere else on this page. */}
+        <div className={kit['srOnly']} role="status" aria-live="polite" aria-atomic="true">
+          {announcement}
+        </div>
 
-      <ConfettiCanvas canvasRef={confettiRef} />
+        <ConfettiCanvas canvasRef={confettiRef} />
 
-      <ProfileModal
-        open={profileOpen}
-        name={name}
-        avatar={avatar}
-        avatars={AVATARS}
-        adjectives={boot.adjectives}
-        nouns={boot.nouns}
-        onSave={saveProfile}
-        onClose={() => setProfileOpen(false)}
-        required={!name}
-      />
+        <ProfileModal
+          open={profileOpen}
+          name={name}
+          avatar={avatar}
+          avatars={AVATARS}
+          adjectives={boot.adjectives}
+          nouns={boot.nouns}
+          onSave={saveProfile}
+          onClose={() => setProfileOpen(false)}
+          required={!name}
+        />
 
-      <Modal open={inviteOpen} onClose={() => setInviteOpen(false)} title="Invite the team">
-        {/* No join code here: the link carries it, and the QR is the link. A
+        <Modal open={inviteOpen} onClose={() => setInviteOpen(false)} title="Invite the team">
+          {/* No join code here: the link carries it, and the QR is the link. A
             code to read out is a third way to say the same thing. */}
-        <p className={styles['popNote']}>
-          Send the link, or let them scan it — either one lands them straight on the board. Keep both off
-          anywhere public.
-        </p>
-        <Toast message={invite.notice} onDismiss={invite.dismiss} />
-        <InviteQR qrSrc={apiUrl(session, '/api/qr')} inviteUrl={invite.invite?.inviteUrl} />
-      </Modal>
+          <p className={styles['popNote']}>
+            Send the link, or let them scan it — either one lands them straight on the board. Keep
+            both off anywhere public.
+          </p>
+          <Toast message={invite.notice} onDismiss={invite.dismiss} />
+          <InviteQR qrSrc={apiUrl(session, '/api/qr')} inviteUrl={invite.invite?.inviteUrl} />
+        </Modal>
       </div>
     </PageShell>
   );

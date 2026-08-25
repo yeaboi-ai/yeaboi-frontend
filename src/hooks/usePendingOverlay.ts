@@ -44,7 +44,7 @@ export function usePendingOverlay<T>(
     timeoutMs?: number;
     isEqual?: (a: T, b: T) => boolean;
     onTimeout?: () => void;
-  } = {}
+  } = {},
 ): PendingOverlay<T> {
   const [pending, setPending] = useState<{ value: T } | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -92,7 +92,7 @@ export function usePendingOverlay<T>(
         onTimeoutRef.current?.();
       }, timeoutMs);
     },
-    [stopTimer, timeoutMs]
+    [stopTimer, timeoutMs],
   );
 
   const clear = useCallback(() => {

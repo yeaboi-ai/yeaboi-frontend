@@ -43,7 +43,15 @@ function sizeLabel(project: RoadmapProject): string {
  * way, and two captionless full-width stripes stacked on top of each other read
  * as one element repeated rather than as two different facts.
  */
-function Mix({ caption, label, counts }: { caption: string; label: string; counts: Array<readonly [string, number]> }) {
+function Mix({
+  caption,
+  label,
+  counts,
+}: {
+  caption: string;
+  label: string;
+  counts: Array<readonly [string, number]>;
+}) {
   const { segments, legend } = countedSegments(counts);
   if (!segments.length) return null;
   return (
@@ -129,7 +137,11 @@ export function Roadmap({
             {/* One quarter is not a distribution — the bar would be a solid
                 block captioned with the only value it could have. */}
             {byQuarter.size > 1 ? (
-              <Mix caption="By quarter" label="Projects by quarter" counts={[...byQuarter.entries()]} />
+              <Mix
+                caption="By quarter"
+                label="Projects by quarter"
+                counts={[...byQuarter.entries()]}
+              />
             ) : null}
           </div>
           <div className={styles['projects']}>

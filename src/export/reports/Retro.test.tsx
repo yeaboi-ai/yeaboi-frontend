@@ -19,7 +19,7 @@ function column(over: Partial<RetroColumn> = {}): RetroColumn {
 /** All four, in board order — which is what the exporter always sends. */
 function board(cards: Partial<Record<RetroColumn['grid'], RetroColumn['cards']>>): RetroColumn[] {
   return (['went_well', 'didnt_go_well', 'action_items', 'demos'] as const).map((grid) =>
-    column({ grid, cards: cards[grid] ?? [] })
+    column({ grid, cards: cards[grid] ?? [] }),
   );
 }
 
@@ -33,7 +33,7 @@ describe('Retro', () => {
         participants={[]}
         carried={[]}
         trend={null}
-      />
+      />,
     );
     const item = container.querySelector('li');
     expect(item?.textContent).toBe('fast deploys — SSam👍 3');
@@ -48,7 +48,7 @@ describe('Retro', () => {
         participants={[]}
         carried={[]}
         trend={null}
-      />
+      />,
     );
     expect(container.querySelector('li')?.textContent).toBe('add retry guard (AI)');
     expect(container.querySelector('li .avatar')).toBeNull();
@@ -61,9 +61,11 @@ describe('Retro', () => {
         participants={[]}
         carried={[]}
         trend={null}
-      />
+      />,
     );
-    expect([...container.querySelectorAll('h3')].map((h) => h.textContent)).toEqual(['What went well1']);
+    expect([...container.querySelectorAll('h3')].map((h) => h.textContent)).toEqual([
+      'What went well1',
+    ]);
     expect([...container.querySelectorAll('p')].map((p) => p.textContent)).toEqual([
       "What didn't go well — no cards.",
       'Action items — no cards.',
@@ -86,10 +88,10 @@ describe('Retro', () => {
         participants={[]}
         carried={[]}
         trend={null}
-      />
+      />,
     );
     const tones = [...container.querySelectorAll('[style*="--col-tone"]')].map((el) =>
-      (el as HTMLElement).style.getPropertyValue('--col-tone')
+      (el as HTMLElement).style.getPropertyValue('--col-tone'),
     );
     expect(tones).toEqual(['var(--ok)', 'var(--warn)', 'var(--accent)', 'var(--accent2)']);
   });
@@ -110,13 +112,15 @@ describe('Retro', () => {
         participants={[]}
         carried={[]}
         trend={null}
-      />
+      />,
     );
     expect(container.querySelector('.legend')?.textContent).toBe('What went well 1Action items 2');
   });
 
   it('draws no bar for a board nobody wrote on', () => {
-    const { container } = render(<Retro columns={board({})} participants={[]} carried={[]} trend={null} />);
+    const { container } = render(
+      <Retro columns={board({})} participants={[]} carried={[]} trend={null} />,
+    );
     expect(container.querySelector('.segTrack')).toBeNull();
     expect(container.querySelectorAll('p')).toHaveLength(4);
   });
@@ -128,14 +132,14 @@ describe('Retro', () => {
         participants={[]}
         carried={[{ status: 'carried_over', text: 'ship the docs' }]}
         trend={null}
-      />
+      />,
     );
     expect(screen.getByText('[Carried Over]').tagName).toBe('STRONG');
   });
 
   it('lists participants by name', () => {
     const { container } = render(
-      <Retro columns={board({})} participants={['Sam', 'Rae']} carried={[]} trend={null} />
+      <Retro columns={board({})} participants={['Sam', 'Rae']} carried={[]} trend={null} />,
     );
     expect(container.querySelector('.people')?.textContent).toBe('Participants:SSamRRae');
   });

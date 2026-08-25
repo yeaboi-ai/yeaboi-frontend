@@ -17,7 +17,9 @@ import { renderShadowWordmark, renderWordmark, Wordmark } from './Wordmark';
 
 describe('renderWordmark', () => {
   it.each(Object.keys(WORDMARK_SAMPLES))('matches render_ascii_text for %j', (word) => {
-    expect(renderWordmark(word)).toEqual([...(WORDMARK_SAMPLES[word] as readonly [string, string])]);
+    expect(renderWordmark(word)).toEqual([
+      ...(WORDMARK_SAMPLES[word] as readonly [string, string]),
+    ]);
   });
 
   it('is case-insensitive — the glyph table is uppercase only', () => {
@@ -60,7 +62,8 @@ describe('renderShadowWordmark', () => {
     // The space glyph is all blanks, so it nests into anything — the gap between
     // two words would vanish entirely without the guard.
     const gap =
-      (renderShadowWordmark('a a')?.[0]?.length ?? 0) - (renderShadowWordmark('aa')?.[0]?.length ?? 0);
+      (renderShadowWordmark('a a')?.[0]?.length ?? 0) -
+      (renderShadowWordmark('aa')?.[0]?.length ?? 0);
     expect(gap).toBe(SHADOW_GLYPHS[' ']?.[0]?.length);
   });
 

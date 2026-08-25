@@ -54,7 +54,15 @@ export function statusCategory(status: string): LozengeCategory | null {
   return STATUS_RULES.find((s) => s.match.test(lowered))?.category ?? null;
 }
 
-export function EvidenceRow({ item, idBase, variant = 'default' }: { item: EvidenceItem; idBase: string; variant?: EvidenceVariant }) {
+export function EvidenceRow({
+  item,
+  idBase,
+  variant = 'default',
+}: {
+  item: EvidenceItem;
+  idBase: string;
+  variant?: EvidenceVariant;
+}) {
   const [open, setOpen] = useState(false);
   const meta = kindMeta(item.kind);
   const url = safeUrl(item.url);
@@ -68,7 +76,10 @@ export function EvidenceRow({ item, idBase, variant = 'default' }: { item: Evide
   // A wip row's kind chip already says "in progress" — repeating the status
   // under it is noise, and noise is what this component replaced. The feed
   // variant has no kind chip, so its status always shows.
-  const status = variant === 'default' && item.status.toLowerCase() === meta.label.toLowerCase() ? '' : item.status;
+  const status =
+    variant === 'default' && item.status.toLowerCase() === meta.label.toLowerCase()
+      ? ''
+      : item.status;
   const category = status ? statusCategory(status) : null;
   const childrenId = `${idBase}-commits`;
   // In the ticket-status feed the row IS a ticket — a "ticket" chip on every
@@ -126,7 +137,11 @@ export function EvidenceRow({ item, idBase, variant = 'default' }: { item: Evide
       {children.length ? (
         <ul id={childrenId} hidden={!open} className={styles['evidenceChildren']}>
           {children.map((child, index) => (
-            <EvidenceRow key={`${child.kind}-${child.key}-${index}`} item={child} idBase={`${childrenId}-${index}`} />
+            <EvidenceRow
+              key={`${child.kind}-${child.key}-${index}`}
+              item={child}
+              idBase={`${childrenId}-${index}`}
+            />
           ))}
         </ul>
       ) : null}
@@ -134,7 +149,15 @@ export function EvidenceRow({ item, idBase, variant = 'default' }: { item: Evide
   );
 }
 
-export function EvidenceList({ items, id, variant = 'default' }: { items: EvidenceItem[]; id: string; variant?: EvidenceVariant }) {
+export function EvidenceList({
+  items,
+  id,
+  variant = 'default',
+}: {
+  items: EvidenceItem[];
+  id: string;
+  variant?: EvidenceVariant;
+}) {
   const [open, setOpen] = useState(false);
   if (!items.length) return null;
   const head = items.slice(0, VISIBLE_ROWS);
@@ -144,14 +167,24 @@ export function EvidenceList({ items, id, variant = 'default' }: { items: Eviden
     <div>
       <ul className={styles['evidence']}>
         {head.map((item, index) => (
-          <EvidenceRow key={`${item.kind}-${item.key}-${index}`} item={item} idBase={`${id}-h${index}`} variant={variant} />
+          <EvidenceRow
+            key={`${item.kind}-${item.key}-${index}`}
+            item={item}
+            idBase={`${id}-h${index}`}
+            variant={variant}
+          />
         ))}
       </ul>
       {rest.length ? (
         <>
           <ul id={id} hidden={!open} className={styles['evidence']}>
             {rest.map((item, index) => (
-              <EvidenceRow key={`${item.kind}-${item.key}-${index}`} item={item} idBase={`${id}-r${index}`} variant={variant} />
+              <EvidenceRow
+                key={`${item.kind}-${item.key}-${index}`}
+                item={item}
+                idBase={`${id}-r${index}`}
+                variant={variant}
+              />
             ))}
           </ul>
           <button

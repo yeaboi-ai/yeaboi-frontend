@@ -236,7 +236,7 @@ function tintShadows(row: string, keyPrefix: string) {
       </span>
     ) : (
       run.text
-    )
+    ),
   );
 }
 

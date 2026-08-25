@@ -83,7 +83,9 @@ describe('JoinGate', () => {
     type('K3P92QXA');
     fireEvent.click(submit());
 
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toMatch(/wait a few minutes/i));
+    await waitFor(() =>
+      expect(screen.getByRole('alert').textContent).toMatch(/wait a few minutes/i),
+    );
   });
 
   it('says the code did not match on a 403', async () => {
@@ -109,7 +111,11 @@ describe('JoinGate', () => {
   it('hands the token to the caller on success', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, token: 'tok-1' }), { status: 200 }))
+      vi
+        .fn()
+        .mockResolvedValue(
+          new Response(JSON.stringify({ ok: true, token: 'tok-1' }), { status: 200 }),
+        ),
     );
     const onJoined = vi.fn();
     render(<JoinGate onJoined={onJoined} />);
@@ -191,14 +197,16 @@ describe('JoinGate identity', () => {
     fireEvent.click(screen.getByRole('button', { name: /open/i }));
 
     await waitFor(() =>
-      expect(container.querySelector('[data-state]')?.getAttribute('data-state')).toBe('startled')
+      expect(container.querySelector('[data-state]')?.getAttribute('data-state')).toBe('startled'),
     );
   });
 
   it('leaves the duck alone when the code is right', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, token: 't' }), { status: 200 }))
+      vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({ ok: true, token: 't' }), { status: 200 })),
     );
     const onJoined = vi.fn();
     const { container } = render(<JoinGate onJoined={onJoined} />);
@@ -292,7 +300,7 @@ describe('JoinGate, arrived on an invite link', () => {
       vi.fn(async () => {
         hashDuringRequest = location.hash;
         return new Response('', { status: 403 });
-      })
+      }),
     );
 
     render(<JoinGate />);
@@ -332,7 +340,9 @@ describe('JoinGate, arrived on an invite link', () => {
     arriveWith('/#code=K3P9-2QXA');
     answering(429);
     render(<JoinGate />);
-    await waitFor(() => expect(screen.getByRole('alert').textContent).toMatch(/wait a few minutes/i));
+    await waitFor(() =>
+      expect(screen.getByRole('alert').textContent).toMatch(/wait a few minutes/i),
+    );
   });
 
   it('asks once per mount, even under StrictMode', async () => {
@@ -342,7 +352,7 @@ describe('JoinGate, arrived on an invite link', () => {
     render(
       <StrictMode>
         <JoinGate />
-      </StrictMode>
+      </StrictMode>,
     );
 
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
@@ -389,7 +399,9 @@ describe('JoinGate, arrived on an invite link', () => {
     const onJoined = vi.fn();
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true, token: 't' }), { status: 200 }))
+      vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({ ok: true, token: 't' }), { status: 200 })),
     );
     render(<JoinGate onJoined={onJoined} />);
     await waitFor(() => expect(onJoined).toHaveBeenCalledWith('t'));

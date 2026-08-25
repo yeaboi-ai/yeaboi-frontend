@@ -44,7 +44,11 @@ export function Table({ votes, revealed, arguing = [] }: TableProps) {
   const row = useRef<HTMLUListElement>(null);
   // Seats slide to the places the row redistributes to, and the two coming back
   // fly out of the floor panel they were just in.
-  useRowChoreography(row, { place: 'table', from: 'floor', members: seated.map((p) => p.name).join(' ') });
+  useRowChoreography(row, {
+    place: 'table',
+    from: 'floor',
+    members: seated.map((p) => p.name).join(' '),
+  });
 
   return (
     <section className={styles['table']} aria-label="The table">
@@ -54,7 +58,9 @@ export function Table({ votes, revealed, arguing = [] }: TableProps) {
 
       {seated.length === 0 ? (
         <p className={styles['vempty']}>
-          {revealed ? 'No votes were cast.' : 'Waiting for the team — share the code to invite them.'}
+          {revealed
+            ? 'No votes were cast.'
+            : 'Waiting for the team — share the code to invite them.'}
         </p>
       ) : (
         <ul className={styles['vrow']} ref={row}>
@@ -82,7 +88,11 @@ export function Table({ votes, revealed, arguing = [] }: TableProps) {
                   ) : null}
                 </span>
                 {revealed ? (
-                  <span className={styles['vcard']} style={{ '--i': index } as never} aria-hidden="true">
+                  <span
+                    className={styles['vcard']}
+                    style={{ '--i': index } as never}
+                    aria-hidden="true"
+                  >
                     {person.value}
                   </span>
                 ) : null}
@@ -93,7 +103,11 @@ export function Table({ votes, revealed, arguing = [] }: TableProps) {
               {/* The seat's meaning, spelled out once per person: the tick and
                   the flipped card are both purely visual. */}
               <span className={kit['srOnly']}>
-                {revealed ? `voted ${person.value}` : person.voted ? 'has voted' : 'has not voted yet'}
+                {revealed
+                  ? `voted ${person.value}`
+                  : person.voted
+                    ? 'has voted'
+                    : 'has not voted yet'}
               </span>
             </li>
           ))}

@@ -30,5 +30,5 @@ export default mergeConfig(
       // with `?raw` to measure all five palettes at once.
       css: { include: [/.*/], modules: { classNameStrategy: 'non-scoped' } },
     },
-  })
+  }),
 );

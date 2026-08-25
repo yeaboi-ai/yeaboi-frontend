@@ -194,7 +194,7 @@ function CardViewBase({
         isAI && styles['cardAI'],
         locked && styles['cardLocked'],
         dragging && styles['cardDragging'],
-        arrived && motion['arrived']
+        arrived && motion['arrived'],
       )}
       data-card-id={card.id}
       aria-label={`Card by ${isAI ? 'AI' : card.author}`}
@@ -275,7 +275,12 @@ function CardViewBase({
           // The whole control cluster is replaced rather than added to: a
           // pending destructive action wants the row saying one thing, and
           // leaving the ✎ and the grip beside it invites the wrong click again.
-          <span ref={confirmRef} className={styles['confirmRow']} role="group" aria-label="Confirm delete">
+          <span
+            ref={confirmRef}
+            className={styles['confirmRow']}
+            role="group"
+            aria-label="Confirm delete"
+          >
             <span className={styles['confirmLabel']}>Delete?</span>
             <Button
               shape="bare"
@@ -301,35 +306,35 @@ function CardViewBase({
           </span>
         ) : (
           <>
-          {locked ? null : (
-            <ReactionTrigger
-              open={trayOpen}
-              trayId={trayId}
-              buttonRef={trayTriggerRef}
-              onToggle={() => setTrayOpen((v) => !v)}
-              disabled={locked}
-            />
-          )}
+            {locked ? null : (
+              <ReactionTrigger
+                open={trayOpen}
+                trayId={trayId}
+                buttonRef={trayTriggerRef}
+                onToggle={() => setTrayOpen((v) => !v)}
+                disabled={locked}
+              />
+            )}
 
-          {canModify && !editing ? (
-            <>
-              <Button
-                shape="bare"
-                aria-label={`Edit card: ${card.text.slice(0, 40)}`}
-                onClick={() => setEditing(true)}
-              >
-                <Icon name="pencil" size={16} />
-              </Button>
-              <Button
-                shape="bare"
-                tone="danger"
-                aria-label={`Delete card: ${card.text.slice(0, 40)}`}
-                onClick={() => setConfirming(true)}
-              >
-                <Icon name="trash" size={16} />
-              </Button>
-            </>
-          ) : null}
+            {canModify && !editing ? (
+              <>
+                <Button
+                  shape="bare"
+                  aria-label={`Edit card: ${card.text.slice(0, 40)}`}
+                  onClick={() => setEditing(true)}
+                >
+                  <Icon name="pencil" size={16} />
+                </Button>
+                <Button
+                  shape="bare"
+                  tone="danger"
+                  aria-label={`Delete card: ${card.text.slice(0, 40)}`}
+                  onClick={() => setConfirming(true)}
+                >
+                  <Icon name="trash" size={16} />
+                </Button>
+              </>
+            ) : null}
           </>
         )}
       </div>

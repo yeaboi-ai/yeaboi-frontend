@@ -221,7 +221,10 @@ export function useCardDrag({ onMove, gridLabel, enabled = true }: CardDragOptio
       kind === 'tail'
         ? { left: box.left, top: box.bottom + (parseFloat(style.rowGap) || 0) }
         : kind === 'empty'
-          ? { left: box.left + parseFloat(style.paddingLeft), top: box.top + parseFloat(style.paddingTop) }
+          ? {
+              left: box.left + parseFloat(style.paddingLeft),
+              top: box.top + parseFloat(style.paddingTop),
+            }
           : { left: box.left, top: box.top };
 
     // The layer is the viewport, and the card is pinned to its top-left corner,
@@ -232,13 +235,17 @@ export function useCardDrag({ onMove, gridLabel, enabled = true }: CardDragOptio
     const animation = el.animate(
       [
         { transform: el.style.transform, rotate: el.style.rotate || '0deg', scale: '1.03' },
-        { transform: `translate3d(${target.left}px, ${target.top}px, 0)`, rotate: '0deg', scale: '1' },
+        {
+          transform: `translate3d(${target.left}px, ${target.top}px, 0)`,
+          rotate: '0deg',
+          scale: '1',
+        },
       ],
-      { duration: LAND_MS, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' }
+      { duration: LAND_MS, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'forwards' },
     );
     return animation.finished.then(
       () => undefined,
-      () => undefined
+      () => undefined,
     );
   }, []);
 
@@ -254,7 +261,7 @@ export function useCardDrag({ onMove, gridLabel, enabled = true }: CardDragOptio
         handlers.current.onMove(current.cardId, current.target.grid, current.target.index);
         // 1-based: "position 0" is not something anyone says out loud.
         setAnnouncement(
-          `Moved to ${handlers.current.gridLabel(current.target.grid)}, position ${current.target.index + 1}.`
+          `Moved to ${handlers.current.gridLabel(current.target.grid)}, position ${current.target.index + 1}.`,
         );
         // Held one flight longer: the list is frozen while a drag is live, so
         // this is also what keeps the slot open underneath the card until it
@@ -272,7 +279,7 @@ export function useCardDrag({ onMove, gridLabel, enabled = true }: CardDragOptio
       }
       setDrag(null);
     },
-    [land]
+    [land],
   );
 
   // Cleared on every move and re-armed, so it only fires once the pointer has
@@ -468,12 +475,12 @@ export function useCardDrag({ onMove, gridLabel, enabled = true }: CardDragOptio
       document.addEventListener('keydown', key);
       teardownRef.current = teardown;
     },
-    [enabled, finish, place]
+    [enabled, finish, place],
   );
 
   const onGripPointerDown = useCallback(
     (cardId: string, event: PointerEvent) => begin(cardId, event, false),
-    [begin]
+    [begin],
   );
 
   const onCardPointerDown = useCallback(
@@ -483,7 +490,7 @@ export function useCardDrag({ onMove, gridLabel, enabled = true }: CardDragOptio
       if (from instanceof Element && from.closest('button, a, input, textarea, select')) return;
       begin(cardId, event, event.pointerType !== 'mouse');
     },
-    [begin]
+    [begin],
   );
 
   useEffect(
@@ -492,7 +499,7 @@ export function useCardDrag({ onMove, gridLabel, enabled = true }: CardDragOptio
       clearTimeout(settleRef.current);
       active.current = null;
     },
-    []
+    [],
   );
 
   return { drag, previewRef, onGripPointerDown, onCardPointerDown, announcement };

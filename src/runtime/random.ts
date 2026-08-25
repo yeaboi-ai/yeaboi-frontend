@@ -12,7 +12,7 @@
 export function randomName(
   adjectives: readonly string[],
   nouns: readonly string[],
-  pick: (n: number) => number = (n) => Math.floor(Math.random() * n)
+  pick: (n: number) => number = (n) => Math.floor(Math.random() * n),
 ): string {
   if (!adjectives.length || !nouns.length) return 'Guest';
   const adjective = adjectives[pick(adjectives.length) % adjectives.length];

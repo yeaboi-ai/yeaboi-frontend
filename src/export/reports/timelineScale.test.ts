@@ -164,24 +164,31 @@ describe('fmtDuration', () => {
 describe('artifactId', () => {
   it('reads the pull request out of the shapes each source really emits', () => {
     // GitHub PR row.
-    expect(artifactId('https://github.com/acme/web/pull/91', '#91')).toBe('https://github.com/acme/web/pull/91');
-    // GitHub review row — the key is the *review* id, so only the URL helps.
-    expect(artifactId('https://github.com/acme/web/pull/91#pullrequestreview-12345', 'review:12345')).toBe(
-      'https://github.com/acme/web/pull/91'
+    expect(artifactId('https://github.com/acme/web/pull/91', '#91')).toBe(
+      'https://github.com/acme/web/pull/91',
     );
+    // GitHub review row — the key is the *review* id, so only the URL helps.
+    expect(
+      artifactId('https://github.com/acme/web/pull/91#pullrequestreview-12345', 'review:12345'),
+    ).toBe('https://github.com/acme/web/pull/91');
     // GitHub issue comment on a PR.
     expect(artifactId('https://github.com/acme/web/pull/91#issuecomment-777', 'comment:777')).toBe(
-      'https://github.com/acme/web/pull/91'
+      'https://github.com/acme/web/pull/91',
     );
     // Azure DevOps PR row, and a thread row on the same PR.
     expect(artifactId('https://dev.azure.com/org/Proj/_git/web/pullrequest/91', '!91')).toBe(
-      'https://dev.azure.com/org/proj/_git/web/pullrequest/91'
+      'https://dev.azure.com/org/proj/_git/web/pullrequest/91',
     );
-    expect(artifactId('https://dev.azure.com/org/Proj/_git/web/pullrequest/91?discussionId=7', 'review:91:x')).toBe(
-      'https://dev.azure.com/org/proj/_git/web/pullrequest/91'
-    );
+    expect(
+      artifactId(
+        'https://dev.azure.com/org/Proj/_git/web/pullrequest/91?discussionId=7',
+        'review:91:x',
+      ),
+    ).toBe('https://dev.azure.com/org/proj/_git/web/pullrequest/91');
     // A deeper path still resolves to the pull request itself.
-    expect(artifactId('https://github.com/acme/web/pull/91/files', '')).toBe('https://github.com/acme/web/pull/91');
+    expect(artifactId('https://github.com/acme/web/pull/91/files', '')).toBe(
+      'https://github.com/acme/web/pull/91',
+    );
   });
 
   it('falls back to a ticket key, and refuses anything else', () => {

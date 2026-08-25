@@ -64,7 +64,13 @@ export function Prose({ text, className }: { text: string; className?: string | 
 }
 
 /** An untrusted paragraph split into scannable bullets. */
-export function ProseBullets({ text, className }: { text: string; className?: string | undefined }) {
+export function ProseBullets({
+  text,
+  className,
+}: {
+  text: string;
+  className?: string | undefined;
+}) {
   const bullets = proseBullets(text);
   if (!bullets.length) return null;
   return (

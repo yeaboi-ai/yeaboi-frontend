@@ -106,7 +106,11 @@ export function createPokerActions(session: Session, store: BoardStore<PokerStat
     async trackerOptions(key) {
       // Not through `mutate`: this reads the tracker and returns no board
       // state, so there is nothing to feed the store and no refusal to show.
-      const result = await postJSON<{ options?: TrackerOptions }>(session, '/api/admin/ticket/options', { key });
+      const result = await postJSON<{ options?: TrackerOptions }>(
+        session,
+        '/api/admin/ticket/options',
+        { key },
+      );
       return (result.ok && result.data.options) || {};
     },
 
@@ -123,6 +127,7 @@ export function createPokerActions(session: Session, store: BoardStore<PokerStat
     stopTimer: () => mutate('/api/timer', { action: 'stop' }),
     setLocked: (locked) => mutate('/api/admin/lock', { locked }),
     castTheme: (theme) => mutate('/api/admin/broadcast', { theme }),
-    castMusic: (playing, channel) => mutate('/api/admin/broadcast', { music: { playing, channel } }),
+    castMusic: (playing, channel) =>
+      mutate('/api/admin/broadcast', { music: { playing, channel } }),
   };
 }

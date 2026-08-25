@@ -59,7 +59,8 @@ export function App({ boot, siteTheme: applied }: { boot: DeckBoot; siteTheme?: 
   const names = useMemo(() => Object.keys(boot.palettes), [boot.palettes]);
   // A payload always carries the palette it names, but this is a file that can
   // outlive the exporter that wrote it — falling back beats rendering unstyled.
-  const palette = (boot.palettes[theme] ?? boot.palettes[names[0] ?? '']) as DeckPalette | undefined;
+  const palette = (boot.palettes[theme] ?? boot.palettes[names[0] ?? '']) as
+    DeckPalette | undefined;
 
   useEffect(() => {
     // `siteTheme` is a dependency, not noise: applyPalette derives each accent
@@ -70,7 +71,7 @@ export function App({ boot, siteTheme: applied }: { boot: DeckBoot; siteTheme?: 
 
   const go = useCallback(
     (by: number) => setIndex((at) => Math.max(0, Math.min(total - 1, at + by))),
-    [total]
+    [total],
   );
   const cycle = useCallback(() => setTheme((at) => nextTheme(names, at)), [names]);
 
@@ -82,7 +83,11 @@ export function App({ boot, siteTheme: applied }: { boot: DeckBoot; siteTheme?: 
       // palette with the keyboard advanced the deck at the same time. `T` and
       // `F` would likewise page the deck while typing into any field.
       const target = event.target;
-      if (target instanceof HTMLElement && target.closest('input, textarea, select, [role="radiogroup"]')) return;
+      if (
+        target instanceof HTMLElement &&
+        target.closest('input, textarea, select, [role="radiogroup"]')
+      )
+        return;
 
       const step = STEP[event.key];
       if (step !== undefined) {
@@ -140,7 +145,9 @@ export function App({ boot, siteTheme: applied }: { boot: DeckBoot; siteTheme?: 
         onSiteTheme={chooseSite}
       />
 
-      {style.footer ? <p className={cx(styles['corner'], styles['cornerLeft'])}>{style.footer}</p> : null}
+      {style.footer ? (
+        <p className={cx(styles['corner'], styles['cornerLeft'])}>{style.footer}</p>
+      ) : null}
       {style.slideNumbers ? (
         <p className={cx(styles['corner'], styles['cornerRight'])}>{index + 1}</p>
       ) : null}

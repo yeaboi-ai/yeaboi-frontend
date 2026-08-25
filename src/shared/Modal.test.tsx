@@ -28,7 +28,7 @@ describe('Modal', () => {
     render(
       <Modal open={false} onClose={vi.fn()} title="Choose a name">
         body
-      </Modal>
+      </Modal>,
     );
     expect(dialog().open).toBe(false);
   });
@@ -37,7 +37,7 @@ describe('Modal', () => {
     render(
       <Modal open onClose={vi.fn()} title="Choose a name">
         body
-      </Modal>
+      </Modal>,
     );
     expect(dialog().open).toBe(true);
     // The role and the accessible name are the two things the old div-based
@@ -52,7 +52,7 @@ describe('Modal', () => {
     render(
       <Modal open onClose={onClose} title="Choose a name">
         body
-      </Modal>
+      </Modal>,
     );
     fireEvent(dialog(), new Event('cancel', { cancelable: true }));
 
@@ -65,7 +65,7 @@ describe('Modal', () => {
     render(
       <Modal open onClose={onClose} title="Choose a name">
         <p>body</p>
-      </Modal>
+      </Modal>,
     );
 
     fireEvent.click(screen.getByText('body'));
@@ -81,7 +81,7 @@ describe('Modal', () => {
     render(
       <Modal open onClose={vi.fn()} title="Invite" hideTitle>
         body
-      </Modal>
+      </Modal>,
     );
     // srOnly, not display:none — the name must survive for the dialog role.
     expect(screen.getByRole('dialog', { name: 'Invite' })).toBeTruthy();

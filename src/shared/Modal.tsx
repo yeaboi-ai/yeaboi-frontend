@@ -57,7 +57,15 @@ export interface ModalProps {
 /** How long the dialog is held open to fade. Matches `modalOut` in the CSS. */
 const EXIT_MS = 180;
 
-export function Modal({ open, onClose, title, hideTitle, children, actions, className }: ModalProps) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  hideTitle,
+  children,
+  actions,
+  className,
+}: ModalProps) {
   const ref = useRef<HTMLDialogElement | null>(null);
   const [closing, setClosing] = useState(false);
   const titleId = useId();

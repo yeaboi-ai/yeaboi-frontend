@@ -45,6 +45,6 @@ if (root) {
       <Shell chrome={boot.chrome} theme={theme}>
         <Report report={boot.report} />
       </Shell>
-    )
+    ),
   );
 }

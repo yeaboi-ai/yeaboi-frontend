@@ -63,9 +63,10 @@ describe('a deck accent on a site background', () => {
     const raw = DECK_PALETTES[deck]![role];
     const applied = readableAccent(raw, bg);
     const ratio = contrast(applied, bg);
-    expect(ratio, `${deck} ${role} on ${site} --bg is ${ratio.toFixed(2)}:1 (raw ${raw} → ${applied})`).toBeGreaterThanOrEqual(
-      AA_TEXT,
-    );
+    expect(
+      ratio,
+      `${deck} ${role} on ${site} --bg is ${ratio.toFixed(2)}:1 (raw ${raw} → ${applied})`,
+    ).toBeGreaterThanOrEqual(AA_TEXT);
   });
 
   it('leaves an accent alone when it already reads', () => {
@@ -81,9 +82,10 @@ describe('a deck accent on a site background', () => {
     // The case that motivated this: sunset's orange on the light theme.
     const bg = SITE_PALETTES['light']?.['bg'] as string;
     const raw = DECK_PALETTES['sunset']!.accent;
-    expect(contrast(raw, bg), 'sunset accent was already legible on light — pick a different case').toBeLessThan(
-      AA_TEXT,
-    );
+    expect(
+      contrast(raw, bg),
+      'sunset accent was already legible on light — pick a different case',
+    ).toBeLessThan(AA_TEXT);
     expect(readableAccent(raw, bg)).not.toBe(raw);
   });
 

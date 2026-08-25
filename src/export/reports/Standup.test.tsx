@@ -28,7 +28,14 @@ function member(over: Partial<StandupMember> = {}): StandupMember {
 
 const BASE = {
   sprint: { name: 'Sprint 42', day: 7, total: 10 },
-  confidence: { label: 'At risk', pct: 68, text: 'At risk (68%)', trend: '', trendText: '', rationale: '' },
+  confidence: {
+    label: 'At risk',
+    pct: 68,
+    text: 'At risk (68%)',
+    trend: '',
+    trendText: '',
+    rationale: '',
+  },
   summary: [],
   members: [],
   activityCounts: [] as Array<[string, number]>,
@@ -55,7 +62,7 @@ describe('Standup source labels', () => {
   it('labels a skipped source too', () => {
     render(<Standup {...BASE} skipped={[['azure_devops', 'not selected in setup']]} />);
     expect(screen.getByText(/Sources skipped/).textContent).toContain(
-      'Azure DevOps tickets (not selected in setup)'
+      'Azure DevOps tickets (not selected in setup)',
     );
   });
 
@@ -69,9 +76,7 @@ describe('Standup source labels', () => {
 
 describe('Standup', () => {
   it('pluralises the count chips, and leaves "code" uncountable', () => {
-    const { container } = render(
-      <Standup {...BASE} members={[member({ counts: [1, 3, 2] })]} />
-    );
+    const { container } = render(<Standup {...BASE} members={[member({ counts: [1, 3, 2] })]} />);
     const chips = [...container.querySelectorAll('.chips .chip')].map((c) => c.textContent);
     expect(chips).toEqual(['1 ticket', '3 code', '2 docs']);
   });
@@ -97,8 +102,13 @@ describe('Standup', () => {
     const { container } = render(
       <Standup
         {...BASE}
-        confidence={{ ...BASE.confidence, label: 'Insufficient data', pct: 0, text: 'Insufficient data' }}
-      />
+        confidence={{
+          ...BASE.confidence,
+          label: 'Insufficient data',
+          pct: 0,
+          text: 'Insufficient data',
+        }}
+      />,
     );
     expect(container.querySelector('.stat:nth-child(2) .statValue')?.textContent).toBe('—');
   });
@@ -112,7 +122,7 @@ describe('Standup', () => {
 
   it('marks a blocked member and shows what they are blocked on', () => {
     const { container } = render(
-      <Standup {...BASE} members={[member({ blockers: [{ s: 'waiting on review' }] })]} />
+      <Standup {...BASE} members={[member({ blockers: [{ s: 'waiting on review' }] })]} />,
     );
     expect(container.querySelector('.blocked')).not.toBeNull();
     // Jira's flag idiom: the word beside the glyph, and the status lozenge agrees.
@@ -128,17 +138,21 @@ describe('Standup', () => {
         {...BASE}
         members={[
           member({
-            summary: [[{ s: 'Shipped ' }, { s: 'ACME-101', href: 'https://x/browse/ACME-101' }, { s: '.' }]],
+            summary: [
+              [{ s: 'Shipped ' }, { s: 'ACME-101', href: 'https://x/browse/ACME-101' }, { s: '.' }],
+            ],
           }),
         ]}
-      />
+      />,
     );
-    expect(screen.getByRole('link', { name: 'ACME-101' }).getAttribute('href')).toBe('https://x/browse/ACME-101');
+    expect(screen.getByRole('link', { name: 'ACME-101' }).getAttribute('href')).toBe(
+      'https://x/browse/ACME-101',
+    );
   });
 
   it('drops a link whose URL the exporter rejected, keeping the label', () => {
     const { container } = render(
-      <Standup {...BASE} members={[member({ links: [['see this', '']] })]} />
+      <Standup {...BASE} members={[member({ links: [['see this', '']] })]} />,
     );
     expect(container.querySelector('.chipRow a')).toBeNull();
     expect(container.querySelector('.chipRow .chip')?.textContent).toBe('see this');
@@ -150,26 +164,34 @@ describe('Standup', () => {
         {...BASE}
         members={[
           member({
-            categories: [{ label: 'Ticketing', items: [[{ s: 'ACME-1 moved.' }]], links: [], evidence: [] }],
-            footnotes: [{ label: 'Documentation', runs: [{ s: 'Documentation sources are not configured.' }] }],
+            categories: [
+              { label: 'Ticketing', items: [[{ s: 'ACME-1 moved.' }]], links: [], evidence: [] },
+            ],
+            footnotes: [
+              {
+                label: 'Documentation',
+                runs: [{ s: 'Documentation sources are not configured.' }],
+              },
+            ],
           }),
         ]}
-      />
+      />,
     );
     // The Description section always leads; Ticketing renders in Jira's clothes.
-    expect([...container.querySelectorAll('.issueSection .eyebrow')].map((e) => e.textContent)).toEqual([
-      'Description',
-      'Ticket status changes',
-    ]);
+    expect(
+      [...container.querySelectorAll('.issueSection .eyebrow')].map((e) => e.textContent),
+    ).toEqual(['Description', 'Ticket status changes']);
     // The wording survives: "not configured" must stay distinguishable from
     // "no activity detected".
     expect(container.querySelector('.footnote')?.textContent).toBe(
-      'Documentation — Documentation sources are not configured.'
+      'Documentation — Documentation sources are not configured.',
     );
   });
 
   it('renders a one-sentence team summary as a paragraph and several as a list', () => {
-    const { container, rerender } = render(<Standup {...BASE} summary={[[{ s: 'Steady progress.' }]]} />);
+    const { container, rerender } = render(
+      <Standup {...BASE} summary={[[{ s: 'Steady progress.' }]]} />,
+    );
     expect(container.querySelector('#summary ul')).toBeNull();
     expect(container.querySelector('#summary p')?.textContent).toBe('Steady progress.');
 
@@ -188,7 +210,7 @@ describe('Standup', () => {
             categories: [{ label: 'Code', items: [], links: [], evidence: [evidence()] }],
           }),
         ]}
-      />
+      />,
     );
     const lane = container.querySelector('.timeline .tlRail');
     expect(lane?.textContent).toContain('Ada');
@@ -209,9 +231,11 @@ describe('Standup', () => {
           }),
           member({ name: 'Quiet' }),
         ]}
-      />
+      />,
     );
-    expect([...container.querySelectorAll('.timeline .tlWord')].map((n) => n.textContent)).toEqual(['Ada']);
+    expect([...container.querySelectorAll('.timeline .tlWord')].map((n) => n.textContent)).toEqual([
+      'Ada',
+    ]);
     // Two names on the page now — the jump strip and the card — so ask for the card.
     expect(container.querySelector('#m-quiet .memberHead')).not.toBeNull();
   });
@@ -223,7 +247,11 @@ describe('Standup', () => {
 
   it('renders quiet members as one strip, not cards', () => {
     const { container } = render(
-      <Standup {...BASE} members={[member({ name: 'Ada', counts: [2, 0, 0] })]} quietMembers={['Bo', 'Cy']} />
+      <Standup
+        {...BASE}
+        members={[member({ name: 'Ada', counts: [2, 0, 0] })]}
+        quietMembers={['Bo', 'Cy']}
+      />,
     );
     const strip = container.querySelector('.quietStrip');
     expect(strip?.textContent).toContain('No activity detected:');
@@ -241,7 +269,7 @@ describe('Standup', () => {
   it('shows no Members or Activity-items tiles', () => {
     // A head-count and a raw API item count are numbers nobody acts on.
     const { container } = render(
-      <Standup {...BASE} members={[member()]} activityCounts={[['jira', 38]]} />
+      <Standup {...BASE} members={[member()]} activityCounts={[['jira', 38]]} />,
     );
     const labels = [...container.querySelectorAll('.statLabel')].map((l) => l.textContent);
     expect(labels).toEqual(['Sprint day', 'Confidence']);
@@ -249,11 +277,19 @@ describe('Standup', () => {
 
   it('names each coverage status beside its dot, never colour alone', () => {
     const { container } = render(
-      <Standup {...BASE} coverage={[['ticketing', 'covered'], ['documentation', 'not_configured']]} />
+      <Standup
+        {...BASE}
+        coverage={[
+          ['ticketing', 'covered'],
+          ['documentation', 'not_configured'],
+        ]}
+      />,
     );
     const entries = [...container.querySelectorAll('.coverage')].map((c) => c.textContent);
     expect(entries).toEqual(['ticketing covered', 'documentation not configured']);
-    const dots = [...container.querySelectorAll('.dot')].map((d) => (d as HTMLElement).style.background);
+    const dots = [...container.querySelectorAll('.dot')].map(
+      (d) => (d as HTMLElement).style.background,
+    );
     expect(dots).toEqual(['var(--ok)', 'var(--low)']);
   });
 
@@ -284,13 +320,17 @@ function evidence(over: Partial<EvidenceItem> = {}): EvidenceItem {
 function memberWithEvidence(rows: EvidenceItem[]): StandupMember {
   return member({
     counts: [0, rows.length, 0],
-    categories: [{ label: 'Code', items: [[{ s: 'Merged the login fix.' }]], links: [], evidence: rows }],
+    categories: [
+      { label: 'Code', items: [[{ s: 'Merged the login fix.' }]], links: [], evidence: rows },
+    ],
   });
 }
 
 describe('Standup evidence rows', () => {
   it('says what each item is: kind word, linked key, title, repo', () => {
-    const { container } = render(<Standup {...BASE} members={[memberWithEvidence([evidence()])]} />);
+    const { container } = render(
+      <Standup {...BASE} members={[memberWithEvidence([evidence()])]} />,
+    );
     const row = container.querySelector('.evidenceRow');
     expect(row?.querySelector('.chip')?.textContent).toBe('commit');
     const key = screen.getByRole('link', { name: '78e4201d' });
@@ -301,7 +341,7 @@ describe('Standup evidence rows', () => {
 
   it('degrades an unknown kind to its own word rather than failing', () => {
     const { container } = render(
-      <Standup {...BASE} members={[memberWithEvidence([evidence({ kind: 'mystery' })])]} />
+      <Standup {...BASE} members={[memberWithEvidence([evidence({ kind: 'mystery' })])]} />,
     );
     expect(container.querySelector('.evidenceRow .chip')?.textContent).toBe('mystery');
   });
@@ -321,7 +361,7 @@ describe('Standup evidence rows', () => {
 
   it('keeps a row whose URL the exporter rejected, without a link', () => {
     const { container } = render(
-      <Standup {...BASE} members={[memberWithEvidence([evidence({ url: '' })])]} />
+      <Standup {...BASE} members={[memberWithEvidence([evidence({ url: '' })])]} />,
     );
     expect(container.querySelector('.evidenceRow a')).toBeNull();
     expect(container.querySelector('.evidenceRef')?.textContent).toBe('78e4201d');
@@ -345,7 +385,10 @@ describe('Standup evidence rows', () => {
 
   it('shows no toggle for three rows or fewer', () => {
     const { container } = render(
-      <Standup {...BASE} members={[memberWithEvidence([evidence(), evidence({ key: 'a1b2c3d4' })])]} />
+      <Standup
+        {...BASE}
+        members={[memberWithEvidence([evidence(), evidence({ key: 'a1b2c3d4' })])]}
+      />,
     );
     expect(container.querySelector('.moreToggle')).toBeNull();
   });
@@ -361,14 +404,16 @@ describe('Standup evidence rows', () => {
             ],
           }),
         ]}
-      />
+      />,
     );
     expect(container.querySelector('.evidenceRow')).toBeNull();
     expect(container.querySelector('.chipRow .chip')?.textContent).toBe('78E4201D');
   });
 
   it('colour-codes the category section and its count chip alike', () => {
-    const { container } = render(<Standup {...BASE} members={[memberWithEvidence([evidence()])]} />);
+    const { container } = render(
+      <Standup {...BASE} members={[memberWithEvidence([evidence()])]} />,
+    );
     // The section's dot carries the tone now; the Description section has none.
     const dot = container.querySelector('.issueSection .dot') as HTMLElement;
     expect(dot.getAttribute('style')).toContain('var(--accent2)');
@@ -387,7 +432,10 @@ describe('Standup member strip', () => {
     const { container } = render(<Standup {...BASE} members={two} />);
     const strip = screen.getByRole('navigation', { name: 'Jump to member' });
     const links = [...strip.querySelectorAll('a')];
-    expect(links.map((a) => a.getAttribute('href'))).toEqual(['#m-ada-lovelace', '#m-grace-hopper']);
+    expect(links.map((a) => a.getAttribute('href'))).toEqual([
+      '#m-ada-lovelace',
+      '#m-grace-hopper',
+    ]);
     expect(container.querySelector('#m-grace-hopper')).not.toBeNull();
     expect(links[1]?.textContent).toContain('blocked');
     expect(links[0]?.textContent).not.toContain('blocked');
@@ -401,7 +449,7 @@ describe('Standup member strip', () => {
   it('has no axe violations with the strip, evidence rows, and fold visible', async () => {
     const rows = [0, 1, 2, 3].map((i) => evidence({ key: `#${i}`, url: `https://g/pr/${i}` }));
     const { container } = render(
-      <Standup {...BASE} members={[memberWithEvidence(rows), ...two]} />
+      <Standup {...BASE} members={[memberWithEvidence(rows), ...two]} />,
     );
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -412,10 +460,16 @@ describe('Standup intro bullets', () => {
     const { container } = render(
       <Standup
         {...BASE}
-        members={[member({ summary: [[{ s: 'Closed the login work' }], [{ s: 'continuing the audit fix' }]] })]}
-      />
+        members={[
+          member({
+            summary: [[{ s: 'Closed the login work' }], [{ s: 'continuing the audit fix' }]],
+          }),
+        ]}
+      />,
     );
-    const items = [...container.querySelectorAll('ul.memberSummary li')].map((li) => li.textContent);
+    const items = [...container.querySelectorAll('ul.memberSummary li')].map(
+      (li) => li.textContent,
+    );
     expect(items).toEqual(['Closed the login work', 'continuing the audit fix']);
   });
 
@@ -445,9 +499,11 @@ describe('Standup intro bullets', () => {
             ],
           }),
         ]}
-      />
+      />,
     );
-    const items = [...container.querySelectorAll('ul.memberSummary li')].map((li) => li.textContent);
+    const items = [...container.querySelectorAll('ul.memberSummary li')].map(
+      (li) => li.textContent,
+    );
     // Intro words stay glued to their first ticket; the list glue is trimmed.
     expect(items).toEqual([
       'Edited PSOT-1638 Barbican dev env',
@@ -475,9 +531,11 @@ describe('Standup intro bullets', () => {
             ],
           }),
         ]}
-      />
+      />,
     );
-    const items = [...container.querySelectorAll('ul.memberSummary li')].map((li) => li.textContent);
+    const items = [...container.querySelectorAll('ul.memberSummary li')].map(
+      (li) => li.textContent,
+    );
     expect(items).toEqual(['Groomed six tickets: PSOT-1638, PSOT-1633.']);
   });
 });
@@ -485,7 +543,10 @@ describe('Standup intro bullets', () => {
 describe('Standup status lozenges', () => {
   it('renders a done status as the green lozenge and keeps the word', () => {
     const { container } = render(
-      <Standup {...BASE} members={[memberWithEvidence([evidence({ kind: 'issue', status: 'Done' })])]} />
+      <Standup
+        {...BASE}
+        members={[memberWithEvidence([evidence({ kind: 'issue', status: 'Done' })])]}
+      />,
     );
     const status = container.querySelector('.evidenceStatus') as HTMLElement;
     expect(status.textContent).toBe('Done');
@@ -494,7 +555,10 @@ describe('Standup status lozenges', () => {
 
   it('degrades an unknown status to the grey lozenge with the plain word', () => {
     const { container } = render(
-      <Standup {...BASE} members={[memberWithEvidence([evidence({ kind: 'issue', status: 'Mystery Lane' })])]} />
+      <Standup
+        {...BASE}
+        members={[memberWithEvidence([evidence({ kind: 'issue', status: 'Mystery Lane' })])]}
+      />,
     );
     const status = container.querySelector('.evidenceStatus') as HTMLElement;
     expect(status.textContent).toBe('Mystery Lane');
@@ -509,10 +573,16 @@ describe('Standup doc evidence rows', () => {
         {...BASE}
         members={[
           memberWithEvidence([
-            evidence({ kind: 'page', key: '1892385692', title: 'MFA Runbook', url: 'https://c/p', repo: '' }),
+            evidence({
+              kind: 'page',
+              key: '1892385692',
+              title: 'MFA Runbook',
+              url: 'https://c/p',
+              repo: '',
+            }),
           ]),
         ]}
-      />
+      />,
     );
     const link = screen.getByRole('link', { name: 'MFA Runbook' });
     expect(link.getAttribute('href')).toBe('https://c/p');
@@ -537,7 +607,9 @@ describe('Standup PR commit breakdown', () => {
     const { container } = render(<Standup {...BASE} members={[memberWithEvidence([pr])]} />);
     const toggle = screen.getByRole('button', { name: '▸ 2 commits' });
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
-    const region = container.querySelector(`#${toggle.getAttribute('aria-controls')}`) as HTMLElement;
+    const region = container.querySelector(
+      `#${toggle.getAttribute('aria-controls')}`,
+    ) as HTMLElement;
     expect(region.hidden).toBe(true);
 
     fireEvent.click(toggle);
@@ -548,7 +620,9 @@ describe('Standup PR commit breakdown', () => {
   });
 
   it('renders no toggle for a childless row', () => {
-    const { container } = render(<Standup {...BASE} members={[memberWithEvidence([evidence()])]} />);
+    const { container } = render(
+      <Standup {...BASE} members={[memberWithEvidence([evidence()])]} />,
+    );
     expect(container.querySelector('.commitToggle')).toBeNull();
   });
 
@@ -569,13 +643,15 @@ describe('Standup practices', () => {
 
   it('hoists an untracked-work signal into its own card section, evidence intact', () => {
     const { container } = render(
-      <Standup {...BASE} members={[member({ practices: [untracked] })]} />
+      <Standup {...BASE} members={[member({ practices: [untracked] })]} />,
     );
     const section = [...container.querySelectorAll('.issueSection')].find(
-      (s) => s.querySelector('.eyebrow')?.textContent === 'Untracked work'
+      (s) => s.querySelector('.eyebrow')?.textContent === 'Untracked work',
     );
     expect(section?.textContent).toContain('carries no ticket reference');
-    expect(section?.querySelector('a')?.getAttribute('href')).toBe('https://example.invalid/pull/91');
+    expect(section?.querySelector('a')?.getAttribute('href')).toBe(
+      'https://example.invalid/pull/91',
+    );
     // And the generic practices block does not render it twice.
     expect(container.querySelector('.practices')).toBeNull();
   });
@@ -598,7 +674,7 @@ describe('Standup practices', () => {
       <Standup
         {...BASE}
         members={[member({ practices: [{ ...untracked, rule: 'invented-tomorrow' }] })]}
-      />
+      />,
     );
     const chip = container.querySelector('.practices .chip');
     expect(chip?.textContent).toBe('Untracked work');
@@ -607,33 +683,42 @@ describe('Standup practices', () => {
 
   it('colours a known rule by its own tone', () => {
     const { container } = render(
-      <Standup {...BASE} members={[member({ practices: [untracked] })]} />
+      <Standup {...BASE} members={[member({ practices: [untracked] })]} />,
     );
-    expect(container.querySelector('.practiceList .chip')?.getAttribute('style')).toContain('var(--warn)');
+    expect(container.querySelector('.practiceList .chip')?.getAttribute('style')).toContain(
+      'var(--warn)',
+    );
   });
 
   it('keeps a coached rule in the practices block, not the untracked section', () => {
     const coached = { ...untracked, rule: 'commit-messages', title: 'Commit messages' };
     const { container } = render(
-      <Standup {...BASE} members={[member({ practices: [coached] })]} />
+      <Standup {...BASE} members={[member({ practices: [coached] })]} />,
     );
     expect(container.querySelector('.practices')?.textContent).toContain('Commit messages');
-    const sections = [...container.querySelectorAll('.issueSection .eyebrow')].map((e) => e.textContent);
+    const sections = [...container.querySelectorAll('.issueSection .eyebrow')].map(
+      (e) => e.textContent,
+    );
     expect(sections).not.toContain('Untracked work');
   });
 
   it('marks a repeat with the word, not colour alone', () => {
     const { container } = render(
-      <Standup {...BASE} members={[member({ practices: [{ ...untracked, repeat: true }] })]} />
+      <Standup {...BASE} members={[member({ practices: [{ ...untracked, repeat: true }] })]} />,
     );
     expect(container.querySelector('.practiceRepeat')?.textContent).toBe('again today');
   });
 
   it('spells the rollup count as members, and hides it when empty', () => {
     const { container, rerender } = render(
-      <Standup {...BASE} practices={[{ rule: 'untracked-work', count: 2, title: 'Untracked work' }]} />
+      <Standup
+        {...BASE}
+        practices={[{ rule: 'untracked-work', count: 2, title: 'Untracked work' }]}
+      />,
     );
-    expect(container.querySelector('.practiceRollup')?.textContent).toContain('Untracked work · 2 members');
+    expect(container.querySelector('.practiceRollup')?.textContent).toContain(
+      'Untracked work · 2 members',
+    );
 
     rerender(<Standup {...BASE} />);
     expect(container.querySelector('.practiceRollup')).toBeNull();
@@ -645,7 +730,7 @@ describe('Standup practices', () => {
         {...BASE}
         members={[member({ practices: [untracked] })]}
         practices={[{ rule: 'untracked-work', count: 1, title: 'Untracked work' }]}
-      />
+      />,
     );
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -667,10 +752,15 @@ describe('Standup issue card header', () => {
           ticketing([
             // A PR number is not a tracker key — the header must skip it.
             evidence({ kind: 'pr', key: '#91' }),
-            evidence({ kind: 'issue', key: 'YB-12', url: 'https://x/browse/YB-12', status: 'In Progress' }),
+            evidence({
+              kind: 'issue',
+              key: 'YB-12',
+              url: 'https://x/browse/YB-12',
+              status: 'In Progress',
+            }),
           ]),
         ]}
-      />
+      />,
     );
     const key = container.querySelector('.issueKey');
     expect(key?.textContent).toBe('YB-12');
@@ -686,7 +776,8 @@ describe('Standup issue card header', () => {
   });
 
   it('derives the lozenge: all-done reads Done, otherwise In Progress, no activity reads the honest words', () => {
-    const lozenge = (container: Element) => container.querySelector('.issueHead .lozenge')?.textContent;
+    const lozenge = (container: Element) =>
+      container.querySelector('.issueHead .lozenge')?.textContent;
 
     const done = ticketing([evidence({ kind: 'issue', key: 'YB-1', status: 'Done' })]);
     expect(lozenge(render(<Standup {...BASE} members={[done]} />).container)).toBe('Done');
@@ -696,9 +787,13 @@ describe('Standup issue card header', () => {
 
     // Activity with no ticketing evidence at all is still in progress.
     const codeOnly = member({ counts: [0, 2, 0] });
-    expect(lozenge(render(<Standup {...BASE} members={[codeOnly]} />).container)).toBe('In Progress');
+    expect(lozenge(render(<Standup {...BASE} members={[codeOnly]} />).container)).toBe(
+      'In Progress',
+    );
 
-    expect(lozenge(render(<Standup {...BASE} members={[member()]} />).container)).toBe('No activity');
+    expect(lozenge(render(<Standup {...BASE} members={[member()]} />).container)).toBe(
+      'No activity',
+    );
   });
 
   it('renders ticket rows as a feed: no kind chip, status as a lozenge', () => {
@@ -706,7 +801,7 @@ describe('Standup issue card header', () => {
       <Standup
         {...BASE}
         members={[ticketing([evidence({ kind: 'issue', key: 'YB-1', status: 'In Progress' })])]}
-      />
+      />,
     );
     const row = container.querySelector('.evidenceFeedRow');
     expect(row).not.toBeNull();
@@ -735,7 +830,7 @@ describe('Standup issue card header', () => {
             ],
           }),
         ]}
-      />
+      />,
     );
     expect(await axe(container)).toHaveNoViolations();
   });
@@ -758,7 +853,11 @@ describe('Standup — correcting a practice signal', () => {
 
   function withPractice(correctable: boolean) {
     return render(
-      <Standup {...BASE} members={[member({ practices: [untracked] })]} correctable={correctable} />
+      <Standup
+        {...BASE}
+        members={[member({ practices: [untracked] })]}
+        correctable={correctable}
+      />,
     );
   }
 
@@ -789,7 +888,7 @@ describe('Standup — correcting a practice signal', () => {
 
   it('offers no controls when the flag is absent entirely', () => {
     const { container } = render(
-      <Standup {...BASE} members={[member({ practices: [untracked] })]} />
+      <Standup {...BASE} members={[member({ practices: [untracked] })]} />,
     );
     expect(container.querySelector('.practiceVotes')).toBeNull();
   });
@@ -894,22 +993,43 @@ describe('Standup — correcting a practice signal', () => {
  * the story — the fixture every story-view test below starts from. */
 function storiedMember(over: Partial<StandupMember> = {}): StandupMember {
   const story = evidence({
-    kind: 'issue', key: 'YB-1', title: 'SSO login flow', url: 'https://j/browse/YB-1',
-    status: 'In Progress', type: 'Story', repo: '',
+    kind: 'issue',
+    key: 'YB-1',
+    title: 'SSO login flow',
+    url: 'https://j/browse/YB-1',
+    status: 'In Progress',
+    type: 'Story',
+    repo: '',
   });
   const subtask = evidence({
-    kind: 'issue', key: 'YB-3', title: 'SSO error states', url: 'https://j/browse/YB-3',
-    status: 'Done', type: 'Sub-task', parent: 'YB-1', subtask: true, repo: '',
+    kind: 'issue',
+    key: 'YB-3',
+    title: 'SSO error states',
+    url: 'https://j/browse/YB-3',
+    status: 'Done',
+    type: 'Sub-task',
+    parent: 'YB-1',
+    subtask: true,
+    repo: '',
   });
   const referencedPr = evidence({
-    kind: 'pr', key: '#91', title: 'YB-1 enable SSO', url: 'https://g/pr/91', tickets: ['YB-1'],
+    kind: 'pr',
+    key: '#91',
+    title: 'YB-1 enable SSO',
+    url: 'https://g/pr/91',
+    tickets: ['YB-1'],
   });
   const looseCommit = evidence();
   return member({
     counts: [2, 2, 0],
     categories: [
       { label: 'Ticketing', items: [], links: [], evidence: [story, subtask] },
-      { label: 'Code', items: [[{ s: 'Merged the login fix.' }]], links: [], evidence: [referencedPr, looseCommit] },
+      {
+        label: 'Code',
+        items: [[{ s: 'Merged the login fix.' }]],
+        links: [],
+        evidence: [referencedPr, looseCommit],
+      },
     ],
     ...over,
   });
@@ -924,7 +1044,9 @@ describe('Standup story groups', () => {
     expect(subtaskRows).toHaveLength(1);
     // Its own <li>, never text appended to the story's line.
     expect(subtaskRows?.[0]?.textContent).toContain('SSO error states');
-    expect(card?.querySelector('.storySubtasks')?.getAttribute('aria-label')).toBe('Subtasks of YB-1');
+    expect(card?.querySelector('.storySubtasks')?.getAttribute('aria-label')).toBe(
+      'Subtasks of YB-1',
+    );
   });
 
   it('files code that names the story inside its group, and only that code', () => {
@@ -941,7 +1063,9 @@ describe('Standup story groups', () => {
 
   it('labels the section Stories only when there is hierarchy to draw', () => {
     const { container } = render(<Standup {...BASE} members={[storiedMember()]} />);
-    const labels = [...container.querySelectorAll('.issueSection .eyebrow')].map((e) => e.textContent);
+    const labels = [...container.querySelectorAll('.issueSection .eyebrow')].map(
+      (e) => e.textContent,
+    );
     expect(labels).toContain('Stories');
     expect(labels).not.toContain('Ticket status changes');
   });
@@ -950,12 +1074,28 @@ describe('Standup story groups', () => {
     // All-default fields — exactly what a legacy report or keyless board sends.
     const flat = member({
       counts: [1, 0, 0],
-      categories: [{ label: 'Ticketing', items: [], links: [], evidence: [
-        evidence({ kind: 'issue', key: 'YB-9', title: 'Old row', url: 'https://j/browse/YB-9', status: 'Done', repo: '' }),
-      ] }],
+      categories: [
+        {
+          label: 'Ticketing',
+          items: [],
+          links: [],
+          evidence: [
+            evidence({
+              kind: 'issue',
+              key: 'YB-9',
+              title: 'Old row',
+              url: 'https://j/browse/YB-9',
+              status: 'Done',
+              repo: '',
+            }),
+          ],
+        },
+      ],
     });
     const { container } = render(<Standup {...BASE} members={[flat]} />);
-    const labels = [...container.querySelectorAll('.issueSection .eyebrow')].map((e) => e.textContent);
+    const labels = [...container.querySelectorAll('.issueSection .eyebrow')].map(
+      (e) => e.textContent,
+    );
     expect(labels).toContain('Ticket status changes');
     expect(container.querySelector('.storyCard')).toBeNull();
   });
@@ -963,12 +1103,26 @@ describe('Standup story groups', () => {
   it('promotes an orphan subtask to its own group and names its parent in words', () => {
     const orphan = member({
       counts: [1, 0, 0],
-      categories: [{ label: 'Ticketing', items: [], links: [], evidence: [
-        evidence({
-          kind: 'issue', key: 'YB-3', title: 'SSO error states', url: 'https://j/browse/YB-3',
-          status: 'Done', type: 'Sub-task', parent: 'YB-1', subtask: true, repo: '',
-        }),
-      ] }],
+      categories: [
+        {
+          label: 'Ticketing',
+          items: [],
+          links: [],
+          evidence: [
+            evidence({
+              kind: 'issue',
+              key: 'YB-3',
+              title: 'SSO error states',
+              url: 'https://j/browse/YB-3',
+              status: 'Done',
+              type: 'Sub-task',
+              parent: 'YB-1',
+              subtask: true,
+              repo: '',
+            }),
+          ],
+        },
+      ],
     });
     const { container } = render(<Standup {...BASE} members={[orphan]} />);
     const card = container.querySelector('.storyCard');
@@ -980,21 +1134,55 @@ describe('Standup story groups', () => {
   });
 
   it('never nests a story under its epic', () => {
-    const epic = evidence({ kind: 'issue', key: 'YB-100', title: 'Auth epic', url: 'https://j/browse/YB-100', type: 'Epic', repo: '' });
+    const epic = evidence({
+      kind: 'issue',
+      key: 'YB-100',
+      title: 'Auth epic',
+      url: 'https://j/browse/YB-100',
+      type: 'Epic',
+      repo: '',
+    });
     // A team-managed Jira Story carries its epic in `parent` with subtask false.
     const story = evidence({
-      kind: 'issue', key: 'YB-1', title: 'SSO login flow', url: 'https://j/browse/YB-1',
-      type: 'Story', parent: 'YB-100', repo: '',
+      kind: 'issue',
+      key: 'YB-1',
+      title: 'SSO login flow',
+      url: 'https://j/browse/YB-1',
+      type: 'Story',
+      parent: 'YB-100',
+      repo: '',
     });
     const { groups } = groupStories([epic, story], [], []);
     expect(groups.map((g) => g.story.key)).toEqual(['YB-100', 'YB-1']);
     expect(groups.every((g) => g.subtasks.length === 0)).toBe(true);
   });
 
-  it('attaches a change naming a subtask to that subtask\'s story group', () => {
-    const story = evidence({ kind: 'issue', key: 'YB-1', title: 'SSO', url: 'https://j/1', type: 'Story', repo: '' });
-    const subtask = evidence({ kind: 'issue', key: 'YB-3', title: 'Errors', url: 'https://j/3', type: 'Sub-task', parent: 'YB-1', subtask: true, repo: '' });
-    const pr = evidence({ kind: 'pr', key: '#7', title: 'YB-3 handle errors', url: 'https://g/7', tickets: ['YB-3'] });
+  it("attaches a change naming a subtask to that subtask's story group", () => {
+    const story = evidence({
+      kind: 'issue',
+      key: 'YB-1',
+      title: 'SSO',
+      url: 'https://j/1',
+      type: 'Story',
+      repo: '',
+    });
+    const subtask = evidence({
+      kind: 'issue',
+      key: 'YB-3',
+      title: 'Errors',
+      url: 'https://j/3',
+      type: 'Sub-task',
+      parent: 'YB-1',
+      subtask: true,
+      repo: '',
+    });
+    const pr = evidence({
+      kind: 'pr',
+      key: '#7',
+      title: 'YB-3 handle errors',
+      url: 'https://g/7',
+      tickets: ['YB-3'],
+    });
     const { groups, looseCode } = groupStories([story, subtask], [pr], []);
     expect(groups[0]?.code.map((c) => c.key)).toEqual(['#7']);
     expect(looseCode).toEqual([]);
@@ -1002,11 +1190,32 @@ describe('Standup story groups', () => {
 
   it('folds story groups past the first three behind an accessible toggle', () => {
     const rows = [1, 2, 3, 4, 5].map((n) =>
-      evidence({ kind: 'issue', key: `YB-${n}`, title: `Story ${n}`, url: `https://j/${n}`, type: 'Story', repo: '' }),
+      evidence({
+        kind: 'issue',
+        key: `YB-${n}`,
+        title: `Story ${n}`,
+        url: `https://j/${n}`,
+        type: 'Story',
+        repo: '',
+      }),
     );
     // One subtask so the story view engages at all.
-    rows.push(evidence({ kind: 'issue', key: 'YB-9', title: 'Sub', url: 'https://j/9', type: 'Sub-task', parent: 'YB-1', subtask: true, repo: '' }));
-    const m = member({ counts: [6, 0, 0], categories: [{ label: 'Ticketing', items: [], links: [], evidence: rows }] });
+    rows.push(
+      evidence({
+        kind: 'issue',
+        key: 'YB-9',
+        title: 'Sub',
+        url: 'https://j/9',
+        type: 'Sub-task',
+        parent: 'YB-1',
+        subtask: true,
+        repo: '',
+      }),
+    );
+    const m = member({
+      counts: [6, 0, 0],
+      categories: [{ label: 'Ticketing', items: [], links: [], evidence: rows }],
+    });
     const { container } = render(<Standup {...BASE} members={[m]} />);
     expect(container.querySelectorAll('.storyList:not([hidden]) .storyCard')).toHaveLength(3);
     const toggle = screen.getByRole('button', { name: '+ 2 more' });
@@ -1032,7 +1241,14 @@ describe('Standup story groups', () => {
           items: [],
           links: [],
           evidence: [
-            evidence({ kind: 'work_item', key: '#7', title: 'Build API', url: 'https://a/wi/7', status: 'Active', repo: '' }),
+            evidence({
+              kind: 'work_item',
+              key: '#7',
+              title: 'Build API',
+              url: 'https://a/wi/7',
+              status: 'Active',
+              repo: '',
+            }),
           ],
         },
       ],
@@ -1051,7 +1267,9 @@ describe('Standup story groups', () => {
     const { container } = render(<Standup {...BASE} members={[m]} />);
     // Section headings only — the story group's own little "Code" eyebrow
     // (inside .storyLinkedWork) is exactly where the PR should still render.
-    const labels = [...container.querySelectorAll('.categoryHead .eyebrow')].map((e) => e.textContent);
+    const labels = [...container.querySelectorAll('.categoryHead .eyebrow')].map(
+      (e) => e.textContent,
+    );
     expect(container.querySelector('.storyLinkedWork')?.textContent).toContain('#91');
     expect(labels).not.toContain('Code');
   });

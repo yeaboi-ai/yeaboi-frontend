@@ -56,7 +56,12 @@ export interface EditAppProps {
   theme: Theme;
 }
 
-export function EditApp({ chrome: bootChrome, report: bootReport, editing: boot, theme }: EditAppProps) {
+export function EditApp({
+  chrome: bootChrome,
+  report: bootReport,
+  editing: boot,
+  theme,
+}: EditAppProps) {
   const pid = useMemo(() => participantId(), []);
   const session = useMemo(() => {
     const loaded = loadSession('doc', pid);
@@ -77,7 +82,7 @@ export function EditApp({ chrome: bootChrome, report: bootReport, editing: boot,
         edits: boot.edits,
         people: boot.people,
       }),
-    [boot, bootChrome, bootReport]
+    [boot, bootChrome, bootReport],
   );
 
   const snapshot = useBoardSnapshot(store);
@@ -117,7 +122,7 @@ export function EditApp({ chrome: bootChrome, report: bootReport, editing: boot,
   const revision = useCallback(() => state.revision, [state.revision]);
   const actions = useMemo(
     () => createEditActions(session, store, identity, revision),
-    [session, store, identity, revision]
+    [session, store, identity, revision],
   );
 
   useBoardStream({ session, store, enabled: Boolean(session.token) });
@@ -136,9 +141,11 @@ export function EditApp({ chrome: bootChrome, report: bootReport, editing: boot,
       showHistory: setHistoryPath,
       othersEditing: (path: string) =>
         // `mine` is decided server-side; no pid ever reaches this browser.
-        state.people.filter((person) => !person.mine && person.editing === path).map((person) => person.name),
+        state.people
+          .filter((person) => !person.mine && person.editing === path)
+          .map((person) => person.name),
     }),
-    [state, actions, name, avatar]
+    [state, actions, name, avatar],
   );
 
   return (

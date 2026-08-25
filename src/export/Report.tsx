@@ -64,7 +64,9 @@ function Body({ report }: { report: ExportReport }) {
         />
       );
     case 'poker':
-      return <Poker tickets={report.tickets} participants={report.participants} trend={report.trend} />;
+      return (
+        <Poker tickets={report.tickets} participants={report.participants} trend={report.trend} />
+      );
     case 'retro':
       return (
         <Retro

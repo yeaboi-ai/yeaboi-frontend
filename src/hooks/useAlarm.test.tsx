@@ -65,7 +65,8 @@ function fakeAudio() {
         connect: () => {},
         gain: {
           setValueAtTime: (value: number, time: number) => void voice.ramps.push({ value, time }),
-          exponentialRampToValueAtTime: (value: number, time: number) => void voice.ramps.push({ value, time }),
+          exponentialRampToValueAtTime: (value: number, time: number) =>
+            void voice.ramps.push({ value, time }),
         },
       };
     }

@@ -31,7 +31,13 @@ export interface VisualizerProps {
   className?: string | undefined;
 }
 
-export function Visualizer({ playing, analyser, width = 34, height = 22, className }: VisualizerProps) {
+export function Visualizer({
+  playing,
+  analyser,
+  width = 34,
+  height = 22,
+  className,
+}: VisualizerProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -41,7 +47,8 @@ export function Visualizer({ playing, analyser, width = 34, height = 22, classNa
     if (!ctx) return;
 
     const reduced =
-      typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const barWidth = canvas.width / BARS;
     const bins = analyser ? new Uint8Array(analyser.frequencyBinCount) : null;
@@ -63,7 +70,10 @@ export function Visualizer({ playing, analyser, width = 34, height = 22, classNa
         });
       }
       phase += SPEED;
-      return Array.from({ length: BARS }, (_, i) => (Math.sin(phase + i * 0.7) + Math.sin(phase * 1.7 + i) + 2) / 4);
+      return Array.from(
+        { length: BARS },
+        (_, i) => (Math.sin(phase + i * 0.7) + Math.sin(phase * 1.7 + i) + 2) / 4,
+      );
     };
 
     const frame = (): void => {

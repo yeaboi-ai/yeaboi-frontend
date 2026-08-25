@@ -30,7 +30,10 @@ interface Particle {
 }
 
 function prefersReducedMotion(): boolean {
-  return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return (
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
 }
 
 /** Read the six themed confetti colours off the document. */
@@ -41,7 +44,9 @@ function palette(): string[] {
     .filter(Boolean);
   // A canvas cannot paint `var(--x)`, and a page that somehow lacks the tokens
   // should still celebrate rather than draw 140 invisible squares.
-  return colours.length ? colours : ['#5ac88a', '#a371f7', '#ff5edb', '#4cc38a', '#ffcf5e', '#ff5e5e'];
+  return colours.length
+    ? colours
+    : ['#5ac88a', '#a371f7', '#ff5edb', '#4cc38a', '#ffcf5e', '#ff5e5e'];
 }
 
 /**
@@ -62,7 +67,7 @@ export function useConfetti(): [ref: (el: HTMLCanvasElement | null) => void, fir
     () => () => {
       if (raf.current !== undefined) cancelAnimationFrame(raf.current);
     },
-    []
+    [],
   );
 
   const fire = useCallback(() => {

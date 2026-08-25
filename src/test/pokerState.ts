@@ -31,10 +31,18 @@ export function dueling(overrides: Partial<PokerState> = {}): PokerState {
 }
 
 /** A seat mid-round: known to be present, `voted` says whether they have. */
-export const seat = (name: string, voted = false, avatar = '🙂'): PokerVote => ({ name, avatar, voted });
+export const seat = (name: string, voted = false, avatar = '🙂'): PokerVote => ({
+  name,
+  avatar,
+  voted,
+});
 
 /** A seat post-reveal, carrying its value. */
-export const shown = (name: string, value: string, avatar = '🙂'): PokerVote => ({ name, avatar, value });
+export const shown = (name: string, value: string, avatar = '🙂'): PokerVote => ({
+  name,
+  avatar,
+  value,
+});
 
 export function ticket(overrides: Partial<PokerTicket> = {}): PokerTicket {
   return {

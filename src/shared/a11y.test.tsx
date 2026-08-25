@@ -103,7 +103,12 @@ const CASES: [name: string, node: preact.ComponentChildren][] = [
   ],
   [
     'Sparkline',
-    <Sparkline values={[3, 5, 4, 8, 7]} title="velocity, last 5 sprints" startLabel="Apr" endLabel="Aug" />,
+    <Sparkline
+      values={[3, 5, 4, 8, 7]}
+      title="velocity, last 5 sprints"
+      startLabel="Apr"
+      endLabel="Aug"
+    />,
   ],
   ['Avatar', <Avatar name="Alice Johnson" />],
   ['NoticeBlock', <NoticeBlock title="Caveats" items={['Only 3 days of data.']} />],
@@ -123,11 +128,24 @@ const CASES: [name: string, node: preact.ComponentChildren][] = [
   ],
   ['Prose', <Prose text={'Line one.\nLine two.'} />],
   ['ProseBullets', <ProseBullets text="Shipped the API. Docs are behind; tests are green." />],
-  ['RichText', <RichText runs={[{ s: 'See ' }, { s: 'AB-1', href: 'https://jira.example/AB-1' }]} />],
+  [
+    'RichText',
+    <RichText runs={[{ s: 'See ' }, { s: 'AB-1', href: 'https://jira.example/AB-1' }]} />,
+  ],
   ['IconButton', <IconButton icon="🔒" label="Lock the board" />],
-  ['InviteQR', <InviteQR qrSrc="/api/qr?token=x" joinCode="K3P9-2QXA" inviteUrl="https://x.trycloudflare.com/#code=K3P9-2QXA" />],
+  [
+    'InviteQR',
+    <InviteQR
+      qrSrc="/api/qr?token=x"
+      joinCode="K3P9-2QXA"
+      inviteUrl="https://x.trycloudflare.com/#code=K3P9-2QXA"
+    />,
+  ],
   ['JoinGate', <JoinGate />],
-  ['MusicPlayer', <MusicPlayer music={music} channels={[{ name: 'Lofi', url: 'https://example/stream' }]} />],
+  [
+    'MusicPlayer',
+    <MusicPlayer music={music} channels={[{ name: 'Lofi', url: 'https://example/stream' }]} />,
+  ],
   [
     'Popover',
     <PopoverGroup>
@@ -165,7 +183,14 @@ const CASES: [name: string, node: preact.ComponentChildren][] = [
   ['ThemeSwitcher', <ThemeSwitcher value="midnight" onChange={noop} />],
   ['TimerReadout', <TimerReadout remaining={95} />],
   ['TimerControls', <TimerControls running onStart={noop} onStop={noop} />],
-  ['Toolbar', <Toolbar brand="Sprint Retro" subtitle="12 cards" tools={<IconButton icon="🔒" label="Lock" />} />],
+  [
+    'Toolbar',
+    <Toolbar
+      brand="Sprint Retro"
+      subtitle="12 cards"
+      tools={<IconButton icon="🔒" label="Lock" />}
+    />,
+  ],
   ['Visualizer', <Visualizer playing />],
 ];
 

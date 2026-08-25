@@ -224,7 +224,13 @@ function BlockView({ block }: { block: Block }) {
   }
 }
 
-export function Profile({ sections, coverage }: { sections: ProfileSection[]; coverage: string[] }) {
+export function Profile({
+  sections,
+  coverage,
+}: {
+  sections: ProfileSection[];
+  coverage: string[];
+}) {
   if (!sections.length) {
     return <p className={styles['empty']}>No analysis to export yet.</p>;
   }

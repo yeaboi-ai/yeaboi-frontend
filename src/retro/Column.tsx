@@ -123,7 +123,7 @@ export function Column({
       className={cx(
         styles['cardSlot'],
         arrivals.has(card.id) && motion['enter'],
-        filtering && styles['cardFiltered']
+        filtering && styles['cardFiltered'],
       )}
     >
       {dropAt && dropAt.index === positions.get(card.id) ? (
@@ -134,7 +134,11 @@ export function Column({
           would push every card below it by its own height plus a gap — which
           moves the very midpoints the drop index was computed from. */}
       {last && dropAt && dropAt.index >= slots ? (
-        <div className={cx(styles['dropLine'], styles['dropLineTail'])} data-drop-line="tail" aria-hidden="true" />
+        <div
+          className={cx(styles['dropLine'], styles['dropLineTail'])}
+          data-drop-line="tail"
+          aria-hidden="true"
+        />
       ) : null}
       <CardView
         arrived={arrivals.has(card.id)}
@@ -187,16 +191,22 @@ export function Column({
           // always tracked typing; it used to be rendered only as a line of
           // text under the column, which is not where you are looking.
           <div className={motion['ghost']} aria-hidden="true">
-            {typing.length === 1 ? `${typing[0]} is writing` : `${typing.length} people are writing`}
+            {typing.length === 1
+              ? `${typing[0]} is writing`
+              : `${typing.length} people are writing`}
           </div>
         ) : null}
         {visible.length === 0 && typing.length === 0 ? (
-          <p className={styles['columnEmpty']}>{focus ? `Nothing from ${focus} here.` : 'Nothing yet.'}</p>
+          <p className={styles['columnEmpty']}>
+            {focus ? `Nothing from ${focus} here.` : 'Nothing yet.'}
+          </p>
         ) : (
           visible.map((card, index) => renderCard(card, index === visible.length - 1))
         )}
         {/* An empty column has no last slot to hang the tail indicator in. */}
-        {visible.length === 0 && dropAt ? <div className={styles['dropLine']} data-drop-line="empty" aria-hidden="true" /> : null}
+        {visible.length === 0 && dropAt ? (
+          <div className={styles['dropLine']} data-drop-line="empty" aria-hidden="true" />
+        ) : null}
 
         {/* Last in the stack, so a card lands where you were pointing and the
             rest of the column is the control that opens it. */}

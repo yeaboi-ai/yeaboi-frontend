@@ -22,7 +22,13 @@ import { participantId, read } from '../runtime/storage';
 import { InviteQR, JoinGate, Modal, PageShell, Toast, Toolbar } from '../shared';
 import { createBoardStore } from '../store/boardStore';
 import { useBoardSelector, useBoardSnapshot } from '../store/useBoard';
-import type { ShipActivity, ShipPhaseEvent, ShipState, ShipValidationView, ShipWatcher } from '../types/board';
+import type {
+  ShipActivity,
+  ShipPhaseEvent,
+  ShipState,
+  ShipValidationView,
+  ShipWatcher,
+} from '../types/board';
 import type { ShipBoot } from './boot';
 import styles from './ship.module.css';
 
@@ -86,12 +92,20 @@ export function App({ boot }: { boot: ShipBoot }) {
         <Toolbar
           subtitle={STATUS_LABEL[runStatus] ?? runStatus}
           tools={
-            <button type="button" className={styles['inviteBtn']} onClick={() => setInviteOpen(true)}>
+            <button
+              type="button"
+              className={styles['inviteBtn']}
+              onClick={() => setInviteOpen(true)}
+            >
               Invite watchers
             </button>
           }
         >
-          <span className={styles['pip']} data-status={status} aria-label={`connection ${status}`} />
+          <span
+            className={styles['pip']}
+            data-status={status}
+            aria-label={`connection ${status}`}
+          />
           {watchers.length > 0 && (
             <span className={styles['watchers']}>
               {watchers.length} watching{name ? '' : ' · you are anonymous'}
@@ -115,8 +129,8 @@ export function App({ boot }: { boot: ShipBoot }) {
 
       <Modal open={inviteOpen} onClose={() => setInviteOpen(false)} title="Invite watchers">
         <p className={styles['popNote']}>
-          Send the invite link — it carries the watch code, so they land straight on the board. Anyone with the
-          link can see the diff, so keep it off anywhere public.
+          Send the invite link — it carries the watch code, so they land straight on the board.
+          Anyone with the link can see the diff, so keep it off anywhere public.
         </p>
         <Toast message={inviteState.notice} onDismiss={inviteState.dismiss} />
         <InviteQR
@@ -167,7 +181,12 @@ function StatusBanner({ state }: { state: ShipState }) {
         <div className={styles['bannerStory']}>{state.story || state.run_id}</div>
       </div>
       {state.pr_url && (
-        <a className={styles['prLink']} href={state.pr_url} target="_blank" rel="noreferrer noopener">
+        <a
+          className={styles['prLink']}
+          href={state.pr_url}
+          target="_blank"
+          rel="noreferrer noopener"
+        >
           View pull request →
         </a>
       )}
@@ -217,7 +236,10 @@ function ValidationCard({ validation }: { validation: ShipValidationView }) {
   return (
     <section className={styles['card']} aria-label="Validation">
       <h2 className={styles['h']}>
-        Validation <span data-verdict={validation.passed ? 'pass' : 'fail'}>{validation.passed ? 'passed' : 'failed'}</span>
+        Validation{' '}
+        <span data-verdict={validation.passed ? 'pass' : 'fail'}>
+          {validation.passed ? 'passed' : 'failed'}
+        </span>
       </h2>
       <code className={styles['cmd']}>{validation.command}</code>
       {validation.output_tail && <pre className={styles['tail']}>{validation.output_tail}</pre>}
@@ -245,7 +267,14 @@ function DiffPane({ statLine, patch }: { statLine: string; patch: string }) {
 /** Split a patch into per-line spans so add/remove lines can be tinted by CSS. */
 function colorizeDiff(patch: string) {
   return patch.split('\n').map((line, i) => {
-    const kind = line.startsWith('+') && !line.startsWith('+++') ? 'add' : line.startsWith('-') && !line.startsWith('---') ? 'del' : line.startsWith('@@') ? 'hunk' : 'ctx';
+    const kind =
+      line.startsWith('+') && !line.startsWith('+++')
+        ? 'add'
+        : line.startsWith('-') && !line.startsWith('---')
+          ? 'del'
+          : line.startsWith('@@')
+            ? 'hunk'
+            : 'ctx';
     return (
       <span key={i} className={styles['diffLine']} data-kind={kind}>
         {line}

@@ -32,7 +32,10 @@ function Harness({ onMove }: { onMove: (id: string, grid: RetroGrids, index: num
 
   return (
     <div>
-      <button type="button" onPointerDown={(e) => onGripPointerDown('c1', e as unknown as PointerEvent)}>
+      <button
+        type="button"
+        onPointerDown={(e) => onGripPointerDown('c1', e as unknown as PointerEvent)}
+      >
         grip
       </button>
       <div data-grid="went_well" data-testid="col-went_well">
@@ -41,7 +44,9 @@ function Harness({ onMove }: { onMove: (id: string, grid: RetroGrids, index: num
         <div data-card-id="c3" />
       </div>
       <div data-grid="demos" data-testid="col-demos" />
-      <output data-testid="target">{drag?.target ? `${drag.target.grid}:${drag.target.index}` : 'none'}</output>
+      <output data-testid="target">
+        {drag?.target ? `${drag.target.grid}:${drag.target.index}` : 'none'}
+      </output>
       <output data-testid="say">{announcement}</output>
     </div>
   );
@@ -52,14 +57,27 @@ function installLayout(): void {
   for (const [grid, box] of Object.entries(LAYOUT)) {
     const column = screen.getByTestId(`col-${grid}`);
     column.getBoundingClientRect = () =>
-      ({ left: box.left, right: box.right, top: 0, bottom: 400, width: box.right - box.left, height: 400 }) as DOMRect;
+      ({
+        left: box.left,
+        right: box.right,
+        top: 0,
+        bottom: 400,
+        width: box.right - box.left,
+        height: 400,
+      }) as DOMRect;
   }
   const cards = [...document.querySelectorAll<HTMLElement>('[data-card-id]')];
   cards.forEach((card, index) => {
     card.getBoundingClientRect = () =>
-      ({ left: 0, right: 300, top: index * 50, bottom: index * 50 + 50, width: 300, height: 50 }) as DOMRect;
+      ({
+        left: 0,
+        right: 300,
+        top: index * 50,
+        bottom: index * 50 + 50,
+        width: 300,
+        height: 50,
+      }) as DOMRect;
   });
-
 }
 
 /**
@@ -171,7 +189,9 @@ describe('useCardDrag', () => {
     fire(document, pointer('pointerup', 700, 20));
 
     expect(onMove).not.toHaveBeenCalled();
-    expect(screen.getByTestId('say').textContent).toBe('Dropped outside a column. The card did not move.');
+    expect(screen.getByTestId('say').textContent).toBe(
+      'Dropped outside a column. The card did not move.',
+    );
   });
 
   it('cancels when the browser takes the pointer away', () => {
@@ -197,7 +217,10 @@ describe('useCardDrag', () => {
 
   it('ignores a secondary-button press', () => {
     const { onMove, grip } = setup();
-    fire(grip, new MouseEvent('pointerdown', { bubbles: true, clientX: 10, clientY: 10, button: 2 }));
+    fire(
+      grip,
+      new MouseEvent('pointerdown', { bubbles: true, clientX: 10, clientY: 10, button: 2 }),
+    );
     fire(document, pointer('pointermove', 400, 20));
     fire(document, pointer('pointerup', 400, 20));
     expect(onMove).not.toHaveBeenCalled();
@@ -213,6 +236,8 @@ describe('useCardDrag', () => {
     const removeSpy = vi.spyOn(document, 'removeEventListener');
     unmount();
     const removed = removeSpy.mock.calls.map(([type]) => type);
-    expect(removed).toEqual(expect.arrayContaining(['pointermove', 'pointerup', 'pointercancel', 'keydown']));
+    expect(removed).toEqual(
+      expect.arrayContaining(['pointermove', 'pointerup', 'pointercancel', 'keydown']),
+    );
   });
 });

@@ -113,14 +113,19 @@ export function HostRail({
       </section>
 
       <section>
-        <Eyebrow value={carried.length ? `${reviewed}/${carried.length}` : 'nothing'}>Last retro</Eyebrow>
+        <Eyebrow value={carried.length ? `${reviewed}/${carried.length}` : 'nothing'}>
+          Last retro
+        </Eyebrow>
         {carried.length ? (
           <ul key={`carried-${viewKey}`} className={cx(kit['railList'], styles['railSwap'])}>
             {carried.map((item) => {
               const status = (item.status || 'pending') as CarriedStatuses;
               return (
                 <li key={item.id} className={styles['carriedRow']}>
-                  <span className={cx(kit['railDot'], styles[`dot_${status}`])} aria-hidden="true" />
+                  <span
+                    className={cx(kit['railDot'], styles[`dot_${status}`])}
+                    aria-hidden="true"
+                  />
                   <span className={styles['carriedText']}>{item.text}</span>
                   <Dropdown
                     label={`Status for: ${item.text.slice(0, 60)}`}
@@ -128,7 +133,9 @@ export function HostRail({
                     value={CARRIED_STATUS_LABELS[status]}
                     options={STATUS_LABELS}
                     onChange={(next) => {
-                      const picked = CARRIED_STATUSES.find((value) => CARRIED_STATUS_LABELS[value] === next);
+                      const picked = CARRIED_STATUSES.find(
+                        (value) => CARRIED_STATUS_LABELS[value] === next,
+                      );
                       if (picked && !past) onSetCarriedStatus(item.id, picked);
                     }}
                   />
@@ -160,7 +167,9 @@ export function HostRail({
                   <Icon name="users" size={13} />
                 </span>
                 <span className={styles['railName']}>Everyone</span>
-                <span className={styles['railCount']}>{people.reduce((sum, p) => sum + p.cards, 0)}</span>
+                <span className={styles['railCount']}>
+                  {people.reduce((sum, p) => sum + p.cards, 0)}
+                </span>
               </button>
             </li>
             {people.map((person) => (
@@ -186,7 +195,8 @@ export function HostRail({
         <section className={styles['railAction']}>
           <Eyebrow>Action items</Eyebrow>
           <Button tone="primary" disabled={suggesting} onClick={onSuggest}>
-            <Icon name="sparkles" size={14} /> {suggesting ? 'Thinking…' : 'Suggest from the feedback'}
+            <Icon name="sparkles" size={14} />{' '}
+            {suggesting ? 'Thinking…' : 'Suggest from the feedback'}
           </Button>
         </section>
       )}

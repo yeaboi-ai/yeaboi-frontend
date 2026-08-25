@@ -79,7 +79,11 @@ export function Deck({ mine, pending, disabled, reason, locked, waiting, onVote 
             <button
               key={value}
               type="button"
-              className={cx(styles['pcard'], selected && styles['pcardSel'], selected && pending && styles['pcardWait'])}
+              className={cx(
+                styles['pcard'],
+                selected && styles['pcardSel'],
+                selected && pending && styles['pcardWait'],
+              )}
               // -1 at the left edge, 0 in the middle, 1 at the right: the arc
               // the closed hand is drawn on.
               style={{ '--fan': (index - FAN_CENTRE) / FAN_CENTRE } as never}

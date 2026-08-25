@@ -93,7 +93,9 @@ describe('retro App', () => {
     await screen.findByText('Pairing paid off');
     const wentWell = screen.getByRole('region', { name: 'What went well' });
     expect(within(wentWell).getByText('Zero flaky tests')).toBeTruthy();
-    expect(within(screen.getByRole('region', { name: 'Action items' })).getByText('Alert on staging')).toBeTruthy();
+    expect(
+      within(screen.getByRole('region', { name: 'Action items' })).getByText('Alert on staging'),
+    ).toBeTruthy();
     // Counting is the column heads' job — there is no board-wide total.
     expect(within(wentWell).getByText('2')).toBeTruthy();
   });
@@ -161,7 +163,9 @@ describe('retro App', () => {
     expect(screen.getByText('Pairing paid off')).toBeTruthy();
     expect(screen.queryByText('Zero flaky tests')).toBeNull();
     // The panel shows the running order and marks who is up.
-    expect(within(walk).getByRole('button', { name: /^Only Ada, 1 card$/, pressed: true })).toBeTruthy();
+    expect(
+      within(walk).getByRole('button', { name: /^Only Ada, 1 card$/, pressed: true }),
+    ).toBeTruthy();
     expect(within(walk).getByRole('button', { name: /^Only Grace,/, pressed: false })).toBeTruthy();
     // "Everyone" is an option in the list, so the off state is visible too.
     expect(within(walk).getByRole('button', { name: /Everyone/, pressed: false })).toBeTruthy();
