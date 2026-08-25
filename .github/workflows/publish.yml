@@ -1,0 +1,116 @@
+# Publish yeaboi-web-assets to PyPI.
+#
+# THE WORKFLOW FILENAME MUST STAY "publish.yml". It is half of PyPI's trusted-
+# publisher record for this project (owner, repo, workflow filename, environment
+# `pypi`); renaming the file revokes the ability to publish, and the failure
+# looks like an authentication error rather than a rename.
+#
+# There is no token and no secret. `id-token: write` mints a short-lived OIDC
+# credential that PyPI exchanges for upload rights, scoped to this workflow in
+# this repository.
+#
+# A merge to `main` publishes when `version` in pyproject.toml names something
+# PyPI does not already have; otherwise the run ends at `check` and does nothing.
+# That makes a version bump the release, and every other merge free.
+
+name: Publish to PyPI
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      suffix:
+        description: 'pre-release suffix to append, e.g. rc1 (leave blank for the version in pyproject.toml)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  # A group per commit, never a shared one. Two merges publish two different
+  # versions and are independent; sharing a group would let a third pending run
+  # cancel the second, and a release that silently never happens leaves nothing
+  # behind but a cancelled run.
+  group: publish-${{ github.event_name == 'push' && github.sha || 'dispatch' }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: Is there a release to make
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      go: ${{ steps.v.outputs.go }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: v
+        env:
+          SUFFIX: ${{ github.event.inputs.suffix }}
+        run: |
+          set -euo pipefail
+          base="$(grep -m1 '^version = ' pyproject.toml | cut -d'"' -f2)"
+          version="${base}${SUFFIX:-}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          # Ask PyPI rather than tracking state here: the registry is the only
+          # authority on what has been released, and it stays right across
+          # force-pushes, reverts and re-runs.
+          code="$(curl -sS -o /dev/null -w '%{http_code}' \
+            "https://pypi.org/pypi/yeaboi-web-assets/$version/json")"
+          if [ "$code" = "404" ]; then
+            echo "go=true" >> "$GITHUB_OUTPUT"
+            echo "→ $version is not on PyPI; publishing"
+          else
+            echo "go=false" >> "$GITHUB_OUTPUT"
+            echo "→ $version already on PyPI (HTTP $code); nothing to do"
+          fi
+
+  publish:
+    name: Build & publish
+    needs: check
+    if: needs.check.outputs.go == 'true'
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write # PyPI trusted publishing (OIDC)
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: make install
+
+      # The gate runs again here, on the exact tree being published. CI already
+      # ran it on the PR, but a release is the one moment where "it passed on
+      # something adjacent" is not good enough.
+      - run: make lint
+      - run: make test-fast
+      - run: make dist-check
+      - run: make wheel-check
+
+      # A pre-release suffix is stamped, never committed. `rc1` exists to prove
+      # a publish end to end; a committed rc would then be the version main
+      # claims, and the next real release would look like a downgrade.
+      - name: Stamp the pre-release suffix
+        if: github.event.inputs.suffix != ''
+        env:
+          VERSION: ${{ needs.check.outputs.version }}
+        run: |
+          set -euo pipefail
+          sed -i "0,/^version = /s|^version = .*|version = \"$VERSION\"|" pyproject.toml
+          grep -m1 '^version = ' pyproject.toml
+
+      # Bundles are already built (wheel-check depends on `build`), so this
+      # packages exactly what those two checks just verified.
+      - run: uv build
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          skip-existing: true # idempotent: a re-run must not fail on an existing file

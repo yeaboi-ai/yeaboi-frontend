@@ -1,0 +1,23 @@
+# Vendored from the yeaboi repo — `make contracts-check` compares it byte for
+# byte against the pinned sha, so reformatting it would fail that check.
+contracts/
+
+# Generated from contracts/web/enums.json by scripts/gen-enums.mjs. The renderer
+# decides its layout; prettier disagreeing with it would make the --check
+# unsatisfiable.
+src/types/enums.ts
+
+node_modules/
+yeaboi_web_assets/static/
+dist/
+package-lock.json
+
+# Prose. Prettier reflows markdown and turned "Preact\n+ TypeScript" into a
+# list item — it cannot tell a hanging line from a bullet.
+*.md
+
+# Stylesheets. Several tests parse these textually — the theme contrast matrix
+# reads every palette, the token audit greps `var(--x)` declarations, and a
+# `data-state` rule is found by regex. Reformatting them broke 210 tests for no
+# benefit; they are hand-authored and machine-read, so prettier stays out.
+*.css

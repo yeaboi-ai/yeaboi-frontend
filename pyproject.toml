@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "yeaboi-web-assets"
+version = "1.0.0"
+description = "Built front-end bundles for yeaboi's boards, share gate, slide deck and exported pages"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{ name = "Omar Noureldin" }]
+keywords = ["yeaboi", "assets"]
+classifiers = [
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: User Interfaces",
+]
+
+# No dependencies, and none possible: this distribution is a directory of files.
+dependencies = []
+
+[project.urls]
+Homepage = "https://yeaboi.ai"
+Repository = "https://github.com/yeaboi-ai/yeaboi-frontend"
+
+[tool.hatch.build.targets.wheel]
+packages = ["yeaboi_web_assets"]
+
+# MANDATORY, not belt-and-braces. Hatchling loads .gitignore as build excludes
+# (hatchling/builders/config.py), and this repo deliberately gitignores the build
+# output — the bundles are produced by `npm run build` in CI, moments before the
+# wheel is built, so a committed copy would only be a second thing to keep fresh.
+# Without this line the wheel builds green and ships empty, and the failure lands
+# on somebody's `pip install yeaboi` as a board that renders nothing.
+# `tests/test_wheel.py` builds the wheel and reads it back for exactly that reason.
+artifacts = ["yeaboi_web_assets/static/*.js", "yeaboi_web_assets/static/*.css"]
+
+[tool.hatch.build.targets.sdist]
+# The TypeScript sources ride in the sdist so the wheel is reproducible from it;
+# the wheel itself carries only the built output.
+artifacts = ["yeaboi_web_assets/static/*.js", "yeaboi_web_assets/static/*.css"]
+exclude = ["node_modules", ".claude", ".tooling"]

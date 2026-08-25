@@ -1,0 +1,82 @@
+# CI for yeaboi-frontend — every browser surface of yeaboi, and the wheel that
+# carries it to a `pip install`.
+#
+# Job names become the required-check strings `ci / <job name>` — keep them
+# stable and identical across the yeaboi repos so one ruleset is copy-paste.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: Lint, typecheck and test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: make install
+      # `lint` is `typecheck`, which starts with the enums `--check`: a
+      # src/types/enums.ts that disagrees with the vendored contract fails here,
+      # before anything is type-checked against it.
+      - run: make lint
+      - run: make format-check
+      - run: make test-fast
+
+  bundles:
+    name: Bundles are shippable
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - run: make install
+      # The two properties nothing downstream can catch in time. `dist-check`
+      # asserts the self-contained rules (no CDN, no eval, IIFE not ESM) on the
+      # build that is about to become a wheel; `wheel-check` builds that wheel,
+      # installs it, and resolves the bundles the way yeaboi's assets.py does.
+      #
+      # Both depend on `build`, so this is also the job that fails when the
+      # bundles do not build at all.
+      - run: make dist-check
+      - run: make wheel-check
+
+  contracts:
+    name: Vendored contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # Asserts contracts/web/ still matches the yeaboi sha in .contracts-rev,
+      # and notes when that pin has fallen behind upstream.
+      - run: make contracts-check
+
+  tooling:
+    name: Shared tooling contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      # Asserts the `.tooling` pin is honoured and that this repo defines every
+      # target the devkit's commands and hooks call on it. Without it, a renamed
+      # or deleted target is silent until somebody's Stop hook quietly stops
+      # verifying anything.
+      - run: make tooling-check

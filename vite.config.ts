@@ -17,7 +17,7 @@ export default defineConfig(({ mode, command }) => {
   const entry = ENTRIES[mode as keyof typeof ENTRIES];
   if (command === 'build' && !entry) {
     throw new Error(
-      `unknown build mode "${mode}" — known modes: ${Object.keys(ENTRIES).join(', ')}`
+      `unknown build mode "${mode}" — known modes: ${Object.keys(ENTRIES).join(', ')}`,
     );
   }
 
@@ -41,7 +41,7 @@ export default defineConfig(({ mode, command }) => {
         // and the wire fixtures. Named rather than reached for with `../../..`
         // so that when this package becomes its own repo and vendors them,
         // repointing is this line and nothing in src/.
-        '@contracts': resolve(import.meta.dirname, '../contracts/web'),
+        '@contracts': resolve(import.meta.dirname, 'contracts/web'),
         'react-dom/client': 'preact/compat/client',
         'react/jsx-runtime': 'preact/jsx-runtime',
         react: 'preact/compat',
@@ -71,7 +71,10 @@ export default defineConfig(({ mode, command }) => {
     },
 
     build: {
-      outDir: '../src/yeaboi/web/static',
+      // The wheel's payload directory. `yeaboi` finds it through
+      // importlib.resources once yeaboi-web-assets is installed, and through
+      // $YEABOI_WEB_STATIC pointed here when developing against a sibling checkout.
+      outDir: 'yeaboi_web_assets/static',
       // Each mode is a separate invocation writing into the same directory —
       // emptying it would delete the previous entry's output.
       emptyOutDir: false,

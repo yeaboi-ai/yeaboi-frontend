@@ -1,0 +1,31 @@
+# Worktrees live inside the checkout, in every yeaboi repo.
+.claude/worktrees/
+
+# The pinned yeaboi-tooling clone. Provisioned at Makefile parse time from
+# .tooling-rev; never committed.
+.tooling/
+
+# Node
+node_modules/
+
+# Build output.
+#
+# NOT committed, unlike the monorepo this came out of. There, Python had to read
+# the bundles with no Node anywhere, so they were checked in. Here the wheel is
+# built in CI on a machine that has just built them, and a committed copy would
+# only be a second thing to keep fresh.
+yeaboi_web_assets/static/
+dist/
+
+# Python packaging (the wheel is built, never developed in)
+__pycache__/
+*.py[cod]
+.venv/
+build/
+*.egg-info/
+
+# Local environment
+.env
+
+# macOS
+.DS_Store

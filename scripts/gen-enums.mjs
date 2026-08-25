@@ -18,7 +18,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const CONTRACT = resolve(HERE, '../../contracts/web/enums.json');
+const CONTRACT = resolve(HERE, '../contracts/web/enums.json');
 const OUTPUT = resolve(HERE, '../src/types/enums.ts');
 
 /** The block kinds this renderer knows how to draw. */
@@ -31,7 +31,8 @@ const HEADER = `/*
  * the server validates against. A literal union that disagreed with one would
  * let the client offer a value the board will always refuse.
  *
- * Regenerate both halves with \`make web-types\`; CI runs both with --check.
+ * Regenerate with \`make gen-enums\` after \`make contracts-sync\` moves the
+ * contract; CI runs \`--check\` and fails if this file is stale.
  *
  * Only the enums are generated. State shapes are hand-written in ./board.ts,
  * because they carry semantics a codegen cannot express — and a confidently
@@ -69,8 +70,7 @@ const jsdoc = (lines) =>
  * hoists integer-like keys: read as an object, `BLOCK_GLYPHS` would come back
  * with its ten digits ahead of its letters. Keep them pairs all the way here.
  */
-const rows = (pairs) =>
-  pairs.map(([key, value]) => `  ${str(key)}: ${entry(value)},\n`).join('');
+const rows = (pairs) => pairs.map(([key, value]) => `  ${str(key)}: ${entry(value)},\n`).join('');
 
 const RENDERERS = {
   tuple: (b) =>
@@ -115,7 +115,7 @@ if (process.argv.includes('--check')) {
   if (current === generated) {
     console.log('✓ enums.ts is up to date');
   } else {
-    console.error('✗ enums.ts is stale — run: make web-types');
+    console.error('✗ enums.ts is stale — run: make gen-enums');
     process.exit(1);
   }
 } else if (current === generated) {

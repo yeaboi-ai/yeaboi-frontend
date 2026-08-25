@@ -1,0 +1,52 @@
+{
+  "extraKnownMarketplaces": {
+    "yeaboi-tooling": {
+      "source": {
+        "source": "github",
+        "repo": "yeaboi-ai/yeaboi-tooling"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "yeaboi-devkit@yeaboi-tooling": true
+  },
+  "permissions": {
+    "allow": [
+      "Bash(make test)",
+      "Bash(make test-fast)",
+      "Bash(make test-scoped)",
+      "Bash(make lint)",
+      "Bash(make format)",
+      "Bash(make format-check)",
+      "Bash(make typecheck)",
+      "Bash(make build)",
+      "Bash(make gen-enums)",
+      "Bash(make dist-check)",
+      "Bash(make wheel-check)",
+      "Bash(make tooling-check)",
+      "Bash(make contracts-check)",
+      "Bash(make wt-list)",
+      "Bash(npm ci)",
+      "Bash(npm test)",
+      "Bash(npm run:*)",
+      "Bash(npx prettier:*)",
+      "Bash(git status)",
+      "Bash(git status:*)",
+      "Bash(git diff)",
+      "Bash(git diff:*)",
+      "Bash(git log)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch)",
+      "Bash(git branch -a)",
+      "Bash(git branch -vv)",
+      "Bash(git worktree list)",
+      "Bash(git worktree list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh run view:*)",
+      "Bash(gh run list:*)"
+    ]
+  }
+}

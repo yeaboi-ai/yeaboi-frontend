@@ -5,7 +5,8 @@
  * the server validates against. A literal union that disagreed with one would
  * let the client offer a value the board will always refuse.
  *
- * Regenerate both halves with `make web-types`; CI runs both with --check.
+ * Regenerate with `make gen-enums` after `make contracts-sync` moves the
+ * contract; CI runs `--check` and fails if this file is stale.
  *
  * Only the enums are generated. State shapes are hand-written in ./board.ts,
  * because they carry semantics a codegen cannot express — and a confidently
