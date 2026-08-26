@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Front-end bundles for yeaboi's boards, share gate, slide deck and exported pages. Published to PyPI as the data-only wheel yeaboi-web-assets.",
+  "license": "MIT",
   "engines": {
     "node": ">=20"
   },
