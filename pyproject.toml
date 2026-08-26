@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "yeaboi-web-assets"
-version = "1.0.0"
+version = "1.0.1"
 description = "Built front-end bundles for yeaboi's boards, share gate, slide deck and exported pages"
 readme = "README.md"
 requires-python = ">=3.10"
