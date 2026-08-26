@@ -156,6 +156,11 @@ const pkg = {
 };
 writeFileSync(join(OUT, 'package.json'), JSON.stringify(pkg, null, 2) + '\n');
 
+// npm publishes a LICENSE next to package.json automatically, but only if one
+// is there. Without this the tarball asserted "license": "MIT" and shipped no
+// licence text.
+cpSync(join(ROOT, 'LICENSE'), join(OUT, 'LICENSE'));
+
 const readme = `# @yeaboi-ai/design
 
 The design system behind [yeaboi](https://yeaboi.ai)'s browser surfaces — tokens, palettes and

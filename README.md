@@ -1,11 +1,42 @@
-# yeaboi-frontend
+<div align="center">
 
-Every browser-facing surface of [yeaboi](https://yeaboi.ai): the retro and poker live boards, the
-share gate, the reporting slide deck, the supervised-ship board, and the static HTML exports.
-Preact + TypeScript, built with Vite.
+<img src="https://yeaboi.ai/banner.jpg" alt="yeaboi.ai" width="800"/>
+
+# 🤙 yeaboi-frontend
+
+**Every browser-facing surface of yeaboi — the retro and poker live boards, the share gate, the reporting slide deck, the supervised-ship board and the static HTML exports.**
+
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+[![PyPI](https://img.shields.io/pypi/v/yeaboi-web-assets?style=for-the-badge&logo=pypi&logoColor=white&color=blue&label=yeaboi--web--assets)](https://pypi.org/project/yeaboi-web-assets/)
+[![npm](https://img.shields.io/npm/v/@yeaboi-ai/design?style=for-the-badge&logo=npm&logoColor=white&label=%40yeaboi-ai%2Fdesign)](https://www.npmjs.com/package/@yeaboi-ai/design)
+[![Part of yeaboi](https://img.shields.io/badge/part%20of-yeaboi-ff6600?style=for-the-badge)](https://github.com/yeaboi-ai/yeaboi.ai)
+
+[![CI](https://img.shields.io/github/actions/workflow/status/yeaboi-ai/yeaboi-frontend/ci.yml?style=for-the-badge&label=CI&logo=github)](https://github.com/yeaboi-ai/yeaboi-frontend/actions)
+
+</div>
+
+---
+
+<div align="center">
+<img src="https://yeaboi.ai/demo-frontend.gif" alt="A yeaboi retro board in a browser — joining the room as Ada, ten seeded cards landing across the four grids, then a new action item typed and added live" width="800"/>
+
+*The retro board, live. `make demo` re-records this from `demo_spec.py`.*
+</div>
+
+---
+
+## What this is
+
+Preact + TypeScript, built with Vite, and one of **five repos that make one product**:
+[yeaboi](https://github.com/yeaboi-ai/yeaboi.ai) (the Python — engines, TUI, CLI, MCP),
+this one, [yeaboi-desktop](https://github.com/yeaboi-ai/yeaboi-desktop),
+[yeaboi-site](https://github.com/yeaboi-ai/yeaboi-site) and
+[yeaboi-tooling](https://github.com/yeaboi-ai/yeaboi-tooling).
 
 Published to PyPI as **`yeaboi-web-assets`** — a data-only wheel holding one `.js` and one `.css` per
-entry. That is how the bundles reach a `pip install yeaboi` on a machine with no Node.
+entry. That is how the bundles reach a `pip install yeaboi` on a machine with no Node. The design
+system goes out separately, as **`@yeaboi-ai/design`** on npm, which is what the desktop shell draws
+its chrome from.
 
 ```bash
 make install       # npm ci
@@ -82,3 +113,7 @@ proxying `/api` to whichever board is running.
 
 No ESLint. This tree never had one; with strict TypeScript on, `tsc --noEmit` is what rejects code,
 and `npm run lint` says so rather than pretending otherwise. Prettier is real.
+
+## 📄 License
+
+MIT License. See [LICENSE](LICENSE) for details.
