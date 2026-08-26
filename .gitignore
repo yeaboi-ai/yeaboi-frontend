@@ -32,3 +32,6 @@ build/
 
 # Assembled by scripts/pack-design.mjs for the npm publish; never committed.
 dist-design/
+
+# Feature clips render here; only the spec in .demo/clips/ is committed.
+.demo/out/

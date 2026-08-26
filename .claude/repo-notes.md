@@ -82,3 +82,34 @@ YEABOI_WEB_STATIC=../yeaboi-frontend/yeaboi_web_assets/static   # then yeaboi's 
 ```
 
 It is read once at import, so restart the board after a rebuild.
+
+## Clips
+
+A clip here is `kind: "page"`. The repo's `demo_spec.py` is the example to copy — it already solves
+the two things that go wrong.
+
+**Film the real Python board, never the Vite shell.** `make dev` on :5399 serves `dev/retro.html`,
+whose JSON island is a deliberately shortened stand-in for what `retro/page.py` actually emits, and
+Vite injects its HMR client on top. What ships is what should be filmed:
+
+```python
+"serve": ["make", "dev-board"],      # yeaboi's board on :5173
+"serve_cwd": "$YEABOI_REPO",         # set it with `eval "$(make workspace-env)"`
+```
+
+To film *this* tree's bundles rather than the installed wheel, build first and point the board at
+the output — `web/assets.py` checks `YEABOI_WEB_STATIC` before anything else, and reads it once at
+import, so the board must start after the build:
+
+```python
+"prepare": ["make", "build"],
+"env": {"YEABOI_WEB_STATIC": "../yeaboi-frontend/yeaboi_web_assets/static"},
+```
+
+**Retro, not poker, unless poker is the point.** `dev_poker.py` re-announces its crew from a daemon
+thread every two seconds, so its state moves under the recorder. The retro board is static until
+touched, which is what makes a take repeatable. Seeded tokens are fixed (`dev-token`,
+`dev-admin`) precisely so a recording does not invalidate the tab it is filming.
+
+Prefer `await` on a selector over `pause`, and remember `type` uses `pressSequentially` — a UI that
+reacts per keystroke is the thing worth showing.
