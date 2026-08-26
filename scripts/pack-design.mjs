@@ -20,6 +20,11 @@
  * file list would instead publish a package that is missing a module, and the
  * failure would land in the desktop's build.
  *
+ * A stylesheet's `url()` is an edge of that graph too. Vite inlines those as
+ * data URIs when it builds this repo's own bundles, so nothing here notices a
+ * font left behind; the consumer compiles the same CSS with the file missing and
+ * gets a warning it will never read, then ships the system font stack.
+ *
  * Usage:
  *   node scripts/pack-design.mjs             # assemble into dist-design/
  *   node scripts/pack-design.mjs --version X # ...and stamp that version
@@ -42,12 +47,14 @@ const SRC = join(ROOT, 'src');
 const OUT = join(ROOT, 'dist-design');
 
 const IMPORT = /(?:from|import)\s+['"](\.[^'"]+)['"]/g;
+const CSS_URL = /url\(\s*['"]?(\.[^'")]+)['"]?\s*\)/g;
 const CODE = new Set(['.ts', '.tsx', '.css']);
-const ASSET = new Set(['.png', '.jpg', '.svg', '.woff', '.woff2']);
 
 /** Resolve a relative specifier the way the bundler does. */
 function resolveSpec(from, spec) {
-  const base = resolve(dirname(from), spec);
+  // Vite's `?asset` / `?url` suffixes are instructions to the bundler, not part
+  // of the path.
+  const base = resolve(dirname(from), spec.split('?')[0]);
   const candidates = [
     base,
     `${base}.ts`,
@@ -88,16 +95,13 @@ function closure() {
     if (!CODE.has(ext)) continue;
 
     const text = readFileSync(file, 'utf-8');
-    for (const [, spec] of text.matchAll(IMPORT)) {
+    const specs = [...text.matchAll(IMPORT), ...(ext === '.css' ? text.matchAll(CSS_URL) : [])];
+    for (const [, spec] of specs) {
       const target = resolveSpec(file, spec);
-      if (target) {
-        queue.push(target);
-        continue;
+      if (!target) {
+        throw new Error(`${relative(ROOT, file)} references ${spec}, which resolves to nothing`);
       }
-      const specExt = spec.slice(spec.lastIndexOf('.'));
-      if (!ASSET.has(specExt)) {
-        throw new Error(`${relative(ROOT, file)} imports ${spec}, which resolves to nothing`);
-      }
+      queue.push(target);
     }
   }
   return [...seen].sort();
