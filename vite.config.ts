@@ -94,9 +94,7 @@ export default defineConfig(({ mode, command }) => {
       // server at the poker board meant editing this file.
       // Follows this worktree's own retro board rather than a literal 5173.
       proxy: {
-        '/api':
-          process.env['YEABOI_DEV_API'] ??
-          `http://127.0.0.1:${envPort('RETRO_PORT', 5173)}`,
+        '/api': process.env['YEABOI_DEV_API'] ?? `http://127.0.0.1:${envPort('RETRO_PORT', 5173)}`,
       },
     },
 
