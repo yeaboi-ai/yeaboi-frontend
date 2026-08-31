@@ -32,3 +32,6 @@ build/
 
 # Assembled by scripts/pack-design.mjs for the npm publish; never committed.
 dist-design/
+
+# This worktree's generated ports (written by the shared wt.sh).
+/.worktree.env
