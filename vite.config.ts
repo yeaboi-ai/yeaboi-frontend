@@ -1,9 +1,29 @@
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { defineConfig } from 'vite';
 
 // @ts-expect-error — plain .mjs, shared with build-all.mjs which cannot import TS.
 import { ENTRIES, globalName } from './entries.mjs';
+
+// A worktree's own ports, written by the shared wt.sh. `make dev` exports these
+// already; this covers `npm run dev` and IDE tasks, which load no dotenv. Real
+// environment variables still win (`??=`), and the main checkout has no such
+// file and keeps every default below.
+/** A port from the environment, or `fallback` when it is unset or not a port. */
+function envPort(name: string, fallback: number): number {
+  const parsed = Number(process.env[name]);
+  return Number.isInteger(parsed) && parsed > 0 && parsed < 65536 ? parsed : fallback;
+}
+
+try {
+  for (const line of readFileSync('.worktree.env', 'utf8').split('\n')) {
+    const match = /^export ([A-Z0-9_]+)=(\S*)$/.exec(line.trim());
+    if (match) process.env[match[1]!] ??= match[2]!;
+  }
+} catch {
+  /* no block: the main checkout, or a worktree cut before slots existed */
+}
 
 /**
  * One config, one entry per invocation (`vite build --mode <name>`).
@@ -56,8 +76,13 @@ export default defineConfig(({ mode, command }) => {
 
     server: {
       // NOT Vite's default 5173: retro/server.py already claims that port, so
-      // the dev server and the board it proxies to would fight over it.
-      port: 5399,
+      // the dev server and the board it proxies to would fight over it. In a
+      // worktree the number comes from that worktree's block; in the main
+      // checkout the variable is unset and this is the 5399 it has always been.
+      port: envPort('YEABOI_WEB_DEV_PORT', 5399),
+      // Stays true, and that is the point: falling back to 5400 would put this
+      // worktree's HMR on the port the NEXT worktree's block hands out — the
+      // same collision, only silent. A loud EADDRINUSE names the real problem.
       strictPort: true,
       // Retro's board is the default because it is the one most people are
       // working on, but poker serves the same /api on :5273 — so the target is
@@ -67,7 +92,10 @@ export default defineConfig(({ mode, command }) => {
       //
       // Hardcoding retro's port is part of why poker drifted: pointing the dev
       // server at the poker board meant editing this file.
-      proxy: { '/api': process.env['YEABOI_DEV_API'] ?? 'http://127.0.0.1:5173' },
+      // Follows this worktree's own retro board rather than a literal 5173.
+      proxy: {
+        '/api': process.env['YEABOI_DEV_API'] ?? `http://127.0.0.1:${envPort('RETRO_PORT', 5173)}`,
+      },
     },
 
     build: {

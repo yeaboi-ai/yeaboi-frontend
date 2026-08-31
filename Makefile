@@ -68,10 +68,10 @@ pack-design: ## Assemble the @yeaboi/design npm package into dist-design/
 # To have the PYTHON side serve this tree's build instead of a published wheel,
 # point a sibling yeaboi checkout at it — assets.py checks this before anything
 # else:  YEABOI_WEB_STATIC=../yeaboi-frontend/yeaboi_web_assets/static
-dev: ## Vite dev server on :5399 with HMR, proxying /api to a yeaboi dev board
-	@echo "  dev/{retro,poker,deck,gate,export}.html on http://localhost:5399/"
+dev: ## Vite dev server with HMR, proxying /api to a yeaboi dev board (:5399 unless the worktree has its own block)
+	@echo "  dev/{retro,poker,deck,gate,export}.html on http://localhost:$(or $(YEABOI_WEB_DEV_PORT),5399)/"
 	@echo "  boards need ?token=<token> from the yeaboi checkout's 'make dev-board';"
-	@echo "  for poker, set YEABOI_DEV_API=http://127.0.0.1:5273 so /api proxies there."
+	@echo "  for poker, set YEABOI_DEV_API=http://127.0.0.1:$(or $(POKER_PORT),5273) so /api proxies there."
 	$(NPM) run dev
 
 # Both read build output, so both depend on `build` rather than relying on where
