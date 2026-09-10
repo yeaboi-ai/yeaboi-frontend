@@ -21,6 +21,7 @@ export { Lozenge, LOZENGE_CATEGORIES, type LozengeCategory, type LozengeProps } 
 export { NoticeBlock, type NoticeBlockProps } from './NoticeBlock';
 export { Prose, ProseBullets, proseBullets, RichText, splitSentences, type Run } from './Prose';
 export { Sparkline, sparklineDomain, type SparklineProps } from './Sparkline';
+export { Spinner, type SpinnerProps } from './Spinner';
 export { StatGrid, StatTile, type StatTileProps } from './Stat';
 export { TerminalFrame, type TerminalFrameProps } from './TerminalFrame';
 export { renderWordmark, Wordmark, type WordmarkProps } from './Wordmark';

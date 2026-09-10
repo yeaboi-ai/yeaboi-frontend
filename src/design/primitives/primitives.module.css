@@ -619,3 +619,19 @@ svg.wordmark {
   font-size: var(--fs-xs);
   color: var(--dim);
 }
+
+/* The spinner turns; nothing else about it moves. Honours the system's motion
+   preference by slowing to a crawl rather than stopping, so the control still
+   says it is busy. */
+.spinner {
+  display: inline-block;
+  flex: none;
+  vertical-align: middle;
+  animation: spinnerTurn 700ms linear infinite;
+}
+@keyframes spinnerTurn {
+  to { rotate: 360deg; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 2.4s; }
+}

@@ -21,7 +21,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Duck, Icon, useDuckPulse, type DuckRest } from '../design/primitives';
+import { Duck, Icon, Spinner, type DuckRest, useDuckPulse } from '../design/primitives';
 import { useArrivals } from '../motion';
 import { useAlarm } from '../hooks/useAlarm';
 import { useBoardStream } from '../hooks/useBoardStream';
@@ -133,7 +133,9 @@ export function App({ boot }: { boot: RetroBoot }) {
   // ── Local UI state ─────────────────────────────────────────────────────
   const [theme, setLocalTheme] = useState<Theme>(() => storedTheme(THEME_KEYS.site) ?? 'midnight');
   const [focus, setFocus] = useState('');
-  const [inviteOpen, setInviteOpen] = useState(false);
+  // Asked for, rather than open: the panel appears once there is a link to put
+  // in it, and until then the button itself says it is working on one.
+  const [inviteWanted, setInviteWanted] = useState(false);
   const history = useHistory(session);
   const past = history.showing;
   // A past retro is read-only in the strongest sense available: it reuses
@@ -152,7 +154,7 @@ export function App({ boot }: { boot: RetroBoot }) {
   // Fetched on open rather than read from the boot payload: the page is
   // served unauthenticated, so a join code in the island would be readable by
   // anyone who reaches the board, token or not. Also puts it on the clipboard.
-  const invite = useInvite(session, inviteOpen);
+  const invite = useInvite(session, inviteWanted);
   const [musicBlocked, setMusicBlocked] = useState(false);
   // The one action whose outcome is not visible in what it produces: an
   // unconfigured LLM still adds items, and has to be able to say so.
@@ -481,11 +483,12 @@ export function App({ boot }: { boot: RetroBoot }) {
           </Popover>
 
           <IconButton
-            icon={<Icon name="mail" size={16} />}
-            label="Invite the team"
+            icon={invite.waiting ? <Spinner size={16} /> : <Icon name="mail" size={16} />}
+            label={invite.waiting ? 'Setting up the invite' : 'Invite the team'}
             tone="primary"
             compact
-            onClick={() => setInviteOpen(true)}
+            disabled={invite.waiting}
+            onClick={() => setInviteWanted(true)}
           >
             Invite
           </IconButton>
@@ -601,7 +604,7 @@ export function App({ boot }: { boot: RetroBoot }) {
         required={!name}
       />
 
-      <Modal open={inviteOpen} onClose={() => setInviteOpen(false)} title="Invite the team">
+      <Modal open={invite.ready} onClose={() => setInviteWanted(false)} title="Invite the team">
         {/* No join code here: the link carries it, and the QR is the link. A
             code to read out is a third way to say the same thing. Only shown
             once there is one — instructions for a control that is not on the

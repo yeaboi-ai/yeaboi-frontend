@@ -26,7 +26,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { Duck, Icon, type DuckRest, useDuckPulse } from '../design/primitives';
+import { Duck, Icon, Spinner, type DuckRest, useDuckPulse } from '../design/primitives';
 import { useAlarm } from '../hooks/useAlarm';
 import { useBoardStream } from '../hooks/useBoardStream';
 import { useConfetti } from '../hooks/useConfetti';
@@ -132,11 +132,13 @@ export function App({ boot }: { boot: PokerBoot }) {
 
   // ── Local UI state ─────────────────────────────────────────────────────
   const [theme, setLocalTheme] = useState<Theme>(() => storedTheme(THEME_KEYS.site) ?? 'midnight');
-  const [inviteOpen, setInviteOpen] = useState(false);
+  // Asked for, rather than open: the panel appears once there is a link to put
+  // in it, and until then the button itself says it is working on one.
+  const [inviteWanted, setInviteWanted] = useState(false);
   // Fetched on open rather than read from the boot payload: the page is
   // served unauthenticated, so a join code in the island would be readable by
   // anyone who reaches the board, token or not. Also puts it on the clipboard.
-  const invite = useInvite(session, inviteOpen);
+  const invite = useInvite(session, inviteWanted);
   const [railOpen, setRailOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   // What the tracker itself accepts, asked for once when the editor opens —
@@ -442,11 +444,12 @@ export function App({ boot }: { boot: PokerBoot }) {
           </Popover>
 
           <IconButton
-            icon={<Icon name="mail" size={16} />}
-            label="Invite the team"
+            icon={invite.waiting ? <Spinner size={16} /> : <Icon name="mail" size={16} />}
+            label={invite.waiting ? 'Setting up the invite' : 'Invite the team'}
             tone="primary"
             compact
-            onClick={() => setInviteOpen(true)}
+            disabled={invite.waiting}
+            onClick={() => setInviteWanted(true)}
           >
             Invite
           </IconButton>
@@ -634,7 +637,7 @@ export function App({ boot }: { boot: PokerBoot }) {
           required={!name}
         />
 
-        <Modal open={inviteOpen} onClose={() => setInviteOpen(false)} title="Invite the team">
+        <Modal open={invite.ready} onClose={() => setInviteWanted(false)} title="Invite the team">
           {/* No join code here: the link carries it, and the QR is the link. A
             code to read out is a third way to say the same thing. */}
           <p className={styles['popNote']}>

@@ -26,6 +26,13 @@
  * and until it does the server has no address worth handing out — it binds
  * loopback. A panel opened in that window would cache an answer that is about to
  * be replaced by the real one, so it asks again every time instead.
+ *
+ * ## Why the panel waits for it
+ *
+ * Which is why `waiting` exists: pressed in that window, the Invite button
+ * turns into a loader and the panel holds off until there is a link to put in
+ * it. A panel that opens onto "setting up the shared link" is a dialog you have
+ * to dismiss and reopen to find out whether anything changed.
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -41,18 +48,33 @@ export interface UseInvite {
   notice: string | null;
   /** Clear the toast. Pass straight to `<Toast onDismiss>`. */
   dismiss: () => void;
+  /** Asked for, and nothing worth showing has come back yet. The button that
+   *  asked draws a loader in place of its icon. */
+  waiting: boolean;
+  /** There is something to put on screen: a link, or a settled reason there
+   *  will not be one. Also true once {@link PATIENCE_MS} has passed, so a slow
+   *  tunnel ends in a panel that explains itself rather than in a button that
+   *  spins forever. */
+  ready: boolean;
 }
 
 /** How often to re-ask while the tunnel is still coming up. */
 const RETRY_MS = 3000;
+/** How long the button waits before it gives up and opens the panel anyway. */
+const PATIENCE_MS = 9000;
 
 export function useInvite(session: Session, open: boolean): UseInvite {
   const [invite, setInvite] = useState<InviteInfo | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
   const dismiss = useCallback(() => setNotice(null), []);
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setReady(false);
+      return;
+    }
+    const patience = window.setTimeout(() => setReady(true), PATIENCE_MS);
 
     // Guards a fetch that resolves after the panel has been closed again, which
     // would otherwise raise a toast over a board with no panel on it.
@@ -85,8 +107,12 @@ export function useInvite(session: Session, open: boolean): UseInvite {
         // there never will be one. A failed tunnel keeps polling, because
         // Retry Link in the terminal is what fixes it.
         if (data.shareState === 'off') settled = true;
+        // The panel is worth opening the moment there is a link, or once it is
+        // clear there will never be one.
+        if (settled) setReady(true);
         if (!data.inviteUrl) return;
         settled = true;
+        setReady(true);
 
         const copied = await copyText(data.inviteUrl);
         if (!live) return;
@@ -113,8 +139,9 @@ export function useInvite(session: Session, open: boolean): UseInvite {
     return () => {
       live = false;
       window.clearTimeout(timer);
+      window.clearTimeout(patience);
     };
   }, [open, session]);
 
-  return { invite, notice, dismiss };
+  return { invite, notice, dismiss, waiting: open && !ready, ready: open && ready };
 }
