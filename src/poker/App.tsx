@@ -34,7 +34,7 @@ import { useCountdown } from '../hooks/useCountdown';
 import { useHeartbeat } from '../hooks/useHeartbeat';
 import { useHostBroadcast } from '../hooks/useHostBroadcast';
 import { useInvite } from '../hooks/useInvite';
-import { useMusic } from '../hooks/useMusic';
+import { useMusic, type MusicApi } from '../hooks/useMusic';
 import { usePendingOverlay } from '../hooks/usePendingOverlay';
 import {
   apiUrl,
@@ -88,7 +88,21 @@ const NO_VOTES: readonly PokerVote[] = [];
 const NO_TICKETS: readonly TicketMeta[] = [];
 const NO_PEOPLE: readonly Participant[] = [];
 
-export function App({ boot }: { boot: PokerBoot }) {
+export function App({
+  boot,
+  music: hosted,
+}: {
+  boot: PokerBoot;
+  /**
+   * The player to use, when the window this board is drawn in already has one.
+   *
+   * A board served to a browser mints its own from `boot.musicChannels`. Staged
+   * inside the desktop app there is already a player in the window — its own
+   * radio, its own visualizer, its own dock — and a second one would be two
+   * sets of speakers fighting over the same room.
+   */
+  music?: MusicApi;
+}) {
   // ── Identity and session ───────────────────────────────────────────────
   const pid = useMemo(() => participantId(KEY.pid), []);
   const session = useMemo<Session>(() => loadSession('poker', pid), [pid]);
@@ -160,7 +174,8 @@ export function App({ boot }: { boot: PokerBoot }) {
   // ── Ceremony devices ───────────────────────────────────────────────────
   useHeartbeat({ session, name, avatar, enabled: joined });
 
-  const music = useMusic(boot.musicChannels);
+  const own = useMusic(boot.musicChannels);
+  const music = hosted ?? own;
   const [confettiRef, fireConfetti] = useConfetti();
   const fireAlarm = useAlarm();
   const onTimerFinish = useCallback(() => {

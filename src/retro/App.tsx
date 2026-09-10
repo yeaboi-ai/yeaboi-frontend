@@ -30,7 +30,7 @@ import { useCountdown } from '../hooks/useCountdown';
 import { useHeartbeat } from '../hooks/useHeartbeat';
 import { useHostBroadcast } from '../hooks/useHostBroadcast';
 import { useInvite } from '../hooks/useInvite';
-import { useMusic } from '../hooks/useMusic';
+import { useMusic, type MusicApi } from '../hooks/useMusic';
 import { apiUrl, loadSession, stripCredentialsFromUrl, type Session } from '../runtime/api';
 import { participantId, read, write } from '../runtime/storage';
 import { applyTheme, setTheme, storedTheme, THEME_KEYS, type Theme } from '../runtime/theme';
@@ -89,7 +89,21 @@ const SWAP_MS = 170;
 /** How long the read-only notice takes to fold away. Matches `lockNoteOut`. */
 const LOCK_NOTE_OUT_MS = 180;
 
-export function App({ boot }: { boot: RetroBoot }) {
+export function App({
+  boot,
+  music: hosted,
+}: {
+  boot: RetroBoot;
+  /**
+   * The player to use, when the window this board is drawn in already has one.
+   *
+   * A board served to a browser mints its own from `boot.musicChannels`. Staged
+   * inside the desktop app there is already a player in the window — its own
+   * radio, its own visualizer, its own dock — and a second one would be two
+   * sets of speakers fighting over the same room.
+   */
+  music?: MusicApi;
+}) {
   // ── Identity and session ───────────────────────────────────────────────
   const pid = useMemo(() => participantId(KEY.pid), []);
   // Fixed for the lifetime of the document. Arriving without a token renders
@@ -186,7 +200,8 @@ export function App({ boot }: { boot: RetroBoot }) {
   }, []);
   useEffect(() => () => clearTimeout(typingTimer.current), []);
 
-  const music = useMusic(boot.musicChannels);
+  const own = useMusic(boot.musicChannels);
+  const music = hosted ?? own;
   const [confettiRef, fireConfetti] = useConfetti();
   const fireAlarm = useAlarm();
   const onTimerFinish = useCallback(() => {
