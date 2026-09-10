@@ -71,7 +71,7 @@ export function App({ boot }: { boot: ShipBoot }) {
   const watchers = useBoardSelector(store, (s) => s?.presence ?? NO_WATCHERS);
 
   const [inviteOpen, setInviteOpen] = useState(false);
-  const inviteState = useInvite(session, inviteOpen);
+  const inviteState = useInvite(session);
 
   if (!joined) {
     return (
@@ -95,7 +95,12 @@ export function App({ boot }: { boot: ShipBoot }) {
             <button
               type="button"
               className={styles['inviteBtn']}
-              onClick={() => setInviteOpen(true)}
+              onClick={() => {
+                setInviteOpen(true);
+                // From the click, so the clipboard write is inside the window
+                // the press opened.
+                inviteState.copy();
+              }}
             >
               Invite watchers
             </button>

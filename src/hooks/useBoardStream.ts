@@ -45,6 +45,12 @@ const WAIT_SECONDS = 25;
 /** Backoff after a failed request, in ms. Capped so recovery stays quick. */
 const RETRY_MIN_MS = 500;
 const RETRY_MAX_MS = 8000;
+/** Consecutive failures before the toolbar says anything. One is a blip — a
+ *  poll caught by a page reload, a wifi handover, the first request of a
+ *  session before the route settles — and it recovers before the word has
+ *  finished rendering. Three is a board that is genuinely off the network,
+ *  which is the only case worth the interruption. */
+const QUIET_FAILURES = 3;
 // A poll that asked to park but returned sooner than this was refused a hold
 // slot (the board is over its per-visitor stream cap). It is a 200/304, not an
 // error, so the retry backoff above does not apply — this does.
@@ -70,9 +76,10 @@ export interface BoardStreamOptions<S extends Revisioned> {
  * Run the long-poll loop for as long as the component is mounted.
  *
  * Returns a coarse status for the connection pip in the toolbar. `'retrying'`
- * is worth showing: over a tunnel on a phone the difference between "the board
- * is quiet" and "you fell off the network" is otherwise invisible, and people
- * assume the former and keep talking to an empty room.
+ * is worth showing, but only once: over a tunnel on a phone the difference
+ * between "the board is quiet" and "you fell off the network" is otherwise
+ * invisible, and people assume the former and keep talking to an empty room.
+ * A single failed poll is not that — see {@link QUIET_FAILURES}.
  */
 export function useBoardStream<S extends Revisioned>({
   session,
@@ -114,7 +121,7 @@ export function useBoardStream<S extends Revisioned>({
 
         if ('error' in result) {
           failures += 1;
-          setStatus('retrying');
+          if (failures >= QUIET_FAILURES) setStatus('retrying');
           // Exponential backoff with a ceiling. A dropped tunnel comes back
           // within seconds; hammering it while it is down helps nobody.
           const delay = Math.min(RETRY_MIN_MS * 2 ** (failures - 1), RETRY_MAX_MS);

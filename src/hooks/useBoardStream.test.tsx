@@ -103,14 +103,32 @@ describe('useBoardStream', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('reports retrying and backs off after a failure', async () => {
+  it('says nothing about a single failed poll', async () => {
+    // A poll caught by a reload or a wifi handover recovers before the word
+    // has finished rendering, and a board that flashes "reconnecting" at the
+    // top of every session is one nobody reads by the time it matters.
+    const fetchMock = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError('offline'))
+      .mockImplementation(async () => snapshot(1, 'W/"a"'));
+    vi.stubGlobal('fetch', fetchMock);
+    const store = createBoardStore<Snap>();
+    const { getByTestId } = render(<Probe store={store} />);
+
+    await waitFor(() => expect(getByTestId('status').textContent).toBe('live'));
+    expect(getByTestId('status').textContent).not.toBe('retrying');
+  });
+
+  it('reports retrying once the board is genuinely off, and backs off', async () => {
+    // 'retrying' is worth surfacing: over a tunnel on a phone, "the board is
+    // quiet" and "you fell off the network" look identical otherwise.
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('offline')));
     const store = createBoardStore<Snap>();
     const { getByTestId } = render(<Probe store={store} />);
 
-    // 'retrying' is worth surfacing: over a tunnel on a phone, "the board is
-    // quiet" and "you fell off the network" look identical otherwise.
-    await waitFor(() => expect(getByTestId('status').textContent).toBe('retrying'));
+    await waitFor(() => expect(getByTestId('status').textContent).toBe('retrying'), {
+      timeout: 5000,
+    });
   });
 
   it('aborts the parked request on teardown instead of leaving a slot held', async () => {
