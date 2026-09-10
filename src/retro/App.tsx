@@ -19,7 +19,7 @@
  * Keeping (2) out of (1) is what removes the `editingHere` freeze; see CardView.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { Duck, Icon, Spinner, type DuckRest, useDuckPulse } from '../design/primitives';
 import { useArrivals } from '../motion';
@@ -92,6 +92,7 @@ const LOCK_NOTE_OUT_MS = 180;
 export function App({
   boot,
   music: hosted,
+  musicControl,
 }: {
   boot: RetroBoot;
   /**
@@ -103,6 +104,15 @@ export function App({
    * sets of speakers fighting over the same room.
    */
   music?: MusicApi;
+  /**
+   * The whole music control — the dock button and whatever it opens — when the
+   * window this board is drawn in has a player of its own to offer.
+   *
+   * Handed `cast`, which is the one part of the board's music that is the
+   * board's: putting a station on for everyone in the room. It is undefined
+   * for a guest, who has no room to put anything on for.
+   */
+  musicControl?: (parts: { cast?: (() => void) | undefined }) => ReactNode;
 }) {
   // ── Identity and session ───────────────────────────────────────────────
   const pid = useMemo(() => participantId(KEY.pid), []);
@@ -428,6 +438,14 @@ export function App({
     </Toolbar>
   );
 
+  /** The host putting a station on for the room. The board's own, wherever the
+   *  panel around it comes from. */
+  const castMusic = isHost ? (
+    <Button onClick={() => void actions.castMusic(music.playing, music.channel)}>
+      <Icon name="megaphone" /> Play for everyone
+    </Button>
+  ) : null;
+
   return (
     <PageShell
       chrome={boot.chrome}
@@ -447,19 +465,15 @@ export function App({
             />
           ) : null}
 
-          <Popover trigger={<Icon name="music" size={16} />} label="Music">
-            <MusicPlayer
-              music={music}
-              channels={boot.musicChannels}
-              footer={
-                isHost ? (
-                  <Button onClick={() => void actions.castMusic(music.playing, music.channel)}>
-                    <Icon name="megaphone" /> Play for everyone
-                  </Button>
-                ) : null
-              }
-            />
-          </Popover>
+          {musicControl ? (
+            musicControl({
+              cast: isHost ? () => void actions.castMusic(music.playing, music.channel) : undefined,
+            })
+          ) : (
+            <Popover trigger={<Icon name="music" size={16} />} label="Music">
+              <MusicPlayer music={music} channels={boot.musicChannels} footer={castMusic} />
+            </Popover>
+          )}
 
           <Popover
             trigger={

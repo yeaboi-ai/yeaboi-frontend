@@ -203,6 +203,10 @@
   width: 16rem;
   display: flex;
   flex-direction: column;
+  /* Centred against the columns beside it, since it is four short sections
+     rather than a list that fills. `safe`, so a rail too tall for the board
+     still starts at the top instead of losing its head off the edge. */
+  justify-content: safe center;
   gap: var(--s5);
   padding: var(--s3) var(--s4) var(--s3) var(--s2);
   overscroll-behavior: contain;

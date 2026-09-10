@@ -24,7 +24,7 @@
  * host revote should visibly override you.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 
 import { Duck, Icon, Spinner, type DuckRest, useDuckPulse } from '../design/primitives';
 import { useAlarm } from '../hooks/useAlarm';
@@ -91,6 +91,7 @@ const NO_PEOPLE: readonly Participant[] = [];
 export function App({
   boot,
   music: hosted,
+  musicControl,
 }: {
   boot: PokerBoot;
   /**
@@ -102,6 +103,15 @@ export function App({
    * sets of speakers fighting over the same room.
    */
   music?: MusicApi;
+  /**
+   * The whole music control — the dock button and whatever it opens — when the
+   * window this board is drawn in has a player of its own to offer.
+   *
+   * Handed `cast`, which is the one part of the board's music that is the
+   * board's: putting a station on for everyone in the room. It is undefined
+   * for a guest, who has no room to put anything on for.
+   */
+  musicControl?: (parts: { cast?: (() => void) | undefined }) => ReactNode;
 }) {
   // ── Identity and session ───────────────────────────────────────────────
   const pid = useMemo(() => participantId(KEY.pid), []);
@@ -366,6 +376,14 @@ export function App({
   const allIn = phase === 'voting' && votes.length > 0 && votes.every((seat) => seat.voted);
   const estimated = snapshot?.progress.estimated ?? 0;
 
+  /** The host putting a station on for the room. The board's own, wherever the
+   *  panel around it comes from. */
+  const castMusic = isHost ? (
+    <Button onClick={() => run(actions.castMusic(music.playing, music.channel))}>
+      <Icon name="megaphone" /> Play for everyone
+    </Button>
+  ) : null;
+
   return (
     // `data-host` drives the room the board leaves for the console: at the foot
     // of the ticket list below --bp-m, and across the whole column below --bp-s.
@@ -397,19 +415,17 @@ export function App({
             />
           ) : null}
 
-          <Popover trigger={<Icon name="music" size={16} />} label="Music" placement="above">
-            <MusicPlayer
-              music={music}
-              channels={boot.musicChannels}
-              footer={
-                isHost ? (
-                  <Button onClick={() => run(actions.castMusic(music.playing, music.channel))}>
-                    <Icon name="megaphone" /> Play for everyone
-                  </Button>
-                ) : null
-              }
-            />
-          </Popover>
+          {musicControl ? (
+            musicControl({
+              cast: isHost
+                ? () => void run(actions.castMusic(music.playing, music.channel))
+                : undefined,
+            })
+          ) : (
+            <Popover trigger={<Icon name="music" size={16} />} label="Music" placement="above">
+              <MusicPlayer music={music} channels={boot.musicChannels} footer={castMusic} />
+            </Popover>
+          )}
 
           <Popover
             trigger={
