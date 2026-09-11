@@ -102,7 +102,9 @@
   position: fixed;
   z-index: var(--z-console);
   display: flex;
-  align-items: stretch;
+  /* Each cluster is its own height: stretched, the taller one would set the
+     other's, and two pieces of furniture that always match read as one. */
+  align-items: flex-end;
   gap: var(--s2);
   cursor: grab;
   touch-action: none;
