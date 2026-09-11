@@ -48,7 +48,7 @@ import { applyTheme, setTheme, storedTheme, THEME_KEYS, type Theme } from '../ru
 import {
   Button,
   ConfettiCanvas,
-  DockSplit,
+  DockAside,
   IconButton,
   InviteQR,
   JoinGate,
@@ -408,20 +408,6 @@ export function App({
         <>
           <Visualizer playing={music.playing} analyser={music.analyser} />
 
-          {musicControl ? (
-            musicControl({
-              cast: isHost
-                ? () => void run(actions.castMusic(music.playing, music.channel))
-                : undefined,
-            })
-          ) : (
-            <Popover trigger={<Icon name="music" size={16} />} label="Music" placement="above">
-              <MusicPlayer music={music} channels={boot.musicChannels} footer={castMusic} />
-            </Popover>
-          )}
-
-          <DockSplit />
-
           <IconButton
             icon={<Icon name="menu" size={16} />}
             label={railOpen ? 'Hide the ticket list' : 'Show the ticket list'}
@@ -503,6 +489,19 @@ export function App({
           >
             Invite
           </IconButton>
+          <DockAside />
+
+          {musicControl ? (
+            musicControl({
+              cast: isHost
+                ? () => void run(actions.castMusic(music.playing, music.channel))
+                : undefined,
+            })
+          ) : (
+            <Popover trigger={<Icon name="music" size={16} />} label="Music" placement="above">
+              <MusicPlayer music={music} channels={boot.musicChannels} footer={castMusic} />
+            </Popover>
+          )}
         </>
       }
       bar={

@@ -37,7 +37,7 @@ import { applyTheme, setTheme, storedTheme, THEME_KEYS, type Theme } from '../ru
 import {
   Button,
   ConfettiCanvas,
-  DockSplit,
+  DockAside,
   IconButton,
   InviteQR,
   JoinGate,
@@ -486,18 +486,6 @@ export function App({
         <>
           <Visualizer playing={music.playing} />
 
-          {musicControl ? (
-            musicControl({
-              cast: isHost ? () => void actions.castMusic(music.playing, music.channel) : undefined,
-            })
-          ) : (
-            <Popover trigger={<Icon name="music" size={16} />} label="Music">
-              <MusicPlayer music={music} channels={boot.musicChannels} footer={castMusic} />
-            </Popover>
-          )}
-
-          <DockSplit />
-
           {isHost ? (
             <IconButton
               icon={<Icon name={locked ? 'lock' : 'lock-open'} size={16} />}
@@ -560,6 +548,17 @@ export function App({
           >
             Invite
           </IconButton>
+          <DockAside />
+
+          {musicControl ? (
+            musicControl({
+              cast: isHost ? () => void actions.castMusic(music.playing, music.channel) : undefined,
+            })
+          ) : (
+            <Popover trigger={<Icon name="music" size={16} />} label="Music">
+              <MusicPlayer music={music} channels={boot.musicChannels} footer={castMusic} />
+            </Popover>
+          )}
         </>
       }
     >

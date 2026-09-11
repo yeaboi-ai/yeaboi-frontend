@@ -96,24 +96,14 @@
  * dock upward, and an element anchored by its top would need its offset
  * recomputed every frame of that growth.
  */
+/* What is picked up: the notch and anything standing beside it, moving as one
+   piece. Carries no material of its own — each cluster inside wears it. */
 .dockApp {
   position: fixed;
   z-index: var(--z-console);
   display: flex;
-  flex-direction: column;
   align-items: stretch;
-  /* The bar at the top of the screen, upside down: same hairline, same three
-     shadows, the same inset off the edge it is anchored to, and the same corner.
-     Squarer than a pill, because a pill reads as a control and this is the other
-     end of the same piece of furniture — what tells them apart is where they
-     are anchored and that this one can be picked up. */
-  border: 1px solid var(--hairline);
-  border-radius: var(--r-l);
-  background: var(--panel);
-  box-shadow:
-    var(--edge),
-    0 1px 1px rgb(0 0 0 / 12%),
-    0 4px 12px rgb(0 0 0 / 10%);
+  gap: var(--s2);
   cursor: grab;
   touch-action: none;
   left: 0;
@@ -123,6 +113,36 @@
      — otherwise the first placement animates out of the left-hand corner. */
   transition: none;
   visibility: var(--dock-vis, hidden);
+}
+
+/* The bar at the top of the screen, upside down: same hairline, same three
+   shadows, the same inset off the edge it is anchored to, and the same corner.
+   Squarer than a pill, because a pill reads as a control and this is the other
+   end of the same piece of furniture — what tells them apart is where they are
+   anchored and that this one can be picked up. */
+.dockPanel,
+.dockAside {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-l);
+  background: var(--panel);
+  box-shadow:
+    var(--edge),
+    0 1px 1px rgb(0 0 0 / 12%),
+    0 4px 12px rgb(0 0 0 / 10%);
+}
+
+/* The drawer measures itself against the notch, not against the whole dock. */
+.dockPanel {
+  position: relative;
+  flex-direction: column;
+}
+
+.dockAside {
+  align-items: center;
+  gap: var(--s1);
+  padding: var(--s1) var(--s2);
 }
 
 .dockPlaced {
@@ -191,6 +211,10 @@
 .dockDragging {
   transition: none;
   cursor: grabbing;
+}
+
+.dockDragging > .dockPanel,
+.dockDragging > .dockAside {
   box-shadow: var(--shadow-hover);
 }
 
@@ -199,17 +223,6 @@
 .dockItem {
   display: inline-flex;
   align-items: center;
-}
-
-/* The rule between two clusters in the row — the window's controls beside the
-   board's rather than among them. */
-.dockSplit {
-  flex: none;
-  align-self: stretch;
-  width: 1px;
-  margin-inline: calc(var(--s1) / 2);
-  background: var(--screen-frame);
-  opacity: 0.6;
 }
 
 .dockGrip {

@@ -88,12 +88,13 @@ export interface PageShellProps {
 }
 
 /**
- * A break in the dock's row: whatever follows it is a separate cluster.
+ * Where the dock's notch ends: whatever follows stands beside it as its own
+ * piece, picked up with the dock but not part of its row.
  *
  * Renders nothing itself — {@link PageShell} reads it out of the dock's
- * children and draws the rule, because only the row knows how tall it is.
+ * children and builds the two clusters around it.
  */
-export function DockSplit(): null {
+export function DockAside(): null {
   return null;
 }
 
@@ -123,6 +124,13 @@ export function PageShell({
   // The controls, one by one: the dock splits across a corner, so it has to
   // know where each of them falls rather than laying out one row.
   const tools = dockItems(dock);
+  // Everything before the aside marker rides in the notch; everything after it
+  // stands beside it.
+  const cut = tools.findIndex(
+    (tool) => tool && isValidElement(tool) && (tool as { type: unknown }).type === DockAside,
+  );
+  const notch = cut < 0 ? tools : tools.slice(0, cut);
+  const aside = cut < 0 ? [] : tools.slice(cut + 1);
   const drag = useDockDrag();
   const dockEl = useRef<HTMLElement | null>(null);
   const holdDock = useCallback(
@@ -254,19 +262,26 @@ export function PageShell({
             }
             onPointerDown={drag.onPointerDown}
           >
-            <div ref={setDrawer} className={styles['dockDrawer']} />
-            <div className={styles['dockRow']} role="toolbar" aria-label="Board tools">
-              <span className={styles['dockGrip']} aria-hidden="true" />
-              {tools.map((tool, index) =>
-                tool && isValidElement(tool) && (tool as { type: unknown }).type === DockSplit ? (
-                  <span key={index} className={styles['dockSplit']} aria-hidden="true" />
-                ) : (
+            <div className={styles['dockPanel']}>
+              <div ref={setDrawer} className={styles['dockDrawer']} />
+              <div className={styles['dockRow']} role="toolbar" aria-label="Board tools">
+                <span className={styles['dockGrip']} aria-hidden="true" />
+                {notch.map((tool, index) => (
                   <span key={index} className={styles['dockItem']}>
                     {tool}
                   </span>
-                ),
-              )}
+                ))}
+              </div>
             </div>
+            {aside.length > 0 ? (
+              <div className={styles['dockAside']} role="toolbar" aria-label="Window tools">
+                {aside.map((tool, index) => (
+                  <span key={index} className={styles['dockItem']}>
+                    {tool}
+                  </span>
+                ))}
+              </div>
+            ) : null}
           </div>
         </PopoverGroup>
       ) : null}

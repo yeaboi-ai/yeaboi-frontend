@@ -11,7 +11,7 @@ import { render, screen, within } from '@testing-library/preact';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { PageChrome } from './chrome';
-import { DockSplit, PageShell } from './PageShell';
+import { DockAside, PageShell } from './PageShell';
 
 const CHROME: PageChrome = {
   mode: 'retro',
@@ -229,17 +229,37 @@ describe('PageShell', () => {
 });
 
 describe('the dock', () => {
-  it('breaks the row where a split is, rather than drawing an empty control', () => {
+  it('stands what follows the marker beside the notch rather than in it', () => {
     render(
-      <PageShell chrome={CHROME} variant="app" dock={<><button>Music</button><DockSplit /><button>Timer</button></>}>
+      <PageShell
+        chrome={CHROME}
+        variant="app"
+        dock={
+          <>
+            <button>Timer</button>
+            <DockAside />
+            <button>Music</button>
+          </>
+        }
+      >
         board
       </PageShell>,
     );
-    const row = screen.getByRole('toolbar', { name: 'Board tools' });
-    // The grip, the two controls and the rule — the split is not a slot with
-    // nothing in it.
-    expect(within(row).getAllByRole('button')).toHaveLength(2);
-    expect(row.querySelectorAll('[class*="dockSplit"]')).toHaveLength(1);
-    expect(row.querySelectorAll('[class*="dockItem"]')).toHaveLength(2);
+    const notch = screen.getByRole('toolbar', { name: 'Board tools' });
+    const aside = screen.getByRole('toolbar', { name: 'Window tools' });
+    expect(within(notch).getByRole('button', { name: 'Timer' })).toBeTruthy();
+    expect(within(aside).getByRole('button', { name: 'Music' })).toBeTruthy();
+    // The marker is not a control: it leaves no empty slot behind in either.
+    expect(within(notch).getAllByRole('button')).toHaveLength(1);
+    expect(within(aside).getAllByRole('button')).toHaveLength(1);
+  });
+
+  it('draws no aside at all when nothing asks for one', () => {
+    render(
+      <PageShell chrome={CHROME} variant="app" dock={<button>Timer</button>}>
+        board
+      </PageShell>,
+    );
+    expect(screen.queryByRole('toolbar', { name: 'Window tools' })).toBeNull();
   });
 });
