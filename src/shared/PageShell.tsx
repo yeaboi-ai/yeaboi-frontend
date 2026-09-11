@@ -87,6 +87,16 @@ export interface PageShellProps {
   data?: Record<string, string | undefined>;
 }
 
+/**
+ * A break in the dock's row: whatever follows it is a separate cluster.
+ *
+ * Renders nothing itself — {@link PageShell} reads it out of the dock's
+ * children and draws the rule, because only the row knows how tall it is.
+ */
+export function DockSplit(): null {
+  return null;
+}
+
 /** A dock's controls, whether handed over as a fragment or as a list. */
 function dockItems(dock: ReactNode): ReactNode[] {
   const element = isValidElement(dock)
@@ -247,11 +257,15 @@ export function PageShell({
             <div ref={setDrawer} className={styles['dockDrawer']} />
             <div className={styles['dockRow']} role="toolbar" aria-label="Board tools">
               <span className={styles['dockGrip']} aria-hidden="true" />
-              {tools.map((tool, index) => (
-                <span key={index} className={styles['dockItem']}>
-                  {tool}
-                </span>
-              ))}
+              {tools.map((tool, index) =>
+                tool && isValidElement(tool) && (tool as { type: unknown }).type === DockSplit ? (
+                  <span key={index} className={styles['dockSplit']} aria-hidden="true" />
+                ) : (
+                  <span key={index} className={styles['dockItem']}>
+                    {tool}
+                  </span>
+                ),
+              )}
             </div>
           </div>
         </PopoverGroup>

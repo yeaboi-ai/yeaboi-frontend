@@ -11,7 +11,7 @@ import { render, screen, within } from '@testing-library/preact';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { PageChrome } from './chrome';
-import { PageShell } from './PageShell';
+import { DockSplit, PageShell } from './PageShell';
 
 const CHROME: PageChrome = {
   mode: 'retro',
@@ -225,5 +225,21 @@ describe('PageShell', () => {
     const html = container.innerHTML;
     expect(html.indexOf('Sprint Retro')).toBeLessThan(html.indexOf('toolbar'));
     expect(html.indexOf('toolbar')).toBeLessThan(html.indexOf('board'));
+  });
+});
+
+describe('the dock', () => {
+  it('breaks the row where a split is, rather than drawing an empty control', () => {
+    render(
+      <PageShell chrome={CHROME} variant="app" dock={<><button>Music</button><DockSplit /><button>Timer</button></>}>
+        board
+      </PageShell>,
+    );
+    const row = screen.getByRole('toolbar', { name: 'Board tools' });
+    // The grip, the two controls and the rule — the split is not a slot with
+    // nothing in it.
+    expect(within(row).getAllByRole('button')).toHaveLength(2);
+    expect(row.querySelectorAll('[class*="dockSplit"]')).toHaveLength(1);
+    expect(row.querySelectorAll('[class*="dockItem"]')).toHaveLength(2);
   });
 });

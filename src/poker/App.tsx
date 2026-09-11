@@ -48,6 +48,7 @@ import { applyTheme, setTheme, storedTheme, THEME_KEYS, type Theme } from '../ru
 import {
   Button,
   ConfettiCanvas,
+  DockSplit,
   IconButton,
   InviteQR,
   JoinGate,
@@ -92,6 +93,7 @@ export function App({
   boot,
   music: hosted,
   musicControl,
+  themeControl,
 }: {
   boot: PokerBoot;
   /**
@@ -112,6 +114,14 @@ export function App({
    * for a guest, who has no room to put anything on for.
    */
   musicControl?: (parts: { cast?: (() => void) | undefined }) => ReactNode;
+  /**
+   * The whole theme control, when the window this board is drawn in paints it.
+   *
+   * Staged inside the desktop app the board takes the window's colours, so its
+   * own five palettes have nothing left to change; the menu that does is the
+   * window's. A board served to a browser paints itself and keeps its own.
+   */
+  themeControl?: () => ReactNode;
 }) {
   // ── Identity and session ───────────────────────────────────────────────
   const pid = useMemo(() => participantId(KEY.pid), []);
@@ -398,6 +408,20 @@ export function App({
         <>
           <Visualizer playing={music.playing} analyser={music.analyser} />
 
+          {musicControl ? (
+            musicControl({
+              cast: isHost
+                ? () => void run(actions.castMusic(music.playing, music.channel))
+                : undefined,
+            })
+          ) : (
+            <Popover trigger={<Icon name="music" size={16} />} label="Music" placement="above">
+              <MusicPlayer music={music} channels={boot.musicChannels} footer={castMusic} />
+            </Popover>
+          )}
+
+          <DockSplit />
+
           <IconButton
             icon={<Icon name="menu" size={16} />}
             label={railOpen ? 'Hide the ticket list' : 'Show the ticket list'}
@@ -414,18 +438,6 @@ export function App({
               onClick={() => run(actions.setLocked(!locked))}
             />
           ) : null}
-
-          {musicControl ? (
-            musicControl({
-              cast: isHost
-                ? () => void run(actions.castMusic(music.playing, music.channel))
-                : undefined,
-            })
-          ) : (
-            <Popover trigger={<Icon name="music" size={16} />} label="Music" placement="above">
-              <MusicPlayer music={music} channels={boot.musicChannels} footer={castMusic} />
-            </Popover>
-          )}
 
           <Popover
             trigger={
@@ -458,19 +470,23 @@ export function App({
             )}
           </Popover>
 
-          <Popover trigger={<Icon name="contrast" size={16} />} label="Theme" placement="above">
-            <ThemeSwitcher
-              value={theme}
-              onChange={chooseTheme}
-              footer={
-                isHost ? (
-                  <Button onClick={() => run(actions.castTheme(theme))}>
-                    <Icon name="megaphone" /> Apply to everyone
-                  </Button>
-                ) : null
-              }
-            />
-          </Popover>
+          {themeControl ? (
+            themeControl()
+          ) : (
+            <Popover trigger={<Icon name="contrast" size={16} />} label="Theme" placement="above">
+              <ThemeSwitcher
+                value={theme}
+                onChange={chooseTheme}
+                footer={
+                  isHost ? (
+                    <Button onClick={() => run(actions.castTheme(theme))}>
+                      <Icon name="megaphone" /> Apply to everyone
+                    </Button>
+                  ) : null
+                }
+              />
+            </Popover>
+          )}
 
           <IconButton
             icon={invite.waiting ? <Spinner size={16} /> : <Icon name="mail" size={16} />}

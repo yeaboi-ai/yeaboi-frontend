@@ -15,7 +15,7 @@ export { IconButton, type IconButtonProps } from './IconButton';
 export { InviteQR, type InviteQRProps } from './InviteQR';
 export { JoinGate, normalizeCode, readInviteCode, type JoinGateProps } from './JoinGate';
 export { Modal, type ModalProps } from './Modal';
-export { PageShell, type PageShellProps } from './PageShell';
+export { DockSplit, PageShell, type PageShellProps } from './PageShell';
 export { MusicPlayer, type MusicPlayerProps } from './MusicPlayer';
 export { Popover, PopoverGroup, type PopoverProps } from './Popover';
 export {

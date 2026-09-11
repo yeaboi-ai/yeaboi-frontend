@@ -37,6 +37,7 @@ import { applyTheme, setTheme, storedTheme, THEME_KEYS, type Theme } from '../ru
 import {
   Button,
   ConfettiCanvas,
+  DockSplit,
   IconButton,
   InviteQR,
   JoinGate,
@@ -93,6 +94,7 @@ export function App({
   boot,
   music: hosted,
   musicControl,
+  themeControl,
   showRun,
 }: {
   boot: RetroBoot;
@@ -114,6 +116,14 @@ export function App({
    * for a guest, who has no room to put anything on for.
    */
   musicControl?: (parts: { cast?: (() => void) | undefined }) => ReactNode;
+  /**
+   * The whole theme control, when the window this board is drawn in paints it.
+   *
+   * Staged inside the desktop app the board takes the window's colours, so its
+   * own five palettes have nothing left to change; the menu that does is the
+   * window's. A board served to a browser paints itself and keeps its own.
+   */
+  themeControl?: () => ReactNode;
   /**
    * A past retro to open on, by run id.
    *
@@ -476,15 +486,6 @@ export function App({
         <>
           <Visualizer playing={music.playing} />
 
-          {isHost ? (
-            <IconButton
-              icon={<Icon name={locked ? 'lock' : 'lock-open'} size={16} />}
-              label={locked ? 'Unlock the board' : 'Lock the board'}
-              active={locked}
-              onClick={() => void actions.setLocked(!locked)}
-            />
-          ) : null}
-
           {musicControl ? (
             musicControl({
               cast: isHost ? () => void actions.castMusic(music.playing, music.channel) : undefined,
@@ -494,6 +495,17 @@ export function App({
               <MusicPlayer music={music} channels={boot.musicChannels} footer={castMusic} />
             </Popover>
           )}
+
+          <DockSplit />
+
+          {isHost ? (
+            <IconButton
+              icon={<Icon name={locked ? 'lock' : 'lock-open'} size={16} />}
+              label={locked ? 'Unlock the board' : 'Lock the board'}
+              active={locked}
+              onClick={() => void actions.setLocked(!locked)}
+            />
+          ) : null}
 
           <Popover
             trigger={
@@ -515,19 +527,23 @@ export function App({
             )}
           </Popover>
 
-          <Popover trigger={<Icon name="contrast" size={16} />} label="Theme">
-            <ThemeSwitcher
-              value={theme}
-              onChange={chooseTheme}
-              footer={
-                isHost ? (
-                  <Button onClick={() => void actions.castTheme(theme)}>
-                    <Icon name="megaphone" /> Apply to everyone
-                  </Button>
-                ) : null
-              }
-            />
-          </Popover>
+          {themeControl ? (
+            themeControl()
+          ) : (
+            <Popover trigger={<Icon name="contrast" size={16} />} label="Theme">
+              <ThemeSwitcher
+                value={theme}
+                onChange={chooseTheme}
+                footer={
+                  isHost ? (
+                    <Button onClick={() => void actions.castTheme(theme)}>
+                      <Icon name="megaphone" /> Apply to everyone
+                    </Button>
+                  ) : null
+                }
+              />
+            </Popover>
+          )}
 
           <IconButton
             icon={invite.waiting ? <Spinner size={16} /> : <Icon name="mail" size={16} />}
