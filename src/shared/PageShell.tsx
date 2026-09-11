@@ -125,7 +125,8 @@ export function PageShell({
   // know where each of them falls rather than laying out one row.
   const tools = dockItems(dock);
   // Everything before the aside marker rides in the notch; everything after it
-  // stands beside it.
+  // stands beside it — ahead of it in the row, so a control that opens sideways
+  // grows into the room rather than off the edge the dock is anchored to.
   const cut = tools.findIndex(
     (tool) => tool && isValidElement(tool) && (tool as { type: unknown }).type === DockAside,
   );
@@ -262,6 +263,15 @@ export function PageShell({
             }
             onPointerDown={drag.onPointerDown}
           >
+            {aside.length > 0 ? (
+              <div className={styles['dockAside']} role="toolbar" aria-label="Window tools">
+                {aside.map((tool, index) => (
+                  <span key={index} className={styles['dockItem']}>
+                    {tool}
+                  </span>
+                ))}
+              </div>
+            ) : null}
             <div className={styles['dockPanel']}>
               <div ref={setDrawer} className={styles['dockDrawer']} />
               <div className={styles['dockRow']} role="toolbar" aria-label="Board tools">
@@ -273,15 +283,6 @@ export function PageShell({
                 ))}
               </div>
             </div>
-            {aside.length > 0 ? (
-              <div className={styles['dockAside']} role="toolbar" aria-label="Window tools">
-                {aside.map((tool, index) => (
-                  <span key={index} className={styles['dockItem']}>
-                    {tool}
-                  </span>
-                ))}
-              </div>
-            ) : null}
           </div>
         </PopoverGroup>
       ) : null}
