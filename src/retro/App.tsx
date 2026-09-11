@@ -175,6 +175,11 @@ export function App({
     if (showRun !== undefined) openRun(showRun);
   }, [showRun, openRun]);
   const past = history.showing;
+  // Which one, for the notice at the foot. Off the list rather than off the
+  // retro itself: the list row is there the moment the step is taken, and the
+  // retro is a second request behind it — so naming it from `showing` left the
+  // notice saying nothing for as long as the fetch took.
+  const pastDate = history.runs[history.at - 1]?.retro_date ?? past?.date ?? '';
   // A past retro is read-only in the strongest sense available: it reuses
   // `locked`, so every composer, every control and every drag is already off.
   const readOnly = locked || history.at > 0;
@@ -562,7 +567,11 @@ export function App({
             aria-hidden="true"
           >
             <Icon name={locked ? 'lock' : 'rotate-ccw'} size={13} />
-            {locked ? 'The host locked the board' : 'A retro that already happened'}
+            {locked
+              ? 'The host locked the board'
+              : pastDate
+                ? `Looking back at ${pastDate}`
+                : 'Looking back'}
           </p>
         ) : null}
 
