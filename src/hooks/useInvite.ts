@@ -59,7 +59,9 @@ const RETRY_MS = 3000;
  *  so rather than in a button that spins for the rest of the session. */
 const PATIENCE_MS = 20_000;
 
-export function useInvite(session: Session): UseInvite {
+/** `enabled` false leaves the invite unasked for: a board opened to read a
+ *  retro that already happened has nobody to invite to it. */
+export function useInvite(session: Session, enabled = true): UseInvite {
   const [invite, setInvite] = useState<InviteInfo | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [settled, setSettled] = useState(false);
@@ -67,6 +69,7 @@ export function useInvite(session: Session): UseInvite {
   const latest = useRef<InviteInfo | null>(null);
 
   useEffect(() => {
+    if (!enabled) return;
     let live = true;
     // Separate from `live`: one says the board is still on screen, the other
     // says there is nothing left to ask for.
@@ -109,7 +112,7 @@ export function useInvite(session: Session): UseInvite {
       window.clearTimeout(timer);
       window.clearTimeout(patience);
     };
-  }, [session]);
+  }, [session, enabled]);
 
   const copy = useCallback(() => {
     const url = latest.current?.inviteUrl;
@@ -126,5 +129,5 @@ export function useInvite(session: Session): UseInvite {
     });
   }, []);
 
-  return { invite, notice, dismiss, waiting: !settled, copy };
+  return { invite, notice, dismiss, waiting: enabled && !settled, copy };
 }

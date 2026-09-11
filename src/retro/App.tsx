@@ -206,7 +206,9 @@ export function App({
   // Fetched on open rather than read from the boot payload: the page is
   // served unauthenticated, so a join code in the island would be readable by
   // anyone who reaches the board, token or not. Also puts it on the clipboard.
-  const invite = useInvite(session);
+  // Not while reading one that already happened: there is nobody to invite to
+  // a retro the team has already had.
+  const invite = useInvite(session, showRun === undefined);
   const [musicBlocked, setMusicBlocked] = useState(false);
   // The one action whose outcome is not visible in what it produces: an
   // unconfigured LLM still adds items, and has to be able to say so.
