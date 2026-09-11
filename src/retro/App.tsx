@@ -93,6 +93,7 @@ export function App({
   boot,
   music: hosted,
   musicControl,
+  showRun,
 }: {
   boot: RetroBoot;
   /**
@@ -113,6 +114,14 @@ export function App({
    * for a guest, who has no room to put anything on for.
    */
   musicControl?: (parts: { cast?: (() => void) | undefined }) => ReactNode;
+  /**
+   * A past retro to open on, by run id.
+   *
+   * The board can already step back through them; this is the same thing asked
+   * for from outside, so a ledger elsewhere in the window can put one on the
+   * board rather than drawing a second, lesser copy of it.
+   */
+  showRun?: number | undefined;
 }) {
   // ── Identity and session ───────────────────────────────────────────────
   const pid = useMemo(() => participantId(KEY.pid), []);
@@ -159,6 +168,12 @@ export function App({
   const [focus, setFocus] = useState('');
   const [inviteOpen, setInviteOpen] = useState(false);
   const history = useHistory(session);
+  // Asked for by whatever put this board on screen. Only on a change, so
+  // stepping away from it by hand is not undone on the next render.
+  const openRun = history.open;
+  useEffect(() => {
+    if (showRun !== undefined) openRun(showRun);
+  }, [showRun, openRun]);
   const past = history.showing;
   // A past retro is read-only in the strongest sense available: it reuses
   // `locked`, so every composer, every control and every drag is already off.

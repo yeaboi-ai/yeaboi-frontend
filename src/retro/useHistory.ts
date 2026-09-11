@@ -48,6 +48,10 @@ export interface History {
   step(delta: number): void;
   /** Jump straight to a step. 0 is the live board. */
   go(index: number): void;
+  /** Show one particular past retro, by its run id. The list is fetched first
+   *  if nobody has stepped back yet — which is the usual case, since this is
+   *  how a surface outside the board opens one. */
+  open(runId: number): void;
   /** True once the list has been asked for and answered. */
   listed: boolean;
   /** Back to the live board. */
@@ -78,34 +82,53 @@ export function useHistory(session: Session): History {
   const asked = useRef(false);
   const [arrived, setArrived] = useState(false);
 
+  const list = useCallback(() => {
+    if (asked.current) return;
+    asked.current = true;
+    void get<{ retros: RetroRun[] }>(session).then((data) => {
+      setRuns(data?.retros ?? []);
+      setArrived(true);
+    });
+  }, [session]);
+
   const step = useCallback(
     (delta: number) => {
       setAt((current) => Math.max(0, current + delta));
-      if (!asked.current) {
-        asked.current = true;
-        void get<{ retros: RetroRun[] }>(session).then((data) => {
-          setRuns(data?.retros ?? []);
-          setArrived(true);
-        });
-      }
+      list();
     },
-    [session],
+    [list],
   );
 
   const go = useCallback(
     (index: number) => {
       if (index < 0) return;
       setAt(index);
-      if (!asked.current) {
-        asked.current = true;
-        void get<{ retros: RetroRun[] }>(session).then((data) => {
-          setRuns(data?.retros ?? []);
-          setArrived(true);
-        });
-      }
+      list();
     },
-    [session],
+    [list],
   );
+
+  // Asked for by id, before the list that would say where it sits. Held until
+  // the list lands and then resolved once; dropped if it turns out not to be
+  // in there, which is a retro that has been removed since the caller saw it.
+  const [wanted_, setWanted] = useState<number | null>(null);
+  const open = useCallback(
+    (runId: number) => {
+      setWanted(runId);
+      list();
+    },
+    [list],
+  );
+  useEffect(() => {
+    if (wanted_ === null) return;
+    const index = runs.findIndex((run) => run.id === wanted_);
+    if (index === -1) {
+      if (arrived) setWanted(null);
+      return;
+    }
+    setAt(index + 1);
+    setWanted(null);
+  }, [wanted_, runs, arrived]);
 
   const reset = useCallback(() => setAt(0), []);
 
@@ -137,5 +160,5 @@ export function useHistory(session: Session): History {
     if (arrived && at > runs.length) setAt(runs.length);
   }, [arrived, at, runs.length]);
 
-  return { runs, at, showing, loading, listed: arrived, step, go, reset };
+  return { runs, at, showing, loading, listed: arrived, step, go, open, reset };
 }
