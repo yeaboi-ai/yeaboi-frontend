@@ -14,7 +14,7 @@ permissions:
   id-token: write
 jobs:
   claude:
-    uses: yeaboi-ai/yeaboi-tooling/.github/workflows/claude-review.yml@0198a41897964afdf2f139b4d4cc33559f203a25
+    uses: yeaboi-ai/yeaboi-tooling/.github/workflows/claude-review.yml@101922c543dcf8e72a1b5c3ad469f5f1b2166756
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 # Codex automatic reviews run through its native GitHub integration and ChatGPT subscription.

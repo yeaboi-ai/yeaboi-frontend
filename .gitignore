@@ -41,3 +41,7 @@ dist-design/
 .agents/skills/yeaboi-*
 
 .agents/skills/repo-workflow
+
+# Per-worktree assistant launch choices and generated port assignments.
+/.vscode/tasks.json
+/.vscode/settings.json
