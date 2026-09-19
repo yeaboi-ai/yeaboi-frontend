@@ -35,3 +35,9 @@ dist-design/
 
 # This worktree's generated ports (written by the shared wt.sh).
 /.worktree.env
+
+.worktrees/
+
+.agents/skills/yeaboi-*
+
+.agents/skills/repo-workflow
