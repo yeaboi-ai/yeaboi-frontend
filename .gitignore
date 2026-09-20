@@ -35,3 +35,13 @@ dist-design/
 
 # This worktree's generated ports (written by the shared wt.sh).
 /.worktree.env
+
+.worktrees/
+
+.agents/skills/yeaboi-*
+
+.agents/skills/repo-workflow
+
+# Per-worktree assistant launch choices and generated port assignments.
+/.vscode/tasks.json
+/.vscode/settings.json
